@@ -23,7 +23,7 @@ COMMENT ON COLUMN tenants.created_at IS 'Временная метка созд�
 CREATE TABLE users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id UUID REFERENCES tenants(tenant_id) ON DELETE SET NULL,
-    telegram_id BIGINT NOT NULL,
+    telegram_id VARCHAR(64) NOT NULL,
     phone VARCHAR(20),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     
