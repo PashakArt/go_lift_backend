@@ -1,0 +1,27 @@
+package domain
+
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
+
+// SessionType определяет режим проведения тренировки
+type SessionType string
+
+const (
+	SessionTypeClassic SessionType = "classic"
+	SessionTypeCircuit SessionType = "circuit"
+)
+
+// WorkoutSession представляет собой активную или завершенную тренировку
+type WorkoutSession struct {
+	SessionID  uuid.UUID   `json:"session_id"`
+	TenantID   uuid.UUID   `json:"tenant_id"`
+	UserID     uuid.UUID   `json:"user_id"`
+	TemplateID *uuid.UUID  `json:"template_id,omitempty"`
+	Type       SessionType `json:"type"`
+	StartedAt  time.Time   `json:"started_at"`
+	EndedAt    *time.Time  `json:"ended_at,omitempty"`
+	Notes      *string     `json:"notes,omitempty"`
+}
