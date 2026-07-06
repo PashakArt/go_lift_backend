@@ -24,8 +24,8 @@ type UserRepository struct {
 	pool *pgxpool.Pool
 }
 
-func NewUserRepository(pool *pgxpool.Pool) UserRepository {
-	return UserRepository{pool}
+func NewUserRepository(pool *pgxpool.Pool) *UserRepository {
+	return &UserRepository{pool}
 }
 
 func (r *UserRepository) Create(ctx context.Context, user *domain.User) error {
