@@ -50,7 +50,7 @@ func (r *UserRepository) Create(ctx context.Context, user *domain.User) error {
 	return nil
 }
 
-func (r *UserRepository) GetUserByTgId(ctx context.Context, tenantId uuid.UUID, tgId string) (*domain.User, error) {
+func (r *UserRepository) GetByTenantAndTelegramID(ctx context.Context, tenantId uuid.UUID, tgId string) (*domain.User, error) {
 	var user domain.User
 
 	err := r.pool.QueryRow(ctx, getUserByTgId, tenantId, tgId).Scan(

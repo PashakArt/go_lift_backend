@@ -9,7 +9,7 @@ import (
 // UserRepository описывает контракт для работы с пользователями
 type UserRepository interface {
 	Create(ctx context.Context, user *User) error
-	GetByTelegramID(ctx context.Context, tenantID uuid.UUID, tgID string) (*User, error)
+	GetByTenantAndTelegramID(ctx context.Context, tenantID uuid.UUID, tgID string) (*User, error)
 }
 
 // ExerciseRepository описывает контракт для работы со справочником упражнений
