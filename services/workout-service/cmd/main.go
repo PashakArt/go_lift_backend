@@ -15,10 +15,15 @@ import (
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/repository"
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/service"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 )
 
 func main() {
+	if err := godotenv.Load("../../.env"); err != nil {
+		log.Println("Warning: .env file not found, using system env")
+	}
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
@@ -47,7 +52,7 @@ func main() {
 	authService := service.NewAuthService(userRepo)
 	authHandler := handlers.NewAuthHandler(authService)
 
-	grpcPort := os.Getenv("GRPC_PORT")
+	grpcPort := os.Getenv("WORKOUT_GRPC_PORT")
 	if grpcPort == "" {
 		grpcPort = "50051"
 	}

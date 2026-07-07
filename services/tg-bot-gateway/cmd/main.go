@@ -10,9 +10,14 @@ import (
 
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/bot"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/clients/workout"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load("../../.env"); err != nil {
+		log.Println("Warning: .env file not found, using system env")
+	}
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
