@@ -5,7 +5,7 @@ package workout.v1;
 option go_package = "github.com/PashakArt/go_lift_backend/api/proto/workout/v1;workoutv1";
 
 service WorkoutService {
-  rpc SignInOrSignup(SignInOrSignUpRequest) returns (SignInOrSignUpResponse);
+  rpc SignInOrSignUp(SignInOrSignUpRequest) returns (SignInOrSignUpResponse);
 }
 
 message SignInOrSignUpRequest {

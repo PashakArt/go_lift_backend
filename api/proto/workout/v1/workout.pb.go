@@ -168,7 +168,7 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x05 \x01(\tR\tcreatedAt2i\n" +
 	"\x0eWorkoutService\x12W\n" +
-	"\x0eSignInOrSignup\x12!.workout.v1.SignInOrSignUpRequest\x1a\".workout.v1.SignInOrSignUpResponseBEZCgithub.com/PashakArt/go_lift_backend/api/proto/workout/v1;workoutv1b\x06proto3"
+	"\x0eSignInOrSignUp\x12!.workout.v1.SignInOrSignUpRequest\x1a\".workout.v1.SignInOrSignUpResponseBEZCgithub.com/PashakArt/go_lift_backend/api/proto/workout/v1;workoutv1b\x06proto3"
 
 var (
 	file_api_proto_workout_v1_workout_proto_rawDescOnce sync.Once
@@ -188,8 +188,8 @@ var file_api_proto_workout_v1_workout_proto_goTypes = []any{
 	(*SignInOrSignUpResponse)(nil), // 1: workout.v1.SignInOrSignUpResponse
 }
 var file_api_proto_workout_v1_workout_proto_depIdxs = []int32{
-	0, // 0: workout.v1.WorkoutService.SignInOrSignup:input_type -> workout.v1.SignInOrSignUpRequest
-	1, // 1: workout.v1.WorkoutService.SignInOrSignup:output_type -> workout.v1.SignInOrSignUpResponse
+	0, // 0: workout.v1.WorkoutService.SignInOrSignUp:input_type -> workout.v1.SignInOrSignUpRequest
+	1, // 1: workout.v1.WorkoutService.SignInOrSignUp:output_type -> workout.v1.SignInOrSignUpResponse
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

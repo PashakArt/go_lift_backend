@@ -35,6 +35,7 @@ func (s *AuthService) SignInOrSignUp(ctx context.Context, tenantId, tgId string)
 	newUser := &domain.User{
 		UserID:     uuid.New(),
 		TelegramID: tgId,
+		TenantID:   &parsedTenantId,
 		CreatedAt:  time.Now(),
 	}
 

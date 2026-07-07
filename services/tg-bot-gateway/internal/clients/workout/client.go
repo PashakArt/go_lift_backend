@@ -30,7 +30,7 @@ func (c *Client) Auth(ctx context.Context, tenantId, tgId string) (*workoutv1.Si
 		TelegramId: tgId,
 	}
 
-	res, err := c.client.SignInOrSignup(ctx, req)
+	res, err := c.client.SignInOrSignUp(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC auth call failed: %w", err)
 	}

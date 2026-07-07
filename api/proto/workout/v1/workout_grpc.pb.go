@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WorkoutService_SignInOrSignup_FullMethodName = "/workout.v1.WorkoutService/SignInOrSignup"
+	WorkoutService_SignInOrSignUp_FullMethodName = "/workout.v1.WorkoutService/SignInOrSignUp"
 )
 
 // WorkoutServiceClient is the client API for WorkoutService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WorkoutServiceClient interface {
-	SignInOrSignup(ctx context.Context, in *SignInOrSignUpRequest, opts ...grpc.CallOption) (*SignInOrSignUpResponse, error)
+	SignInOrSignUp(ctx context.Context, in *SignInOrSignUpRequest, opts ...grpc.CallOption) (*SignInOrSignUpResponse, error)
 }
 
 type workoutServiceClient struct {
@@ -37,10 +37,10 @@ func NewWorkoutServiceClient(cc grpc.ClientConnInterface) WorkoutServiceClient {
 	return &workoutServiceClient{cc}
 }
 
-func (c *workoutServiceClient) SignInOrSignup(ctx context.Context, in *SignInOrSignUpRequest, opts ...grpc.CallOption) (*SignInOrSignUpResponse, error) {
+func (c *workoutServiceClient) SignInOrSignUp(ctx context.Context, in *SignInOrSignUpRequest, opts ...grpc.CallOption) (*SignInOrSignUpResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SignInOrSignUpResponse)
-	err := c.cc.Invoke(ctx, WorkoutService_SignInOrSignup_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, WorkoutService_SignInOrSignUp_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (c *workoutServiceClient) SignInOrSignup(ctx context.Context, in *SignInOrS
 // All implementations must embed UnimplementedWorkoutServiceServer
 // for forward compatibility.
 type WorkoutServiceServer interface {
-	SignInOrSignup(context.Context, *SignInOrSignUpRequest) (*SignInOrSignUpResponse, error)
+	SignInOrSignUp(context.Context, *SignInOrSignUpRequest) (*SignInOrSignUpResponse, error)
 	mustEmbedUnimplementedWorkoutServiceServer()
 }
 
@@ -62,8 +62,8 @@ type WorkoutServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedWorkoutServiceServer struct{}
 
-func (UnimplementedWorkoutServiceServer) SignInOrSignup(context.Context, *SignInOrSignUpRequest) (*SignInOrSignUpResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method SignInOrSignup not implemented")
+func (UnimplementedWorkoutServiceServer) SignInOrSignUp(context.Context, *SignInOrSignUpRequest) (*SignInOrSignUpResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method SignInOrSignUp not implemented")
 }
 func (UnimplementedWorkoutServiceServer) mustEmbedUnimplementedWorkoutServiceServer() {}
 func (UnimplementedWorkoutServiceServer) testEmbeddedByValue()                        {}
@@ -86,20 +86,20 @@ func RegisterWorkoutServiceServer(s grpc.ServiceRegistrar, srv WorkoutServiceSer
 	s.RegisterService(&WorkoutService_ServiceDesc, srv)
 }
 
-func _WorkoutService_SignInOrSignup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _WorkoutService_SignInOrSignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SignInOrSignUpRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WorkoutServiceServer).SignInOrSignup(ctx, in)
+		return srv.(WorkoutServiceServer).SignInOrSignUp(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WorkoutService_SignInOrSignup_FullMethodName,
+		FullMethod: WorkoutService_SignInOrSignUp_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkoutServiceServer).SignInOrSignup(ctx, req.(*SignInOrSignUpRequest))
+		return srv.(WorkoutServiceServer).SignInOrSignUp(ctx, req.(*SignInOrSignUpRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -112,8 +112,8 @@ var WorkoutService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*WorkoutServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SignInOrSignup",
-			Handler:    _WorkoutService_SignInOrSignup_Handler,
+			MethodName: "SignInOrSignUp",
+			Handler:    _WorkoutService_SignInOrSignUp_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
