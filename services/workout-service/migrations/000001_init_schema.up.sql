@@ -1,6 +1,4 @@
--- =========================================================================
--- 1. ТАБЛИЦА АРЕНДАТОРОВ (TENANTS)
--- =========================================================================
+-- ТАБЛИЦА АРЕНДАТОРОВ (TENANTS)
 CREATE TABLE tenants (
     tenant_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     bot_token_hash VARCHAR(255) NOT NULL,
@@ -16,10 +14,7 @@ COMMENT ON COLUMN tenants.name IS 'Коммерческое название ф�
 COMMENT ON COLUMN tenants.branding_json IS 'Конфигурационный JSON для фронтенда Telegram Mini App (фирменные цвета, ссылки на логотипы, стили)';
 COMMENT ON COLUMN tenants.created_at IS 'Временная метка создания записи арендатора';
 
-
--- =========================================================================
--- 2. ТАБЛИЦА ПОЛЬЗОВАТЕЛЕЙ (USERS)
--- =========================================================================
+-- ТАБЛИЦА ПОЛЬЗОВАТЕЛЕЙ (USERS)
 CREATE TABLE users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id UUID REFERENCES tenants(tenant_id) ON DELETE SET NULL,
@@ -38,18 +33,28 @@ COMMENT ON COLUMN users.phone IS 'Номер телефона пользоват
 COMMENT ON COLUMN users.created_at IS 'Временная метка регистрации пользователя в системе';
 
 
--- =========================================================================
--- 3. ТАБЛИЦА УПРАЖНЕНИЙ (EXERCISES)
--- =========================================================================
+-- ТАБЛИЦА УПРАЖНЕНИЙ (EXERCISES)
 CREATE TYPE exercise_type AS ENUM ('dynamic', 'static', 'bodyweight', 'cardio');
 COMMENT ON TYPE exercise_type IS 'Полиморфные типы нагрузок: dynamic (с весом), static (на время), bodyweight (свой вес), cardio (дистанция+время)';
+
+-- СПРАВОЧНИК МЫШЕЧНЫХ ГРУПП (MUSCLE GROUPS)
+CREATE TABLE muscle_groups (
+    muscle_group_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code VARCHAR(32) NOT NULL UNIQUE, -- 'chest', 'triceps', 'biceps'
+    name_ru VARCHAR(64) NOT NULL,     -- 'Грудь', 'Трицепс', 'Бицепс'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+COMMENT ON TABLE muscle_groups IS 'Справочник целевых мышечных групп для интерактивной карты тела';
+COMMENT ON COLUMN muscle_groups.muscle_group_id IS 'Уникальный UUID идентификатор мышечной группы';
+COMMENT ON COLUMN muscle_groups.code IS 'Строковый код группы для логики фронтенда и фильтров';
+COMMENT ON COLUMN muscle_groups.name_ru IS 'Название мышечной группы на русском языке';
 
 CREATE TABLE exercises (
     exercise_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id UUID REFERENCES tenants(tenant_id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
     type exercise_type NOT NULL,
-    muscle_group VARCHAR(50) NOT NULL,
     is_global BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -59,14 +64,17 @@ COMMENT ON COLUMN exercises.exercise_id IS 'Уникальный UUID идент
 COMMENT ON COLUMN exercises.tenant_id IS 'Ссылка на создателя упражнения. Для глобальных упражнений может указывать на системный tenant';
 COMMENT ON COLUMN exercises.name IS 'Название упражнения (например, Жим штанги лежа)';
 COMMENT ON COLUMN exercises.type IS 'Тип физической нагрузки, определяющий набор метрик в таблице подходов';
-COMMENT ON COLUMN exercises.muscle_group IS 'Целевая мышечная группа (грудь, спина, ноги, плечи, руки, кор)';
 COMMENT ON COLUMN exercises.is_global IS 'Флаг, определяющий, доступно ли упражнение всем пользователям платформы вне зависимости от их tenant_id';
 COMMENT ON COLUMN exercises.created_at IS 'Временная метка добавления упражнения в базу';
 
+-- СВЯЗУЮЩАЯ ТАБЛИЦА (MANY-TO-MANY)
+CREATE TABLE exercise_muscle_groups (
+    exercise_id UUID REFERENCES exercises(exercise_id) ON DELETE CASCADE,
+    muscle_group_id UUID REFERENCES muscle_groups(muscle_group_id) ON DELETE CASCADE,
+    PRIMARY KEY (exercise_id, muscle_group_id)
+);
 
--- =========================================================================
--- 4. ТАБЛИЦА ШАБЛОНОВ ТРЕНИРОВОК (WORKOUT TEMPLATES)
--- =========================================================================
+-- ТАБЛИЦА ШАБЛОНОВ ТРЕНИРОВОК (WORKOUT TEMPLATES)
 CREATE TABLE workout_templates (
     template_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id UUID REFERENCES tenants(tenant_id) ON DELETE CASCADE,
@@ -100,10 +108,7 @@ COMMENT ON COLUMN template_exercises.template_id IS 'Ссылка на целе�
 COMMENT ON COLUMN template_exercises.exercise_id IS 'Ссылка на добавляемое упражнение из справочника';
 COMMENT ON COLUMN template_exercises.sequence_order IS 'Порядковый номер выполнения упражнения в рамках данного шаблона (1, 2, 3...)';
 
-
--- =========================================================================
--- 5. ТАБЛИЦА СЕССИЙ ТРЕНИРОВОК (WORKOUT SESSIONS)
--- =========================================================================
+-- ТАБЛИЦА СЕССИЙ ТРЕНИРОВОК (WORKOUT SESSIONS)
 CREATE TYPE session_type AS ENUM ('classic', 'circuit');
 COMMENT ON TYPE session_type IS 'Режим выполнения тренировки: classic (последовательный), circuit (круговой кроссфит-круг)';
 
@@ -128,10 +133,7 @@ COMMENT ON COLUMN workout_sessions.started_at IS 'Время фактическ�
 COMMENT ON COLUMN workout_sessions.ended_at IS 'Время завершения тренировки. Заполняется при нажатии кнопки Закончить';
 COMMENT ON COLUMN workout_sessions.notes IS 'Финальный текстовый комментарий пользователя или тренера по итогам всей сессии';
 
-
--- =========================================================================
--- 6. ТАБЛИЦА ПОДХОДОВ / РЕЗУЛЬТАТОВ (WORKOUT SETS)
--- =========================================================================
+-- ТАБЛИЦА ПОДХОДОВ / РЕЗУЛЬТАТОВ (WORKOUT SETS)
 CREATE TABLE workout_sets (
     set_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     session_id UUID REFERENCES workout_sessions(session_id) ON DELETE CASCADE,

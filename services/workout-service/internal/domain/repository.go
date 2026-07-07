@@ -17,9 +17,7 @@ type ExerciseRepository interface {
 	Create(ctx context.Context, exercise *Exercise) error
 	GetByID(ctx context.Context, tenantID, exerciseID uuid.UUID) (*Exercise, error)
 	// List возвращает упражнения арендатора + глобальные упражнения (is_global = true)
-	List(ctx context.Context, tenantID uuid.UUID, muscleGroup string) ([]*Exercise, error)
-	Update(ctx context.Context, exercise *Exercise) error
-	Delete(ctx context.Context, tenantID, exerciseID uuid.UUID) error
+	List(ctx context.Context, tenantID uuid.UUID, muscleGroupCode string) ([]*Exercise, error)
 }
 
 // WorkoutSessionRepository описывает контракт для управления тренировочными сессиями

@@ -4,8 +4,14 @@ package workout.v1;
 
 option go_package = "github.com/PashakArt/go_lift_backend/api/proto/workout/v1;workoutv1";
 
+import "google/protobuf/timestamp.proto";
+
 service WorkoutService {
+  // Авторизация / Регистрация
   rpc SignInOrSignUp(SignInOrSignUpRequest) returns (SignInOrSignUpResponse);
+
+  // Справочники
+  rpc GetExercises(GetExercisesRequest) returns (GetExercisesResponse);
 }
 
 message SignInOrSignUpRequest {
@@ -19,4 +25,30 @@ message SignInOrSignUpResponse {
   string telegram_id = 3;
   string phone = 4;
   string created_at = 5;
+}
+
+enum ExerciseType {
+  EXERCISE_TYPE_UNSPECIFIED = 0;
+  EXERCISE_TYPE_DYNAMIC = 1;     // Вес + Повторения
+  EXERCISE_TYPE_STATIC = 2;      // Время в секундах
+  EXERCISE_TYPE_BODYWEIGHT = 3;  // Только повторения
+  EXERCISE_TYPE_CARDIO = 4;      // Дистанция + Время
+}
+
+message GetExercisesRequest {
+  string tenant_id = 1;
+  string muscle_group_code = 2;
+}
+
+message ExerciseInfo {
+  string exercise_id = 1;
+  string name = 2;
+  ExerciseType type = 3;
+  bool is_global = 4;
+  repeated string muscle_group_codes = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+message GetExercisesResponse {
+  repeated ExerciseInfo exercises = 1;
 }

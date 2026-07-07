@@ -9,6 +9,7 @@ package workoutv1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -20,6 +21,61 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+type ExerciseType int32
+
+const (
+	ExerciseType_EXERCISE_TYPE_UNSPECIFIED ExerciseType = 0
+	ExerciseType_EXERCISE_TYPE_DYNAMIC     ExerciseType = 1 // Вес + Повторения
+	ExerciseType_EXERCISE_TYPE_STATIC      ExerciseType = 2 // Время в секундах
+	ExerciseType_EXERCISE_TYPE_BODYWEIGHT  ExerciseType = 3 // Только повторения
+	ExerciseType_EXERCISE_TYPE_CARDIO      ExerciseType = 4 // Дистанция + Время
+)
+
+// Enum value maps for ExerciseType.
+var (
+	ExerciseType_name = map[int32]string{
+		0: "EXERCISE_TYPE_UNSPECIFIED",
+		1: "EXERCISE_TYPE_DYNAMIC",
+		2: "EXERCISE_TYPE_STATIC",
+		3: "EXERCISE_TYPE_BODYWEIGHT",
+		4: "EXERCISE_TYPE_CARDIO",
+	}
+	ExerciseType_value = map[string]int32{
+		"EXERCISE_TYPE_UNSPECIFIED": 0,
+		"EXERCISE_TYPE_DYNAMIC":     1,
+		"EXERCISE_TYPE_STATIC":      2,
+		"EXERCISE_TYPE_BODYWEIGHT":  3,
+		"EXERCISE_TYPE_CARDIO":      4,
+	}
+)
+
+func (x ExerciseType) Enum() *ExerciseType {
+	p := new(ExerciseType)
+	*p = x
+	return p
+}
+
+func (x ExerciseType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ExerciseType) Descriptor() protoreflect.EnumDescriptor {
+	return file_api_proto_workout_v1_workout_proto_enumTypes[0].Descriptor()
+}
+
+func (ExerciseType) Type() protoreflect.EnumType {
+	return &file_api_proto_workout_v1_workout_proto_enumTypes[0]
+}
+
+func (x ExerciseType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ExerciseType.Descriptor instead.
+func (ExerciseType) EnumDescriptor() ([]byte, []int) {
+	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{0}
+}
 
 type SignInOrSignUpRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -149,12 +205,192 @@ func (x *SignInOrSignUpResponse) GetCreatedAt() string {
 	return ""
 }
 
+type GetExercisesRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	TenantId        string                 `protobuf:"bytes,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
+	MuscleGroupCode string                 `protobuf:"bytes,2,opt,name=muscle_group_code,json=muscleGroupCode,proto3" json:"muscle_group_code,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GetExercisesRequest) Reset() {
+	*x = GetExercisesRequest{}
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExercisesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExercisesRequest) ProtoMessage() {}
+
+func (x *GetExercisesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExercisesRequest.ProtoReflect.Descriptor instead.
+func (*GetExercisesRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GetExercisesRequest) GetTenantId() string {
+	if x != nil {
+		return x.TenantId
+	}
+	return ""
+}
+
+func (x *GetExercisesRequest) GetMuscleGroupCode() string {
+	if x != nil {
+		return x.MuscleGroupCode
+	}
+	return ""
+}
+
+type ExerciseInfo struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	ExerciseId       string                 `protobuf:"bytes,1,opt,name=exercise_id,json=exerciseId,proto3" json:"exercise_id,omitempty"`
+	Name             string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Type             ExerciseType           `protobuf:"varint,3,opt,name=type,proto3,enum=workout.v1.ExerciseType" json:"type,omitempty"`
+	IsGlobal         bool                   `protobuf:"varint,4,opt,name=is_global,json=isGlobal,proto3" json:"is_global,omitempty"`
+	MuscleGroupCodes []string               `protobuf:"bytes,5,rep,name=muscle_group_codes,json=muscleGroupCodes,proto3" json:"muscle_group_codes,omitempty"`
+	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ExerciseInfo) Reset() {
+	*x = ExerciseInfo{}
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExerciseInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExerciseInfo) ProtoMessage() {}
+
+func (x *ExerciseInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExerciseInfo.ProtoReflect.Descriptor instead.
+func (*ExerciseInfo) Descriptor() ([]byte, []int) {
+	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ExerciseInfo) GetExerciseId() string {
+	if x != nil {
+		return x.ExerciseId
+	}
+	return ""
+}
+
+func (x *ExerciseInfo) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ExerciseInfo) GetType() ExerciseType {
+	if x != nil {
+		return x.Type
+	}
+	return ExerciseType_EXERCISE_TYPE_UNSPECIFIED
+}
+
+func (x *ExerciseInfo) GetIsGlobal() bool {
+	if x != nil {
+		return x.IsGlobal
+	}
+	return false
+}
+
+func (x *ExerciseInfo) GetMuscleGroupCodes() []string {
+	if x != nil {
+		return x.MuscleGroupCodes
+	}
+	return nil
+}
+
+func (x *ExerciseInfo) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+type GetExercisesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Exercises     []*ExerciseInfo        `protobuf:"bytes,1,rep,name=exercises,proto3" json:"exercises,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetExercisesResponse) Reset() {
+	*x = GetExercisesResponse{}
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetExercisesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetExercisesResponse) ProtoMessage() {}
+
+func (x *GetExercisesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetExercisesResponse.ProtoReflect.Descriptor instead.
+func (*GetExercisesResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GetExercisesResponse) GetExercises() []*ExerciseInfo {
+	if x != nil {
+		return x.Exercises
+	}
+	return nil
+}
+
 var File_api_proto_workout_v1_workout_proto protoreflect.FileDescriptor
 
 const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\n" +
 	"\"api/proto/workout/v1/workout.proto\x12\n" +
-	"workout.v1\"U\n" +
+	"workout.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"U\n" +
 	"\x15SignInOrSignUpRequest\x12\x1b\n" +
 	"\ttenant_id\x18\x01 \x01(\tR\btenantId\x12\x1f\n" +
 	"\vtelegram_id\x18\x02 \x01(\tR\n" +
@@ -166,9 +402,30 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"telegramId\x12\x14\n" +
 	"\x05phone\x18\x04 \x01(\tR\x05phone\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x05 \x01(\tR\tcreatedAt2i\n" +
+	"created_at\x18\x05 \x01(\tR\tcreatedAt\"^\n" +
+	"\x13GetExercisesRequest\x12\x1b\n" +
+	"\ttenant_id\x18\x01 \x01(\tR\btenantId\x12*\n" +
+	"\x11muscle_group_code\x18\x02 \x01(\tR\x0fmuscleGroupCode\"\xf7\x01\n" +
+	"\fExerciseInfo\x12\x1f\n" +
+	"\vexercise_id\x18\x01 \x01(\tR\n" +
+	"exerciseId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12,\n" +
+	"\x04type\x18\x03 \x01(\x0e2\x18.workout.v1.ExerciseTypeR\x04type\x12\x1b\n" +
+	"\tis_global\x18\x04 \x01(\bR\bisGlobal\x12,\n" +
+	"\x12muscle_group_codes\x18\x05 \x03(\tR\x10muscleGroupCodes\x129\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"N\n" +
+	"\x14GetExercisesResponse\x126\n" +
+	"\texercises\x18\x01 \x03(\v2\x18.workout.v1.ExerciseInfoR\texercises*\x9a\x01\n" +
+	"\fExerciseType\x12\x1d\n" +
+	"\x19EXERCISE_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
+	"\x15EXERCISE_TYPE_DYNAMIC\x10\x01\x12\x18\n" +
+	"\x14EXERCISE_TYPE_STATIC\x10\x02\x12\x1c\n" +
+	"\x18EXERCISE_TYPE_BODYWEIGHT\x10\x03\x12\x18\n" +
+	"\x14EXERCISE_TYPE_CARDIO\x10\x042\xbc\x01\n" +
 	"\x0eWorkoutService\x12W\n" +
-	"\x0eSignInOrSignUp\x12!.workout.v1.SignInOrSignUpRequest\x1a\".workout.v1.SignInOrSignUpResponseBEZCgithub.com/PashakArt/go_lift_backend/api/proto/workout/v1;workoutv1b\x06proto3"
+	"\x0eSignInOrSignUp\x12!.workout.v1.SignInOrSignUpRequest\x1a\".workout.v1.SignInOrSignUpResponse\x12Q\n" +
+	"\fGetExercises\x12\x1f.workout.v1.GetExercisesRequest\x1a .workout.v1.GetExercisesResponseBEZCgithub.com/PashakArt/go_lift_backend/api/proto/workout/v1;workoutv1b\x06proto3"
 
 var (
 	file_api_proto_workout_v1_workout_proto_rawDescOnce sync.Once
@@ -182,19 +439,30 @@ func file_api_proto_workout_v1_workout_proto_rawDescGZIP() []byte {
 	return file_api_proto_workout_v1_workout_proto_rawDescData
 }
 
-var file_api_proto_workout_v1_workout_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_api_proto_workout_v1_workout_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_api_proto_workout_v1_workout_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_api_proto_workout_v1_workout_proto_goTypes = []any{
-	(*SignInOrSignUpRequest)(nil),  // 0: workout.v1.SignInOrSignUpRequest
-	(*SignInOrSignUpResponse)(nil), // 1: workout.v1.SignInOrSignUpResponse
+	(ExerciseType)(0),              // 0: workout.v1.ExerciseType
+	(*SignInOrSignUpRequest)(nil),  // 1: workout.v1.SignInOrSignUpRequest
+	(*SignInOrSignUpResponse)(nil), // 2: workout.v1.SignInOrSignUpResponse
+	(*GetExercisesRequest)(nil),    // 3: workout.v1.GetExercisesRequest
+	(*ExerciseInfo)(nil),           // 4: workout.v1.ExerciseInfo
+	(*GetExercisesResponse)(nil),   // 5: workout.v1.GetExercisesResponse
+	(*timestamppb.Timestamp)(nil),  // 6: google.protobuf.Timestamp
 }
 var file_api_proto_workout_v1_workout_proto_depIdxs = []int32{
-	0, // 0: workout.v1.WorkoutService.SignInOrSignUp:input_type -> workout.v1.SignInOrSignUpRequest
-	1, // 1: workout.v1.WorkoutService.SignInOrSignUp:output_type -> workout.v1.SignInOrSignUpResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0, // 0: workout.v1.ExerciseInfo.type:type_name -> workout.v1.ExerciseType
+	6, // 1: workout.v1.ExerciseInfo.created_at:type_name -> google.protobuf.Timestamp
+	4, // 2: workout.v1.GetExercisesResponse.exercises:type_name -> workout.v1.ExerciseInfo
+	1, // 3: workout.v1.WorkoutService.SignInOrSignUp:input_type -> workout.v1.SignInOrSignUpRequest
+	3, // 4: workout.v1.WorkoutService.GetExercises:input_type -> workout.v1.GetExercisesRequest
+	2, // 5: workout.v1.WorkoutService.SignInOrSignUp:output_type -> workout.v1.SignInOrSignUpResponse
+	5, // 6: workout.v1.WorkoutService.GetExercises:output_type -> workout.v1.GetExercisesResponse
+	5, // [5:7] is the sub-list for method output_type
+	3, // [3:5] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_api_proto_workout_v1_workout_proto_init() }
@@ -207,13 +475,14 @@ func file_api_proto_workout_v1_workout_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_workout_v1_workout_proto_rawDesc), len(file_api_proto_workout_v1_workout_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   2,
+			NumEnums:      1,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_api_proto_workout_v1_workout_proto_goTypes,
 		DependencyIndexes: file_api_proto_workout_v1_workout_proto_depIdxs,
+		EnumInfos:         file_api_proto_workout_v1_workout_proto_enumTypes,
 		MessageInfos:      file_api_proto_workout_v1_workout_proto_msgTypes,
 	}.Build()
 	File_api_proto_workout_v1_workout_proto = out.File
