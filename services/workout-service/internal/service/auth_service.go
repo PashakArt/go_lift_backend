@@ -9,15 +9,19 @@ import (
 	"github.com/google/uuid"
 )
 
-type AuthService struct {
+type AuthService interface {
+	SignInOrSignUp(ctx context.Context, tenantId, tgId string) (*domain.User, error)
+}
+
+type authService struct {
 	r domain.UserRepository
 }
 
-func NewAuthService(r domain.UserRepository) *AuthService {
-	return &AuthService{r: r}
+func NewAuthService(r domain.UserRepository) AuthService {
+	return &authService{r: r}
 }
 
-func (s *AuthService) SignInOrSignUp(ctx context.Context, tenantId, tgId string) (*domain.User, error) {
+func (s *authService) SignInOrSignUp(ctx context.Context, tenantId, tgId string) (*domain.User, error) {
 	parsedTenantId, err := uuid.Parse(tenantId)
 	if err != nil {
 		return nil, fmt.Errorf("invalid tenant id format in service: %w", err)

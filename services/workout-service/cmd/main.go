@@ -50,7 +50,11 @@ func main() {
 
 	userRepo := repository.NewUserRepository(pool)
 	authService := service.NewAuthService(userRepo)
-	authHandler := handlers.NewAuthHandler(authService)
+
+	exerciseRepo := repository.NewExerciseRepository(pool)
+	exerciseService := service.NewExerciseService(exerciseRepo)
+
+	workoutHandler := handlers.NewWorkoutHandler(authService, exerciseService)
 
 	grpcPort := os.Getenv("WORKOUT_GRPC_PORT")
 	if grpcPort == "" {
@@ -64,7 +68,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	workoutv1.RegisterWorkoutServiceServer(grpcServer, authHandler)
+	workoutv1.RegisterWorkoutServiceServer(grpcServer, workoutHandler)
 
 	go func() {
 		log.Printf("gRPC server is listening on :%s", grpcPort)
