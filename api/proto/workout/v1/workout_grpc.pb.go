@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WorkoutService_SignInOrSignUp_FullMethodName = "/workout.v1.WorkoutService/SignInOrSignUp"
-	WorkoutService_GetExercises_FullMethodName   = "/workout.v1.WorkoutService/GetExercises"
+	WorkoutService_SignInOrSignUp_FullMethodName      = "/workout.v1.WorkoutService/SignInOrSignUp"
+	WorkoutService_GetExercises_FullMethodName        = "/workout.v1.WorkoutService/GetExercises"
+	WorkoutService_StartWorkoutSession_FullMethodName = "/workout.v1.WorkoutService/StartWorkoutSession"
 )
 
 // WorkoutServiceClient is the client API for WorkoutService service.
@@ -29,8 +30,10 @@ const (
 type WorkoutServiceClient interface {
 	// Авторизация / Регистрация
 	SignInOrSignUp(ctx context.Context, in *SignInOrSignUpRequest, opts ...grpc.CallOption) (*SignInOrSignUpResponse, error)
-	// Справочники
+	// Справочники упражнений
 	GetExercises(ctx context.Context, in *GetExercisesRequest, opts ...grpc.CallOption) (*GetExercisesResponse, error)
+	// Старт тренировочной сессии
+	StartWorkoutSession(ctx context.Context, in *StartWorkoutSessionRequest, opts ...grpc.CallOption) (*StartWorkoutSessionResponse, error)
 }
 
 type workoutServiceClient struct {
@@ -61,14 +64,26 @@ func (c *workoutServiceClient) GetExercises(ctx context.Context, in *GetExercise
 	return out, nil
 }
 
+func (c *workoutServiceClient) StartWorkoutSession(ctx context.Context, in *StartWorkoutSessionRequest, opts ...grpc.CallOption) (*StartWorkoutSessionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(StartWorkoutSessionResponse)
+	err := c.cc.Invoke(ctx, WorkoutService_StartWorkoutSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkoutServiceServer is the server API for WorkoutService service.
 // All implementations must embed UnimplementedWorkoutServiceServer
 // for forward compatibility.
 type WorkoutServiceServer interface {
 	// Авторизация / Регистрация
 	SignInOrSignUp(context.Context, *SignInOrSignUpRequest) (*SignInOrSignUpResponse, error)
-	// Справочники
+	// Справочники упражнений
 	GetExercises(context.Context, *GetExercisesRequest) (*GetExercisesResponse, error)
+	// Старт тренировочной сессии
+	StartWorkoutSession(context.Context, *StartWorkoutSessionRequest) (*StartWorkoutSessionResponse, error)
 	mustEmbedUnimplementedWorkoutServiceServer()
 }
 
@@ -84,6 +99,9 @@ func (UnimplementedWorkoutServiceServer) SignInOrSignUp(context.Context, *SignIn
 }
 func (UnimplementedWorkoutServiceServer) GetExercises(context.Context, *GetExercisesRequest) (*GetExercisesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetExercises not implemented")
+}
+func (UnimplementedWorkoutServiceServer) StartWorkoutSession(context.Context, *StartWorkoutSessionRequest) (*StartWorkoutSessionResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method StartWorkoutSession not implemented")
 }
 func (UnimplementedWorkoutServiceServer) mustEmbedUnimplementedWorkoutServiceServer() {}
 func (UnimplementedWorkoutServiceServer) testEmbeddedByValue()                        {}
@@ -142,6 +160,24 @@ func _WorkoutService_GetExercises_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkoutService_StartWorkoutSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StartWorkoutSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkoutServiceServer).StartWorkoutSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkoutService_StartWorkoutSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkoutServiceServer).StartWorkoutSession(ctx, req.(*StartWorkoutSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WorkoutService_ServiceDesc is the grpc.ServiceDesc for WorkoutService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -156,6 +192,10 @@ var WorkoutService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetExercises",
 			Handler:    _WorkoutService_GetExercises_Handler,
+		},
+		{
+			MethodName: "StartWorkoutSession",
+			Handler:    _WorkoutService_StartWorkoutSession_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

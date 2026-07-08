@@ -16,10 +16,15 @@ import (
 type WorkoutHandler struct {
 	workoutv1.UnimplementedWorkoutServiceServer
 	authService     service.AuthService
-	exerciseService service.ExerciseService // Вторая зависимость
+	exerciseService service.ExerciseService
+	sessionService  service.WorkoutSessionService
 }
 
-func NewWorkoutHandler(authService service.AuthService, exerciseService service.ExerciseService) *WorkoutHandler {
+func NewWorkoutHandler(
+	authService service.AuthService,
+	exerciseService service.ExerciseService,
+	sessionService service.WorkoutSessionService,
+) *WorkoutHandler {
 	return &WorkoutHandler{
 		authService:     authService,
 		exerciseService: exerciseService,
@@ -68,6 +73,43 @@ func (h *WorkoutHandler) GetExercises(ctx context.Context, req *desc.GetExercise
 	}, nil
 }
 
+func (h *WorkoutHandler) StartWorkoutSession(
+	ctx context.Context,
+	req *workoutv1.StartWorkoutSessionRequest,
+) (*workoutv1.StartWorkoutSessionResponse, error) {
+	tenantId := req.GetTenantId()
+	userId := req.GetUserId()
+
+	if tenantId == "" {
+		return nil, status.Error(codes.InvalidArgument, "tenant_id is required")
+	}
+
+	if userId == "" {
+		return nil, status.Error(codes.InvalidArgument, "user_id is required")
+	}
+
+	domainType := mapProtoTypeToDomain(req.GetType())
+
+	session, err := h.sessionService.StartSession(
+		ctx,
+		tenantId,
+		userId,
+		string(domainType),
+		req.GetTemplateId(),
+	)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to start workout session: %v", err)
+	}
+
+	return &workoutv1.StartWorkoutSessionResponse{
+		SessionId: session.SessionID.String(),
+		TenantId:  tenantId,
+		UserId:    userId,
+		Type:      req.GetType(),
+		StartedAt: timestamppb.New(session.StartedAt),
+	}, nil
+}
+
 func mapDomainTypeToProto(t domain.ExerciseType) desc.ExerciseType {
 	switch t {
 	case domain.ExerciseTypeDynamic:
@@ -80,5 +122,16 @@ func mapDomainTypeToProto(t domain.ExerciseType) desc.ExerciseType {
 		return desc.ExerciseType_EXERCISE_TYPE_CARDIO
 	default:
 		return desc.ExerciseType_EXERCISE_TYPE_UNSPECIFIED
+	}
+}
+
+func mapProtoTypeToDomain(t workoutv1.SessionType) domain.SessionType {
+	switch t {
+	case workoutv1.SessionType_SESSION_TYPE_CLASSIC:
+		return domain.SessionTypeClassic
+	case workoutv1.SessionType_SESSION_TYPE_CIRCUIT:
+		return domain.SessionTypeCircuit
+	default:
+		return domain.SessionTypeClassic
 	}
 }

@@ -49,12 +49,14 @@ func main() {
 	log.Println("Successfully connected to DB")
 
 	userRepo := repository.NewUserRepository(pool)
-	authService := service.NewAuthService(userRepo)
-
 	exerciseRepo := repository.NewExerciseRepository(pool)
-	exerciseService := service.NewExerciseService(exerciseRepo)
+	sessionRepo := repository.NewWorkoutSessionRepository(pool)
 
-	workoutHandler := handlers.NewWorkoutHandler(authService, exerciseService)
+	exerciseService := service.NewExerciseService(exerciseRepo)
+	authService := service.NewAuthService(userRepo)
+	sessionService := service.NewWorkoutSessionService(sessionRepo)
+
+	workoutHandler := handlers.NewWorkoutHandler(authService, exerciseService, sessionService)
 
 	grpcPort := os.Getenv("WORKOUT_GRPC_PORT")
 	if grpcPort == "" {

@@ -23,13 +23,6 @@ type ExerciseRepository interface {
 // WorkoutSessionRepository описывает контракт для управления тренировочными сессиями
 type WorkoutSessionRepository interface {
 	Create(ctx context.Context, session *WorkoutSession) error
-	GetByID(ctx context.Context, tenantID, sessionID uuid.UUID) (*WorkoutSession, error)
-	// GetActiveSession возвращает текущую незавершенную тренировку пользователя (где ended_at IS NULL)
-	GetActiveSession(ctx context.Context, tenantID, userID uuid.UUID) (*WorkoutSession, error)
-	// ListByUserID возвращает историю тренировок пользователя с пагинацией (limit, offset)
-	ListByUserID(ctx context.Context, tenantID, userID uuid.UUID, limit, offset int) ([]*WorkoutSession, error)
-	Update(ctx context.Context, session *WorkoutSession) error
-	Delete(ctx context.Context, tenantID, sessionID uuid.UUID) error
 }
 
 // WorkoutSetRepository описывает контракт для работы с подходами внутри сессии

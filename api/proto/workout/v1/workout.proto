@@ -10,8 +10,11 @@ service WorkoutService {
   // Авторизация / Регистрация
   rpc SignInOrSignUp(SignInOrSignUpRequest) returns (SignInOrSignUpResponse);
 
-  // Справочники
+  // Справочники упражнений
   rpc GetExercises(GetExercisesRequest) returns (GetExercisesResponse);
+
+  // Старт тренировочной сессии
+  rpc StartWorkoutSession(StartWorkoutSessionRequest) returns (StartWorkoutSessionResponse);
 }
 
 message SignInOrSignUpRequest {
@@ -51,4 +54,26 @@ message ExerciseInfo {
 
 message GetExercisesResponse {
   repeated ExerciseInfo exercises = 1;
+}
+
+// Режим выполнения тренировки (соответствует ENUM в БД)
+enum SessionType {
+  SESSION_TYPE_UNSPECIFIED = 0;
+  SESSION_TYPE_CLASSIC = 1;
+  SESSION_TYPE_CIRCUIT = 2;
+}
+
+message StartWorkoutSessionRequest {
+  string tenant_id = 1;
+  string user_id = 2;
+  SessionType type = 3;
+  optional string template_id = 4;
+}
+
+message StartWorkoutSessionResponse {
+  string session_id = 1;
+  string tenant_id = 2;
+  string user_id = 3;
+  SessionType type = 4;
+  google.protobuf.Timestamp started_at = 5;
 }
