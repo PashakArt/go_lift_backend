@@ -13,8 +13,8 @@ proto:
 		echo "Successfully compiled all proto files."; \
 	fi
 
-reset_db:
+down_db:
 	docker compose down -v
 
-create_test_db:
+up_db:
 	docker compose up -d

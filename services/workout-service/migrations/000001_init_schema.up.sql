@@ -42,6 +42,7 @@ CREATE TABLE muscle_groups (
     muscle_group_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     code VARCHAR(32) NOT NULL UNIQUE, -- 'chest', 'triceps', 'biceps'
     name VARCHAR(64) NOT NULL,     -- 'Грудь', 'Трицепс', 'Бицепс'
+    sort_order INT NOT NULL DEFAULT 0
 );
 
 COMMENT ON TABLE muscle_groups IS 'Справочник целевых мышечных групп для интерактивной карты тела';

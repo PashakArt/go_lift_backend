@@ -43,5 +43,24 @@ CREATE TABLE IF NOT EXISTS workout_sessions (
 CREATE TABLE IF NOT EXISTS muscle_groups (
     muscle_group_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     code VARCHAR(32) NOT NULL UNIQUE, -- 'chest', 'triceps', 'biceps'
-    name VARCHAR(64) NOT NULL     -- 'Грудь', 'Трицепс', 'Бицепс'
+    name VARCHAR(64) NOT NULL,     -- 'Грудь', 'Трицепс', 'Бицепс'
+    sort_order INT NOT NULL DEFAULT 0
 );
+
+INSERT INTO muscle_groups (code, name, sort_order) VALUES
+    ('shoulders', 'Плечи', 10),
+    ('chest', 'Грудь', 20),
+    ('back', 'Спина', 30),
+    ('biceps', 'Бицепс', 40),
+    ('triceps', 'Трицепс', 50),
+    ('forearms', 'Предплечья', 60),
+    ('abs', 'Пресс', 70),
+    ('core', 'Кор / Поясница', 80),
+    ('glutes', 'Ягодицы', 90),
+    ('quads', 'Квадрицепсы (Передняя поверхность бедра)', 100),
+    ('hamstrings', 'Бицепс бедра (Задняя поверхность бедра)', 110),
+    ('adductors', 'Приводящие мышцы бедра (Внутренняя поверхность)', 120),
+    ('calves', 'Икры', 130)
+ON CONFLICT (code) DO UPDATE 
+SET name = EXCLUDED.name,
+    sort_order = EXCLUDED.sort_order;

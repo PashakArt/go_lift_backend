@@ -1,2 +1,3 @@
 SELECT muscle_group_id, code, name
-from muscle_groups
+FROM muscle_groups
+ORDER BY sort_order ASC
