@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	WorkoutService_SignInOrSignUp_FullMethodName      = "/workout.v1.WorkoutService/SignInOrSignUp"
+	WorkoutService_GetMuscleGroups_FullMethodName     = "/workout.v1.WorkoutService/GetMuscleGroups"
 	WorkoutService_GetExercises_FullMethodName        = "/workout.v1.WorkoutService/GetExercises"
 	WorkoutService_StartWorkoutSession_FullMethodName = "/workout.v1.WorkoutService/StartWorkoutSession"
 )
@@ -30,6 +31,8 @@ const (
 type WorkoutServiceClient interface {
 	// Авторизация / Регистрация
 	SignInOrSignUp(ctx context.Context, in *SignInOrSignUpRequest, opts ...grpc.CallOption) (*SignInOrSignUpResponse, error)
+	// Получение списка мышечных групп
+	GetMuscleGroups(ctx context.Context, in *GetMuscleGroupsRequest, opts ...grpc.CallOption) (*GetMuscleGroupsResponse, error)
 	// Справочники упражнений
 	GetExercises(ctx context.Context, in *GetExercisesRequest, opts ...grpc.CallOption) (*GetExercisesResponse, error)
 	// Старт тренировочной сессии
@@ -48,6 +51,16 @@ func (c *workoutServiceClient) SignInOrSignUp(ctx context.Context, in *SignInOrS
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SignInOrSignUpResponse)
 	err := c.cc.Invoke(ctx, WorkoutService_SignInOrSignUp_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *workoutServiceClient) GetMuscleGroups(ctx context.Context, in *GetMuscleGroupsRequest, opts ...grpc.CallOption) (*GetMuscleGroupsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetMuscleGroupsResponse)
+	err := c.cc.Invoke(ctx, WorkoutService_GetMuscleGroups_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,6 +93,8 @@ func (c *workoutServiceClient) StartWorkoutSession(ctx context.Context, in *Star
 type WorkoutServiceServer interface {
 	// Авторизация / Регистрация
 	SignInOrSignUp(context.Context, *SignInOrSignUpRequest) (*SignInOrSignUpResponse, error)
+	// Получение списка мышечных групп
+	GetMuscleGroups(context.Context, *GetMuscleGroupsRequest) (*GetMuscleGroupsResponse, error)
 	// Справочники упражнений
 	GetExercises(context.Context, *GetExercisesRequest) (*GetExercisesResponse, error)
 	// Старт тренировочной сессии
@@ -96,6 +111,9 @@ type UnimplementedWorkoutServiceServer struct{}
 
 func (UnimplementedWorkoutServiceServer) SignInOrSignUp(context.Context, *SignInOrSignUpRequest) (*SignInOrSignUpResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method SignInOrSignUp not implemented")
+}
+func (UnimplementedWorkoutServiceServer) GetMuscleGroups(context.Context, *GetMuscleGroupsRequest) (*GetMuscleGroupsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMuscleGroups not implemented")
 }
 func (UnimplementedWorkoutServiceServer) GetExercises(context.Context, *GetExercisesRequest) (*GetExercisesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetExercises not implemented")
@@ -138,6 +156,24 @@ func _WorkoutService_SignInOrSignUp_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(WorkoutServiceServer).SignInOrSignUp(ctx, req.(*SignInOrSignUpRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _WorkoutService_GetMuscleGroups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMuscleGroupsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkoutServiceServer).GetMuscleGroups(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkoutService_GetMuscleGroups_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkoutServiceServer).GetMuscleGroups(ctx, req.(*GetMuscleGroupsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -188,6 +224,10 @@ var WorkoutService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignInOrSignUp",
 			Handler:    _WorkoutService_SignInOrSignUp_Handler,
+		},
+		{
+			MethodName: "GetMuscleGroups",
+			Handler:    _WorkoutService_GetMuscleGroups_Handler,
 		},
 		{
 			MethodName: "GetExercises",

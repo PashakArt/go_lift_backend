@@ -51,12 +51,19 @@ func main() {
 	userRepo := repository.NewUserRepository(pool)
 	exerciseRepo := repository.NewExerciseRepository(pool)
 	sessionRepo := repository.NewWorkoutSessionRepository(pool)
+	muscleGroupRepo := repository.NewMuscleGroupRepository(pool)
 
 	exerciseService := service.NewExerciseService(exerciseRepo)
 	authService := service.NewAuthService(userRepo, sessionRepo)
 	sessionService := service.NewWorkoutSessionService(sessionRepo)
+	muscleGroupService := service.NewMuscleGroupService(muscleGroupRepo)
 
-	workoutHandler := handlers.NewWorkoutHandler(authService, exerciseService, sessionService)
+	workoutHandler := handlers.NewWorkoutHandler(
+		authService,
+		exerciseService,
+		sessionService,
+		muscleGroupService,
+	)
 
 	grpcPort := os.Getenv("WORKOUT_GRPC_PORT")
 	if grpcPort == "" {

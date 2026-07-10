@@ -41,8 +41,7 @@ COMMENT ON TYPE exercise_type IS 'Полиморфные типы нагрузо
 CREATE TABLE muscle_groups (
     muscle_group_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     code VARCHAR(32) NOT NULL UNIQUE, -- 'chest', 'triceps', 'biceps'
-    name_ru VARCHAR(64) NOT NULL,     -- 'Грудь', 'Трицепс', 'Бицепс'
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    name VARCHAR(64) NOT NULL,     -- 'Грудь', 'Трицепс', 'Бицепс'
 );
 
 COMMENT ON TABLE muscle_groups IS 'Справочник целевых мышечных групп для интерактивной карты тела';

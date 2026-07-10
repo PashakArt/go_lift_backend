@@ -37,3 +37,11 @@ func (c *Client) Auth(ctx context.Context, tenantId, tgId string) (*workoutv1.Si
 
 	return res, nil
 }
+
+func (c *Client) GetMuscleGroups(ctx context.Context) (*workoutv1.GetMuscleGroupsResponse, error) {
+	res, err := c.client.GetMuscleGroups(ctx, &workoutv1.GetMuscleGroupsRequest{})
+	if err != nil {
+		return nil, fmt.Errorf("gRPC get muscle group failed: %w", err)
+	}
+	return res, nil
+}

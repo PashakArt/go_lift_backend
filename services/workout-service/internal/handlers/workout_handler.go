@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	desc "github.com/PashakArt/go_lift_backend/api/proto/workout/v1"
 	workoutv1 "github.com/PashakArt/go_lift_backend/api/proto/workout/v1"
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/domain"
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/service"
@@ -15,19 +14,23 @@ import (
 
 type WorkoutHandler struct {
 	workoutv1.UnimplementedWorkoutServiceServer
-	authService     service.AuthService
-	exerciseService service.ExerciseService
-	sessionService  service.WorkoutSessionService
+	authService        service.AuthService
+	exerciseService    service.ExerciseService
+	sessionService     service.WorkoutSessionService
+	muscleGroupService service.MuscleGroupService
 }
 
 func NewWorkoutHandler(
 	authService service.AuthService,
 	exerciseService service.ExerciseService,
 	sessionService service.WorkoutSessionService,
+	muscleGroupService service.MuscleGroupService,
 ) *WorkoutHandler {
 	return &WorkoutHandler{
-		authService:     authService,
-		exerciseService: exerciseService,
+		authService:        authService,
+		exerciseService:    exerciseService,
+		sessionService:     sessionService,
+		muscleGroupService: muscleGroupService,
 	}
 }
 
@@ -58,7 +61,7 @@ func (h *WorkoutHandler) SignInOrSignUp(ctx context.Context, req *workoutv1.Sign
 	}, nil
 }
 
-func (h *WorkoutHandler) GetExercises(ctx context.Context, req *desc.GetExercisesRequest) (*desc.GetExercisesResponse, error) {
+func (h *WorkoutHandler) GetExercises(ctx context.Context, req *workoutv1.GetExercisesRequest) (*workoutv1.GetExercisesResponse, error) {
 	if req.GetTenantId() == "" {
 		return nil, status.Error(codes.InvalidArgument, "tenant_id is required")
 	}
@@ -68,9 +71,9 @@ func (h *WorkoutHandler) GetExercises(ctx context.Context, req *desc.GetExercise
 		return nil, status.Errorf(codes.Internal, "failed to fetch exercises: %v", err)
 	}
 
-	protoExercises := make([]*desc.ExerciseInfo, 0, len(domainExercises))
+	protoExercises := make([]*workoutv1.ExerciseInfo, 0, len(domainExercises))
 	for _, ex := range domainExercises {
-		protoExercises = append(protoExercises, &desc.ExerciseInfo{
+		protoExercises = append(protoExercises, &workoutv1.ExerciseInfo{
 			ExerciseId:       ex.ExerciseID.String(),
 			Name:             ex.Name,
 			Type:             mapDomainTypeToProto(ex.Type),
@@ -80,8 +83,28 @@ func (h *WorkoutHandler) GetExercises(ctx context.Context, req *desc.GetExercise
 		})
 	}
 
-	return &desc.GetExercisesResponse{
+	return &workoutv1.GetExercisesResponse{
 		Exercises: protoExercises,
+	}, nil
+}
+
+func (h *WorkoutHandler) GetMuscleGroups(ctx context.Context, req *workoutv1.GetMuscleGroupsRequest) (*workoutv1.GetMuscleGroupsResponse, error) {
+	domainMuscleGroups, err := h.muscleGroupService.List(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch exercises: %v", err)
+	}
+
+	protoMuscleGroups := make([]*workoutv1.MuscleGroup, 0, len(domainMuscleGroups))
+	for _, mg := range domainMuscleGroups {
+		protoMuscleGroups = append(protoMuscleGroups, &workoutv1.MuscleGroup{
+			MuscleGroupId: mg.MuscleGroupId,
+			Code:          mg.Code,
+			Name:          mg.Name,
+		})
+	}
+
+	return &workoutv1.GetMuscleGroupsResponse{
+		MuscleGroups: protoMuscleGroups,
 	}, nil
 }
 
@@ -122,18 +145,18 @@ func (h *WorkoutHandler) StartWorkoutSession(
 	}, nil
 }
 
-func mapDomainTypeToProto(t domain.ExerciseType) desc.ExerciseType {
+func mapDomainTypeToProto(t domain.ExerciseType) workoutv1.ExerciseType {
 	switch t {
 	case domain.ExerciseTypeDynamic:
-		return desc.ExerciseType_EXERCISE_TYPE_DYNAMIC
+		return workoutv1.ExerciseType_EXERCISE_TYPE_DYNAMIC
 	case domain.ExerciseTypeStatic:
-		return desc.ExerciseType_EXERCISE_TYPE_STATIC
+		return workoutv1.ExerciseType_EXERCISE_TYPE_STATIC
 	case domain.ExerciseTypeBodyweight:
-		return desc.ExerciseType_EXERCISE_TYPE_BODYWEIGHT
+		return workoutv1.ExerciseType_EXERCISE_TYPE_BODYWEIGHT
 	case domain.ExerciseTypeCardio:
-		return desc.ExerciseType_EXERCISE_TYPE_CARDIO
+		return workoutv1.ExerciseType_EXERCISE_TYPE_CARDIO
 	default:
-		return desc.ExerciseType_EXERCISE_TYPE_UNSPECIFIED
+		return workoutv1.ExerciseType_EXERCISE_TYPE_UNSPECIFIED
 	}
 }
 

@@ -39,3 +39,9 @@ CREATE TABLE IF NOT EXISTS workout_sessions (
     ended_at TIMESTAMP WITH TIME ZONE,
     is_active BOOLEAN default true
 );
+
+CREATE TABLE IF NOT EXISTS muscle_groups (
+    muscle_group_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code VARCHAR(32) NOT NULL UNIQUE, -- 'chest', 'triceps', 'biceps'
+    name VARCHAR(64) NOT NULL     -- 'Грудь', 'Трицепс', 'Бицепс'
+);

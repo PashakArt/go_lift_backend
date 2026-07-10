@@ -35,3 +35,7 @@ type WorkoutSetRepository interface {
 	// Delete подходов конкретного упражнения в сессии (если юзер решил сбросить прогресс по нему)
 	DeleteByExercise(ctx context.Context, sessionID, exerciseID uuid.UUID) error
 }
+
+type MuscleGroupRepository interface {
+	List(ctx context.Context) ([]*MuscleGroup, error)
+}

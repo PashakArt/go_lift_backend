@@ -10,6 +10,9 @@ service WorkoutService {
   // Авторизация / Регистрация
   rpc SignInOrSignUp(SignInOrSignUpRequest) returns (SignInOrSignUpResponse);
 
+  // Получение списка мышечных групп
+  rpc GetMuscleGroups(GetMuscleGroupsRequest) returns (GetMuscleGroupsResponse);
+
   // Справочники упражнений
   rpc GetExercises(GetExercisesRequest) returns (GetExercisesResponse);
 
@@ -87,4 +90,18 @@ message StartWorkoutSessionResponse {
   string user_id = 3;
   SessionType type = 4;
   google.protobuf.Timestamp started_at = 5;
+}
+
+message GetMuscleGroupsRequest {
+  
+}
+
+message GetMuscleGroupsResponse {
+  repeated MuscleGroup muscle_groups = 1;
+}
+
+message MuscleGroup {
+  string muscle_group_id = 1;
+  string code = 2;
+  string name = 3;
 }

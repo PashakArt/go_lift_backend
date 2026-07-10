@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/clients/workout"
+	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/response"
 )
 
 const (
@@ -23,13 +24,6 @@ const (
 
 type InitDataRequest struct {
 	InitData string `json:"init_data"`
-}
-
-type AuthResponse struct {
-	UserID           string `json:"user_id"`
-	Token            string `json:"token"`
-	HasActiveSession bool   `json:"has_active_session"`
-	SessionId        string `json:"session_id"`
 }
 
 type HTTPServer struct {
@@ -45,10 +39,52 @@ func NewHTTPServer(botToken string, workoutClient *workout.Client) *HTTPServer {
 }
 
 func (s *HTTPServer) Start(port string) error {
-	http.HandleFunc("/api/v1/auth", s.handleAuth)
+	http.HandleFunc("POST /api/v1/auth", s.handleAuth)
+	http.HandleFunc("GET /api/v1/muscle-groups", s.handleGetMuscleGroups)
 
 	log.Printf("TG Gateway HTTP Server running on port :%s\n", port)
 	return http.ListenAndServe(":"+port, nil)
+}
+
+func (s *HTTPServer) handleGetMuscleGroups(w http.ResponseWriter, r *http.Request) {
+	// TODO отрефакторить: вынести все куда-нибудь
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	grpcResponse, err := s.workoutClient.GetMuscleGroups(ctx)
+	if err != nil {
+		log.Printf("gRPC GetMuscleGroups failed: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	muscleGroups := []response.MuscleGroupsResponse{}
+
+	for _, muscleGroup := range grpcResponse.MuscleGroups {
+		muscleGroups = append(muscleGroups, response.MuscleGroupsResponse{
+			MuscleGroupId: muscleGroup.MuscleGroupId,
+			Code:          muscleGroup.Code,
+			Name:          muscleGroup.Name,
+		})
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(muscleGroups)
+
 }
 
 func (s *HTTPServer) handleAuth(w http.ResponseWriter, r *http.Request) {
@@ -103,7 +139,7 @@ func (s *HTTPServer) handleAuth(w http.ResponseWriter, r *http.Request) {
 
 	res, err := s.workoutClient.Auth(ctx, tenantID, tgIDStr)
 	if err != nil {
-		log.Printf("gRPC Auth failed: %v\n", err)
+		log.Printf("gRPC Auth failed: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -116,7 +152,7 @@ func (s *HTTPServer) handleAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(AuthResponse{
+	json.NewEncoder(w).Encode(response.AuthResponse{
 		UserID:           res.User.GetUserId(),
 		HasActiveSession: hasActiveSession,
 		SessionId:        sessionId,
