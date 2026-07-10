@@ -120,7 +120,7 @@ CREATE TABLE workout_sessions (
     type session_type NOT NULL DEFAULT 'classic',
     started_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     ended_at TIMESTAMP WITH TIME ZONE,
-    notes TEXT
+    is_active BOOLEAN default true
 );
 
 COMMENT ON TABLE workout_sessions IS 'Исторический лог запущенных и выполненных тренировочных сессий пользователей';

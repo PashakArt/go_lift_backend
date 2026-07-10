@@ -23,6 +23,7 @@ type ExerciseRepository interface {
 // WorkoutSessionRepository описывает контракт для управления тренировочными сессиями
 type WorkoutSessionRepository interface {
 	Create(ctx context.Context, session *WorkoutSession) error
+	GetActiveByUserID(ctx context.Context, userId string) (*WorkoutSession, error)
 }
 
 // WorkoutSetRepository описывает контракт для работы с подходами внутри сессии

@@ -23,6 +23,17 @@ message SignInOrSignUpRequest {
 }
 
 message SignInOrSignUpResponse {
+  UserInfo user = 1;
+  bool is_new_user = 2;
+  optional ActiveSessionInfo active_session = 3;
+}
+
+message ActiveSessionInfo {
+  string session_id = 1;
+  string started_at = 2;
+}
+
+message UserInfo {
   string user_id = 1;
   string tenant_id = 2;
   string telegram_id = 3;

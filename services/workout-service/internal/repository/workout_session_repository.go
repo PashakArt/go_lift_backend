@@ -3,14 +3,19 @@ package repository
 import (
 	"context"
 	_ "embed"
+	"errors"
 	"fmt"
 
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/domain"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 //go:embed queries/start_session.sql
 var startSessionQuery string
+
+//go:embed queries/get_active_session_by_user_id.sql
+var getActiveSessionByUserId string
 
 type workoutSessionRepository struct {
 	pool *pgxpool.Pool
@@ -40,4 +45,27 @@ func (r *workoutSessionRepository) Create(ctx context.Context, session *domain.W
 	}
 
 	return nil
+}
+
+func (r *workoutSessionRepository) GetActiveByUserID(ctx context.Context, userId string) (*domain.WorkoutSession, error) {
+	var session domain.WorkoutSession
+
+	err := r.pool.QueryRow(ctx, getActiveSessionByUserId, userId).Scan(
+		&session.SessionID,
+		&session.TenantID,
+		&session.UserID,
+		&session.TemplateID,
+		&session.Type,
+		&session.StartedAt,
+		&session.EndedAt,
+		&session.IsACtive,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("failed to execute get active session by user_id query: %w", err)
+	}
+
+	return &session, nil
 }

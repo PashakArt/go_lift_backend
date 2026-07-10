@@ -26,8 +26,10 @@ type InitDataRequest struct {
 }
 
 type AuthResponse struct {
-	UserID string `json:"user_id"`
-	Token  string `json:"token"`
+	UserID           string `json:"user_id"`
+	Token            string `json:"token"`
+	HasActiveSession bool   `json:"has_active_session"`
+	SessionId        string `json:"session_id"`
 }
 
 type HTTPServer struct {
@@ -106,10 +108,20 @@ func (s *HTTPServer) handleAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var sessionId string
+	var hasActiveSession bool
+	if res.ActiveSession != nil {
+		sessionId = res.ActiveSession.SessionId
+		hasActiveSession = true
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(AuthResponse{
-		UserID: res.GetUserId(),
-		Token:  "mock-jwt-token",
+		UserID:           res.User.GetUserId(),
+		HasActiveSession: hasActiveSession,
+		SessionId:        sessionId,
+		// TODO: генерировать реальный токен
+		Token: "mock-jwt-token",
 	})
 }
 

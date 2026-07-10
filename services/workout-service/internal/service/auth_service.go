@@ -9,44 +9,64 @@ import (
 	"github.com/google/uuid"
 )
 
+type SignInOrSignUpResponse struct {
+	User          *domain.User
+	IsNewUser     bool
+	ActiveSession *domain.WorkoutSession
+}
+
 type AuthService interface {
-	SignInOrSignUp(ctx context.Context, tenantId, tgId string) (*domain.User, error)
+	SignInOrSignUp(ctx context.Context, tenantId, tgId string) (*SignInOrSignUpResponse, error)
 }
 
 type authService struct {
-	r domain.UserRepository
+	userRepo    domain.UserRepository
+	sessionRepo domain.WorkoutSessionRepository
 }
 
-func NewAuthService(r domain.UserRepository) AuthService {
-	return &authService{r: r}
+func NewAuthService(ur domain.UserRepository, sr domain.WorkoutSessionRepository) AuthService {
+	return &authService{userRepo: ur, sessionRepo: sr}
 }
 
-func (s *authService) SignInOrSignUp(ctx context.Context, tenantId, tgId string) (*domain.User, error) {
+func (s *authService) SignInOrSignUp(ctx context.Context, tenantId, tgId string) (*SignInOrSignUpResponse, error) {
 	parsedTenantId, err := uuid.Parse(tenantId)
 	if err != nil {
 		return nil, fmt.Errorf("invalid tenant id format in service: %w", err)
 	}
 
-	existingUser, err := s.r.GetByTenantAndTelegramID(ctx, parsedTenantId, tgId)
+	existingUser, err := s.userRepo.GetByTenantAndTelegramID(ctx, parsedTenantId, tgId)
 	if err != nil {
 		return nil, fmt.Errorf("auth check failed: %w", err)
 	}
 
-	if existingUser != nil {
-		return existingUser, nil
+	if existingUser == nil {
+		newUser := &domain.User{
+			UserID:     uuid.New(),
+			TelegramID: tgId,
+			TenantID:   &parsedTenantId,
+			CreatedAt:  time.Now(),
+		}
+
+		err = s.userRepo.Create(ctx, newUser)
+		if err != nil {
+			return nil, fmt.Errorf("failed to register new user: %w", err)
+		}
+
+		return &SignInOrSignUpResponse{
+			User:          newUser,
+			IsNewUser:     true,
+			ActiveSession: nil,
+		}, nil
 	}
 
-	newUser := &domain.User{
-		UserID:     uuid.New(),
-		TelegramID: tgId,
-		TenantID:   &parsedTenantId,
-		CreatedAt:  time.Now(),
-	}
-
-	err = s.r.Create(ctx, newUser)
+	activeSession, err := s.sessionRepo.GetActiveByUserID(ctx, existingUser.UserID.String())
 	if err != nil {
-		return nil, fmt.Errorf("failed to register new user: %w", err)
+		return nil, fmt.Errorf("failed to get active session by user_id: %w", err)
 	}
 
-	return newUser, nil
+	return &SignInOrSignUpResponse{
+		User:          existingUser,
+		IsNewUser:     false,
+		ActiveSession: activeSession,
+	}, nil
 }

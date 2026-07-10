@@ -32,17 +32,29 @@ func NewWorkoutHandler(
 }
 
 func (h *WorkoutHandler) SignInOrSignUp(ctx context.Context, req *workoutv1.SignInOrSignUpRequest) (*workoutv1.SignInOrSignUpResponse, error) {
-	user, err := h.authService.SignInOrSignUp(ctx, req.TenantId, req.TelegramId)
+	response, err := h.authService.SignInOrSignUp(ctx, req.TenantId, req.TelegramId)
 	if err != nil {
 		return nil, err
 	}
 
+	var activeSessionInfo *workoutv1.ActiveSessionInfo
+	if response.ActiveSession != nil {
+		activeSessionInfo = &workoutv1.ActiveSessionInfo{
+			SessionId: response.ActiveSession.SessionID.String(),
+			StartedAt: response.ActiveSession.StartedAt.Format(time.RFC3339),
+		}
+	}
+
 	return &workoutv1.SignInOrSignUpResponse{
-		UserId:     user.UserID.String(),
-		TenantId:   user.TenantID.String(),
-		TelegramId: user.TelegramID,
-		Phone:      user.Phone,
-		CreatedAt:  user.CreatedAt.Format(time.RFC3339),
+		User: &workoutv1.UserInfo{
+			UserId:     response.User.UserID.String(),
+			TenantId:   response.User.TenantID.String(),
+			TelegramId: response.User.TelegramID,
+			Phone:      response.User.Phone,
+			CreatedAt:  response.User.CreatedAt.Format(time.RFC3339),
+		},
+		ActiveSession: activeSessionInfo,
+		IsNewUser:     response.IsNewUser,
 	}, nil
 }
 

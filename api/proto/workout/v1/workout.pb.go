@@ -181,11 +181,9 @@ func (x *SignInOrSignUpRequest) GetTelegramId() string {
 
 type SignInOrSignUpResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	TenantId      string                 `protobuf:"bytes,2,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
-	TelegramId    string                 `protobuf:"bytes,3,opt,name=telegram_id,json=telegramId,proto3" json:"telegram_id,omitempty"`
-	Phone         string                 `protobuf:"bytes,4,opt,name=phone,proto3" json:"phone,omitempty"`
-	CreatedAt     string                 `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	User          *UserInfo              `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	IsNewUser     bool                   `protobuf:"varint,2,opt,name=is_new_user,json=isNewUser,proto3" json:"is_new_user,omitempty"`
+	ActiveSession *ActiveSessionInfo     `protobuf:"bytes,3,opt,name=active_session,json=activeSession,proto3,oneof" json:"active_session,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -220,35 +218,149 @@ func (*SignInOrSignUpResponse) Descriptor() ([]byte, []int) {
 	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *SignInOrSignUpResponse) GetUserId() string {
+func (x *SignInOrSignUpResponse) GetUser() *UserInfo {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
+func (x *SignInOrSignUpResponse) GetIsNewUser() bool {
+	if x != nil {
+		return x.IsNewUser
+	}
+	return false
+}
+
+func (x *SignInOrSignUpResponse) GetActiveSession() *ActiveSessionInfo {
+	if x != nil {
+		return x.ActiveSession
+	}
+	return nil
+}
+
+type ActiveSessionInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	StartedAt     string                 `protobuf:"bytes,2,opt,name=started_at,json=startedAt,proto3" json:"started_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ActiveSessionInfo) Reset() {
+	*x = ActiveSessionInfo{}
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ActiveSessionInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ActiveSessionInfo) ProtoMessage() {}
+
+func (x *ActiveSessionInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ActiveSessionInfo.ProtoReflect.Descriptor instead.
+func (*ActiveSessionInfo) Descriptor() ([]byte, []int) {
+	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ActiveSessionInfo) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *ActiveSessionInfo) GetStartedAt() string {
+	if x != nil {
+		return x.StartedAt
+	}
+	return ""
+}
+
+type UserInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	TenantId      string                 `protobuf:"bytes,2,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
+	TelegramId    string                 `protobuf:"bytes,3,opt,name=telegram_id,json=telegramId,proto3" json:"telegram_id,omitempty"`
+	Phone         string                 `protobuf:"bytes,4,opt,name=phone,proto3" json:"phone,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UserInfo) Reset() {
+	*x = UserInfo{}
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserInfo) ProtoMessage() {}
+
+func (x *UserInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserInfo.ProtoReflect.Descriptor instead.
+func (*UserInfo) Descriptor() ([]byte, []int) {
+	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *UserInfo) GetUserId() string {
 	if x != nil {
 		return x.UserId
 	}
 	return ""
 }
 
-func (x *SignInOrSignUpResponse) GetTenantId() string {
+func (x *UserInfo) GetTenantId() string {
 	if x != nil {
 		return x.TenantId
 	}
 	return ""
 }
 
-func (x *SignInOrSignUpResponse) GetTelegramId() string {
+func (x *UserInfo) GetTelegramId() string {
 	if x != nil {
 		return x.TelegramId
 	}
 	return ""
 }
 
-func (x *SignInOrSignUpResponse) GetPhone() string {
+func (x *UserInfo) GetPhone() string {
 	if x != nil {
 		return x.Phone
 	}
 	return ""
 }
 
-func (x *SignInOrSignUpResponse) GetCreatedAt() string {
+func (x *UserInfo) GetCreatedAt() string {
 	if x != nil {
 		return x.CreatedAt
 	}
@@ -265,7 +377,7 @@ type GetExercisesRequest struct {
 
 func (x *GetExercisesRequest) Reset() {
 	*x = GetExercisesRequest{}
-	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[2]
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -277,7 +389,7 @@ func (x *GetExercisesRequest) String() string {
 func (*GetExercisesRequest) ProtoMessage() {}
 
 func (x *GetExercisesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[2]
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -290,7 +402,7 @@ func (x *GetExercisesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExercisesRequest.ProtoReflect.Descriptor instead.
 func (*GetExercisesRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{2}
+	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetExercisesRequest) GetTenantId() string {
@@ -321,7 +433,7 @@ type ExerciseInfo struct {
 
 func (x *ExerciseInfo) Reset() {
 	*x = ExerciseInfo{}
-	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[3]
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -333,7 +445,7 @@ func (x *ExerciseInfo) String() string {
 func (*ExerciseInfo) ProtoMessage() {}
 
 func (x *ExerciseInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[3]
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -346,7 +458,7 @@ func (x *ExerciseInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExerciseInfo.ProtoReflect.Descriptor instead.
 func (*ExerciseInfo) Descriptor() ([]byte, []int) {
-	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{3}
+	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ExerciseInfo) GetExerciseId() string {
@@ -400,7 +512,7 @@ type GetExercisesResponse struct {
 
 func (x *GetExercisesResponse) Reset() {
 	*x = GetExercisesResponse{}
-	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[4]
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -412,7 +524,7 @@ func (x *GetExercisesResponse) String() string {
 func (*GetExercisesResponse) ProtoMessage() {}
 
 func (x *GetExercisesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[4]
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -425,7 +537,7 @@ func (x *GetExercisesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetExercisesResponse.ProtoReflect.Descriptor instead.
 func (*GetExercisesResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{4}
+	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetExercisesResponse) GetExercises() []*ExerciseInfo {
@@ -447,7 +559,7 @@ type StartWorkoutSessionRequest struct {
 
 func (x *StartWorkoutSessionRequest) Reset() {
 	*x = StartWorkoutSessionRequest{}
-	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[5]
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -459,7 +571,7 @@ func (x *StartWorkoutSessionRequest) String() string {
 func (*StartWorkoutSessionRequest) ProtoMessage() {}
 
 func (x *StartWorkoutSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[5]
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -472,7 +584,7 @@ func (x *StartWorkoutSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartWorkoutSessionRequest.ProtoReflect.Descriptor instead.
 func (*StartWorkoutSessionRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{5}
+	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *StartWorkoutSessionRequest) GetTenantId() string {
@@ -516,7 +628,7 @@ type StartWorkoutSessionResponse struct {
 
 func (x *StartWorkoutSessionResponse) Reset() {
 	*x = StartWorkoutSessionResponse{}
-	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[6]
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -528,7 +640,7 @@ func (x *StartWorkoutSessionResponse) String() string {
 func (*StartWorkoutSessionResponse) ProtoMessage() {}
 
 func (x *StartWorkoutSessionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[6]
+	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -541,7 +653,7 @@ func (x *StartWorkoutSessionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartWorkoutSessionResponse.ProtoReflect.Descriptor instead.
 func (*StartWorkoutSessionResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{6}
+	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *StartWorkoutSessionResponse) GetSessionId() string {
@@ -588,8 +700,18 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\x15SignInOrSignUpRequest\x12\x1b\n" +
 	"\ttenant_id\x18\x01 \x01(\tR\btenantId\x12\x1f\n" +
 	"\vtelegram_id\x18\x02 \x01(\tR\n" +
-	"telegramId\"\xa4\x01\n" +
-	"\x16SignInOrSignUpResponse\x12\x17\n" +
+	"telegramId\"\xc0\x01\n" +
+	"\x16SignInOrSignUpResponse\x12(\n" +
+	"\x04user\x18\x01 \x01(\v2\x14.workout.v1.UserInfoR\x04user\x12\x1e\n" +
+	"\vis_new_user\x18\x02 \x01(\bR\tisNewUser\x12I\n" +
+	"\x0eactive_session\x18\x03 \x01(\v2\x1d.workout.v1.ActiveSessionInfoH\x00R\ractiveSession\x88\x01\x01B\x11\n" +
+	"\x0f_active_session\"Q\n" +
+	"\x11ActiveSessionInfo\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1d\n" +
+	"\n" +
+	"started_at\x18\x02 \x01(\tR\tstartedAt\"\x96\x01\n" +
+	"\bUserInfo\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\ttenant_id\x18\x02 \x01(\tR\btenantId\x12\x1f\n" +
 	"\vtelegram_id\x18\x03 \x01(\tR\n" +
@@ -654,37 +776,41 @@ func file_api_proto_workout_v1_workout_proto_rawDescGZIP() []byte {
 }
 
 var file_api_proto_workout_v1_workout_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_api_proto_workout_v1_workout_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_api_proto_workout_v1_workout_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_api_proto_workout_v1_workout_proto_goTypes = []any{
 	(ExerciseType)(0),                   // 0: workout.v1.ExerciseType
 	(SessionType)(0),                    // 1: workout.v1.SessionType
 	(*SignInOrSignUpRequest)(nil),       // 2: workout.v1.SignInOrSignUpRequest
 	(*SignInOrSignUpResponse)(nil),      // 3: workout.v1.SignInOrSignUpResponse
-	(*GetExercisesRequest)(nil),         // 4: workout.v1.GetExercisesRequest
-	(*ExerciseInfo)(nil),                // 5: workout.v1.ExerciseInfo
-	(*GetExercisesResponse)(nil),        // 6: workout.v1.GetExercisesResponse
-	(*StartWorkoutSessionRequest)(nil),  // 7: workout.v1.StartWorkoutSessionRequest
-	(*StartWorkoutSessionResponse)(nil), // 8: workout.v1.StartWorkoutSessionResponse
-	(*timestamppb.Timestamp)(nil),       // 9: google.protobuf.Timestamp
+	(*ActiveSessionInfo)(nil),           // 4: workout.v1.ActiveSessionInfo
+	(*UserInfo)(nil),                    // 5: workout.v1.UserInfo
+	(*GetExercisesRequest)(nil),         // 6: workout.v1.GetExercisesRequest
+	(*ExerciseInfo)(nil),                // 7: workout.v1.ExerciseInfo
+	(*GetExercisesResponse)(nil),        // 8: workout.v1.GetExercisesResponse
+	(*StartWorkoutSessionRequest)(nil),  // 9: workout.v1.StartWorkoutSessionRequest
+	(*StartWorkoutSessionResponse)(nil), // 10: workout.v1.StartWorkoutSessionResponse
+	(*timestamppb.Timestamp)(nil),       // 11: google.protobuf.Timestamp
 }
 var file_api_proto_workout_v1_workout_proto_depIdxs = []int32{
-	0, // 0: workout.v1.ExerciseInfo.type:type_name -> workout.v1.ExerciseType
-	9, // 1: workout.v1.ExerciseInfo.created_at:type_name -> google.protobuf.Timestamp
-	5, // 2: workout.v1.GetExercisesResponse.exercises:type_name -> workout.v1.ExerciseInfo
-	1, // 3: workout.v1.StartWorkoutSessionRequest.type:type_name -> workout.v1.SessionType
-	1, // 4: workout.v1.StartWorkoutSessionResponse.type:type_name -> workout.v1.SessionType
-	9, // 5: workout.v1.StartWorkoutSessionResponse.started_at:type_name -> google.protobuf.Timestamp
-	2, // 6: workout.v1.WorkoutService.SignInOrSignUp:input_type -> workout.v1.SignInOrSignUpRequest
-	4, // 7: workout.v1.WorkoutService.GetExercises:input_type -> workout.v1.GetExercisesRequest
-	7, // 8: workout.v1.WorkoutService.StartWorkoutSession:input_type -> workout.v1.StartWorkoutSessionRequest
-	3, // 9: workout.v1.WorkoutService.SignInOrSignUp:output_type -> workout.v1.SignInOrSignUpResponse
-	6, // 10: workout.v1.WorkoutService.GetExercises:output_type -> workout.v1.GetExercisesResponse
-	8, // 11: workout.v1.WorkoutService.StartWorkoutSession:output_type -> workout.v1.StartWorkoutSessionResponse
-	9, // [9:12] is the sub-list for method output_type
-	6, // [6:9] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	5,  // 0: workout.v1.SignInOrSignUpResponse.user:type_name -> workout.v1.UserInfo
+	4,  // 1: workout.v1.SignInOrSignUpResponse.active_session:type_name -> workout.v1.ActiveSessionInfo
+	0,  // 2: workout.v1.ExerciseInfo.type:type_name -> workout.v1.ExerciseType
+	11, // 3: workout.v1.ExerciseInfo.created_at:type_name -> google.protobuf.Timestamp
+	7,  // 4: workout.v1.GetExercisesResponse.exercises:type_name -> workout.v1.ExerciseInfo
+	1,  // 5: workout.v1.StartWorkoutSessionRequest.type:type_name -> workout.v1.SessionType
+	1,  // 6: workout.v1.StartWorkoutSessionResponse.type:type_name -> workout.v1.SessionType
+	11, // 7: workout.v1.StartWorkoutSessionResponse.started_at:type_name -> google.protobuf.Timestamp
+	2,  // 8: workout.v1.WorkoutService.SignInOrSignUp:input_type -> workout.v1.SignInOrSignUpRequest
+	6,  // 9: workout.v1.WorkoutService.GetExercises:input_type -> workout.v1.GetExercisesRequest
+	9,  // 10: workout.v1.WorkoutService.StartWorkoutSession:input_type -> workout.v1.StartWorkoutSessionRequest
+	3,  // 11: workout.v1.WorkoutService.SignInOrSignUp:output_type -> workout.v1.SignInOrSignUpResponse
+	8,  // 12: workout.v1.WorkoutService.GetExercises:output_type -> workout.v1.GetExercisesResponse
+	10, // 13: workout.v1.WorkoutService.StartWorkoutSession:output_type -> workout.v1.StartWorkoutSessionResponse
+	11, // [11:14] is the sub-list for method output_type
+	8,  // [8:11] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_api_proto_workout_v1_workout_proto_init() }
@@ -692,14 +818,15 @@ func file_api_proto_workout_v1_workout_proto_init() {
 	if File_api_proto_workout_v1_workout_proto != nil {
 		return
 	}
-	file_api_proto_workout_v1_workout_proto_msgTypes[5].OneofWrappers = []any{}
+	file_api_proto_workout_v1_workout_proto_msgTypes[1].OneofWrappers = []any{}
+	file_api_proto_workout_v1_workout_proto_msgTypes[7].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_workout_v1_workout_proto_rawDesc), len(file_api_proto_workout_v1_workout_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   7,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

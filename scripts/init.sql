@@ -9,3 +9,33 @@ CREATE TABLE IF NOT EXISTS users (
     
     CONSTRAINT unique_tenant_telegram UNIQUE (tenant_id, telegram_id)
 );
+
+CREATE TABLE IF NOT EXISTS tenants (
+    tenant_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    bot_token_hash VARCHAR(255) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    branding_json JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS workout_templates (
+    template_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID REFERENCES tenants(tenant_id) ON DELETE CASCADE,
+    creator_id UUID REFERENCES users(user_id) ON DELETE SET NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TYPE session_type AS ENUM ('classic', 'circuit');
+
+CREATE TABLE IF NOT EXISTS workout_sessions (
+    session_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id UUID REFERENCES tenants(tenant_id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
+    template_id UUID REFERENCES workout_templates(template_id) ON DELETE SET NULL,
+    type session_type NOT NULL DEFAULT 'classic',
+    started_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    ended_at TIMESTAMP WITH TIME ZONE,
+    is_active BOOLEAN default true
+);

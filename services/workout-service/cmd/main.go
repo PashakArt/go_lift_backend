@@ -53,7 +53,7 @@ func main() {
 	sessionRepo := repository.NewWorkoutSessionRepository(pool)
 
 	exerciseService := service.NewExerciseService(exerciseRepo)
-	authService := service.NewAuthService(userRepo)
+	authService := service.NewAuthService(userRepo, sessionRepo)
 	sessionService := service.NewWorkoutSessionService(sessionRepo)
 
 	workoutHandler := handlers.NewWorkoutHandler(authService, exerciseService, sessionService)
