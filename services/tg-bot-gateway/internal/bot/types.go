@@ -1,4 +1,8 @@
-package response
+package bot
+
+type InitDataRequest struct {
+	InitData string `json:"init_data"`
+}
 
 type AuthResponse struct {
 	UserID           string `json:"user_id"`
