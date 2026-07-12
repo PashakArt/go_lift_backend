@@ -1,16 +1,18 @@
 -- ТАБЛИЦА АРЕНДАТОРОВ (TENANTS)
 CREATE TABLE tenants (
     tenant_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    bot_token_hash VARCHAR(255) NOT NULL,
     name VARCHAR(100) NOT NULL,
+    code VARCHAR(100) NOT NULL,
     branding_json JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+ALTER TABLE tenants ADD CONSTRAINT unique_tenant_code UNIQUE (code);
+
 COMMENT ON TABLE tenants IS 'Таблица арендаторов (фитнес-студий или розничных контуров платформы) для реализации Multi-tenant архитектуры';
 COMMENT ON COLUMN tenants.tenant_id IS 'Уникальный UUID идентификатор арендатора';
-COMMENT ON COLUMN tenants.bot_token_hash IS 'Криптографический хэш токена Telegram-бота для безопасной валидации вебхуков';
 COMMENT ON COLUMN tenants.name IS 'Коммерческое название фитнес-студии или обозначение базового контура GoLift Retail';
+COMMENT ON COLUMN tenants.code IS 'Техническое название фитнес-студии';
 COMMENT ON COLUMN tenants.branding_json IS 'Конфигурационный JSON для фронтенда Telegram Mini App (фирменные цвета, ссылки на логотипы, стили)';
 COMMENT ON COLUMN tenants.created_at IS 'Временная метка создания записи арендатора';
 
