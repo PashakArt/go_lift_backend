@@ -9,6 +9,20 @@ import (
 	"time"
 )
 
+func (s *HTTPServer) HandleStartTraining(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := s.workoutClient.StartTraining(ctx)
+	if err != nil {
+		log.Printf("gRPC StartTraining failed: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, "Internal error")
+		return
+	}
+
+	RespondWithJSON(w, http.StatusCreated, nil)
+}
+
 func (s *HTTPServer) HandleGetExercises(w http.ResponseWriter, r *http.Request) {
 	muscleGroupId := r.PathValue("muscleGroupId")
 	if muscleGroupId == "" {

@@ -27,6 +27,7 @@ func (s *HTTPServer) Start(port string) error {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /api/v1/auth", s.HandleAuth)
+	mux.HandleFunc("POST /api/v1/start", s.HandleStartTraining)
 	mux.HandleFunc("GET /api/v1/muscle-groups", s.HandleGetMuscleGroups)
 	mux.HandleFunc("GET /api/v1/{muscleGroupId}/exercises", s.HandleGetExercises)
 
