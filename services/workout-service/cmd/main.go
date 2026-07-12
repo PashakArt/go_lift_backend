@@ -29,40 +29,15 @@ func main() {
 
 	log.Println("Starting workout-service...")
 
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		log.Fatalf("DATABASE_URL not found")
-	}
+	pool := initDB(ctx)
 
-	connectCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
-
-	pool, err := pgxpool.New(connectCtx, dbURL)
-	if err != nil {
-		log.Fatalf("Unable to connect to database: %v\n", err)
-	}
-	defer pool.Close()
-
-	if err := pool.Ping(connectCtx); err != nil {
-		log.Fatalf("Database ping failed: %v", err)
-	}
-	log.Println("Successfully connected to DB")
-
-	userRepo := repository.NewUserRepository(pool)
-	exerciseRepo := repository.NewExerciseRepository(pool)
-	sessionRepo := repository.NewWorkoutSessionRepository(pool)
-	muscleGroupRepo := repository.NewMuscleGroupRepository(pool)
-
-	exerciseService := service.NewExerciseService(exerciseRepo)
-	authService := service.NewAuthService(userRepo, sessionRepo)
-	sessionService := service.NewWorkoutSessionService(sessionRepo)
-	muscleGroupService := service.NewMuscleGroupService(muscleGroupRepo)
-
+	repos := repository.NewRepositories(pool)
+	services := service.NewServices(repos)
 	workoutHandler := handlers.NewWorkoutHandler(
-		authService,
-		exerciseService,
-		sessionService,
-		muscleGroupService,
+		services.Auth,
+		services.Exercise,
+		services.Session,
+		services.MuscleGroup,
 	)
 
 	grpcPort := os.Getenv("WORKOUT_GRPC_PORT")
@@ -91,4 +66,25 @@ func main() {
 
 	grpcServer.GracefulStop()
 	log.Println("Workout-service stopped completely.")
+}
+
+func initDB(ctx context.Context) *pgxpool.Pool {
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		log.Fatalf("DATABASE_URL not found")
+	}
+
+	connectCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	pool, err := pgxpool.New(connectCtx, dbURL)
+	if err != nil {
+		log.Fatalf("Unable to connect to database: %v\n", err)
+	}
+
+	if err := pool.Ping(connectCtx); err != nil {
+		log.Fatalf("Database ping failed: %v", err)
+	}
+	log.Println("Successfully connected to DB")
+	return pool
 }

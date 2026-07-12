@@ -20,15 +20,15 @@ var (
 	getUserByTgId string
 )
 
-type UserRepository struct {
+type userRepository struct {
 	pool *pgxpool.Pool
 }
 
 func NewUserRepository(pool *pgxpool.Pool) domain.UserRepository {
-	return &UserRepository{pool}
+	return &userRepository{pool}
 }
 
-func (r *UserRepository) Create(ctx context.Context, user *domain.User) error {
+func (r *userRepository) Create(ctx context.Context, user *domain.User) error {
 	if user.UserID == uuid.Nil {
 		user.UserID = uuid.New()
 	}
@@ -50,7 +50,7 @@ func (r *UserRepository) Create(ctx context.Context, user *domain.User) error {
 	return nil
 }
 
-func (r *UserRepository) GetByTenantAndTelegramID(ctx context.Context, tenantId uuid.UUID, tgId string) (*domain.User, error) {
+func (r *userRepository) GetByTenantAndTelegramID(ctx context.Context, tenantId uuid.UUID, tgId string) (*domain.User, error) {
 	var user domain.User
 
 	err := r.pool.QueryRow(ctx, getUserByTgId, tenantId, tgId).Scan(

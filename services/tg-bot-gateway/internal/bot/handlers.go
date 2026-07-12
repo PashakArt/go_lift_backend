@@ -12,7 +12,7 @@ import (
 func (s *HTTPServer) HandleGetExercises(w http.ResponseWriter, r *http.Request) {
 	muscleGroupId := r.PathValue("muscleGroupId")
 	if muscleGroupId == "" {
-		http.Error(w, "muscleGroupId not pass", http.StatusBadRequest)
+		RespondWithError(w, http.StatusBadRequest, "muscleGroupId not pass")
 		return
 	}
 
@@ -47,7 +47,6 @@ func (s *HTTPServer) HandleGetMuscleGroups(w http.ResponseWriter, r *http.Reques
 
 	grpcResponse, err := s.workoutClient.GetMuscleGroups(ctx)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
 		return
 	}
@@ -68,7 +67,7 @@ func (s *HTTPServer) HandleGetMuscleGroups(w http.ResponseWriter, r *http.Reques
 func (s *HTTPServer) HandleAuth(w http.ResponseWriter, r *http.Request) {
 	var req InitDataRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		RespondWithError(w, http.StatusBadRequest, "init data is incorrect")
 		return
 	}
 	defer r.Body.Close()
@@ -76,7 +75,7 @@ func (s *HTTPServer) HandleAuth(w http.ResponseWriter, r *http.Request) {
 	params, err := s.ValidateAndParseInitData(req.InitData)
 	if err != nil {
 		log.Printf("Telegram InitData validation failed: %v\n", err)
-		w.WriteHeader(http.StatusUnauthorized)
+		RespondWithError(w, http.StatusUnauthorized, "Telegram InitData validation failed")
 		return
 	}
 
@@ -87,7 +86,7 @@ func (s *HTTPServer) HandleAuth(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal([]byte(params.Get("user")), &tgUser)
 	if err != nil {
 		log.Printf("Failed to unmarshal telegram user data: %v\n", err)
-		w.WriteHeader(http.StatusBadRequest)
+		RespondWithError(w, http.StatusBadRequest, "Failed to unmarshal telegram user data")
 		return
 	}
 
@@ -104,7 +103,7 @@ func (s *HTTPServer) HandleAuth(w http.ResponseWriter, r *http.Request) {
 	res, err := s.workoutClient.Auth(ctx, tenantID, tgIDStr)
 	if err != nil {
 		log.Printf("gRPC Auth failed: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
+		RespondWithError(w, http.StatusInternalServerError, "Internal Error")
 		return
 	}
 

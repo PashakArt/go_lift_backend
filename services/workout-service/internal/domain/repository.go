@@ -14,8 +14,6 @@ type UserRepository interface {
 
 // ExerciseRepository описывает контракт для работы со справочником упражнений
 type ExerciseRepository interface {
-	Create(ctx context.Context, exercise *Exercise) error
-	GetByID(ctx context.Context, tenantID, exerciseID uuid.UUID) (*Exercise, error)
 	List(ctx context.Context, muscleGroupId uuid.UUID) ([]*Exercise, error)
 	UserFavoriteList(ctx context.Context, muscleGroupId, userId uuid.UUID) ([]*Exercise, error)
 }

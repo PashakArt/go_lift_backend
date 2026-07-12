@@ -5,7 +5,6 @@ import (
 	"time"
 
 	workoutv1 "github.com/PashakArt/go_lift_backend/api/proto/workout/v1"
-	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/domain"
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/service"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -72,7 +71,7 @@ func (h *WorkoutHandler) GetExercises(ctx context.Context, req *workoutv1.GetExe
 		protoExercises = append(protoExercises, &workoutv1.ExerciseInfo{
 			ExerciseId:       ex.ExerciseID.String(),
 			Name:             ex.Name,
-			Type:             mapDomainTypeToProto(ex.Type),
+			Type:             MapDomainTypeToProto(ex.Type),
 			IsGlobal:         ex.IsGlobal,
 			MuscleGroupCodes: ex.MuscleGroupCodes,
 			CreatedAt:        timestamppb.New(ex.CreatedAt),
@@ -119,7 +118,7 @@ func (h *WorkoutHandler) StartWorkoutSession(
 		return nil, status.Error(codes.InvalidArgument, "user_id is required")
 	}
 
-	domainType := mapProtoTypeToDomain(req.GetType())
+	domainType := MapProtoTypeToDomain(req.GetType())
 
 	session, err := h.sessionService.StartSession(
 		ctx,
@@ -139,30 +138,4 @@ func (h *WorkoutHandler) StartWorkoutSession(
 		Type:      req.GetType(),
 		StartedAt: timestamppb.New(session.StartedAt),
 	}, nil
-}
-
-func mapDomainTypeToProto(t domain.ExerciseType) workoutv1.ExerciseType {
-	switch t {
-	case domain.ExerciseTypeDynamic:
-		return workoutv1.ExerciseType_EXERCISE_TYPE_DYNAMIC
-	case domain.ExerciseTypeStatic:
-		return workoutv1.ExerciseType_EXERCISE_TYPE_STATIC
-	case domain.ExerciseTypeBodyweight:
-		return workoutv1.ExerciseType_EXERCISE_TYPE_BODYWEIGHT
-	case domain.ExerciseTypeCardio:
-		return workoutv1.ExerciseType_EXERCISE_TYPE_CARDIO
-	default:
-		return workoutv1.ExerciseType_EXERCISE_TYPE_UNSPECIFIED
-	}
-}
-
-func mapProtoTypeToDomain(t workoutv1.SessionType) domain.SessionType {
-	switch t {
-	case workoutv1.SessionType_SESSION_TYPE_CLASSIC:
-		return domain.SessionTypeClassic
-	case workoutv1.SessionType_SESSION_TYPE_CIRCUIT:
-		return domain.SessionTypeCircuit
-	default:
-		return domain.SessionTypeClassic
-	}
 }

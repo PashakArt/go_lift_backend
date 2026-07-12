@@ -26,14 +26,6 @@ func NewExerciseRepository(pool *pgxpool.Pool) domain.ExerciseRepository {
 	return &exerciseRepository{pool: pool}
 }
 
-func (r *exerciseRepository) Create(ctx context.Context, exercise *domain.Exercise) error {
-	return fmt.Errorf("")
-}
-
-func (r *exerciseRepository) GetByID(ctx context.Context, tenantID, exerciseID uuid.UUID) (*domain.Exercise, error) {
-	return nil, nil
-}
-
 func (r *exerciseRepository) List(ctx context.Context, muscleGroupId uuid.UUID) ([]*domain.Exercise, error) {
 	rows, err := r.pool.Query(ctx, listExercisesQuery, muscleGroupId)
 
