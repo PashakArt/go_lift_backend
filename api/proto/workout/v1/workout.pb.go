@@ -368,11 +368,11 @@ func (x *UserInfo) GetCreatedAt() string {
 }
 
 type GetExercisesRequest struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	TenantId        string                 `protobuf:"bytes,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
-	MuscleGroupCode string                 `protobuf:"bytes,2,opt,name=muscle_group_code,json=muscleGroupCode,proto3" json:"muscle_group_code,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MuscleGroupId string                 `protobuf:"bytes,1,opt,name=muscle_group_id,json=muscleGroupId,proto3" json:"muscle_group_id,omitempty"`
+	UserId        *string                `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetExercisesRequest) Reset() {
@@ -405,16 +405,16 @@ func (*GetExercisesRequest) Descriptor() ([]byte, []int) {
 	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *GetExercisesRequest) GetTenantId() string {
+func (x *GetExercisesRequest) GetMuscleGroupId() string {
 	if x != nil {
-		return x.TenantId
+		return x.MuscleGroupId
 	}
 	return ""
 }
 
-func (x *GetExercisesRequest) GetMuscleGroupCode() string {
-	if x != nil {
-		return x.MuscleGroupCode
+func (x *GetExercisesRequest) GetUserId() string {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
 	}
 	return ""
 }
@@ -858,10 +858,12 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"telegramId\x12\x14\n" +
 	"\x05phone\x18\x04 \x01(\tR\x05phone\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x05 \x01(\tR\tcreatedAt\"^\n" +
-	"\x13GetExercisesRequest\x12\x1b\n" +
-	"\ttenant_id\x18\x01 \x01(\tR\btenantId\x12*\n" +
-	"\x11muscle_group_code\x18\x02 \x01(\tR\x0fmuscleGroupCode\"\xf7\x01\n" +
+	"created_at\x18\x05 \x01(\tR\tcreatedAt\"g\n" +
+	"\x13GetExercisesRequest\x12&\n" +
+	"\x0fmuscle_group_id\x18\x01 \x01(\tR\rmuscleGroupId\x12\x1c\n" +
+	"\auser_id\x18\x02 \x01(\tH\x00R\x06userId\x88\x01\x01B\n" +
+	"\n" +
+	"\b_user_id\"\xf7\x01\n" +
 	"\fExerciseInfo\x12\x1f\n" +
 	"\vexercise_id\x18\x01 \x01(\tR\n" +
 	"exerciseId\x12\x12\n" +
@@ -973,6 +975,7 @@ func file_api_proto_workout_v1_workout_proto_init() {
 		return
 	}
 	file_api_proto_workout_v1_workout_proto_msgTypes[1].OneofWrappers = []any{}
+	file_api_proto_workout_v1_workout_proto_msgTypes[4].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[7].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

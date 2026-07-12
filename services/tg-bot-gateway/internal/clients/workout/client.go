@@ -45,3 +45,14 @@ func (c *Client) GetMuscleGroups(ctx context.Context) (*workoutv1.GetMuscleGroup
 	}
 	return res, nil
 }
+
+func (c *Client) GetExercises(ctx context.Context, userId, muscleGroupId string) (*workoutv1.GetExercisesResponse, error) {
+	res, err := c.client.GetExercises(ctx, &workoutv1.GetExercisesRequest{
+		UserId:        &userId,
+		MuscleGroupId: muscleGroupId,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gRPC get exercises failed: %w", err)
+	}
+	return res, nil
+}

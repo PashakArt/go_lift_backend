@@ -62,11 +62,7 @@ func (h *WorkoutHandler) SignInOrSignUp(ctx context.Context, req *workoutv1.Sign
 }
 
 func (h *WorkoutHandler) GetExercises(ctx context.Context, req *workoutv1.GetExercisesRequest) (*workoutv1.GetExercisesResponse, error) {
-	if req.GetTenantId() == "" {
-		return nil, status.Error(codes.InvalidArgument, "tenant_id is required")
-	}
-
-	domainExercises, err := h.exerciseService.GetExercises(ctx, req.GetTenantId(), req.GetMuscleGroupCode())
+	domainExercises, err := h.exerciseService.GetExercises(ctx, req.GetMuscleGroupId(), req.GetUserId())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to fetch exercises: %v", err)
 	}

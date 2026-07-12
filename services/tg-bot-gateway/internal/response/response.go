@@ -12,3 +12,9 @@ type MuscleGroupsResponse struct {
 	Code          string `json:"code"`
 	Name          string `json:"name"`
 }
+
+type ExerciseResponse struct {
+	ExerciseId string `json:"exercise_id"`
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+}

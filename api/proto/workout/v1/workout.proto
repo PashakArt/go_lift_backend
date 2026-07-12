@@ -53,8 +53,8 @@ enum ExerciseType {
 }
 
 message GetExercisesRequest {
-  string tenant_id = 1;
-  string muscle_group_code = 2;
+  string muscle_group_id = 1;
+  optional string user_id = 2;
 }
 
 message ExerciseInfo {

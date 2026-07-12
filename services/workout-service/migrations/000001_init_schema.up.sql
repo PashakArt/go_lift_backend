@@ -74,6 +74,16 @@ CREATE TABLE exercise_muscle_groups (
     PRIMARY KEY (exercise_id, muscle_group_id)
 );
 
+CREATE TABLE IF NOT EXISTS user_favorite_exercises (
+    user_id     UUID REFERENCES users(user_id) ON DELETE CASCADE,
+    exercise_id UUID REFERENCES exercises(exercise_id) ON DELETE CASCADE,
+    
+    -- Составной первичный ключ гарантирует, что юзер не добавит одно упражнение в избранное дважды
+    PRIMARY KEY (user_id, exercise_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_favorites_user_id ON user_favorite_exercises(user_id);
+
 -- ТАБЛИЦА ШАБЛОНОВ ТРЕНИРОВОК (WORKOUT TEMPLATES)
 CREATE TABLE workout_templates (
     template_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

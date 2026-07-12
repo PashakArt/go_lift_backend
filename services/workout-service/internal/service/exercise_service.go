@@ -9,7 +9,7 @@ import (
 )
 
 type ExerciseService interface {
-	GetExercises(ctx context.Context, tenantIDStr string, muscleGroupCode string) ([]*domain.Exercise, error)
+	GetExercises(ctx context.Context, muscleGroupId, userId string) ([]*domain.Exercise, error)
 }
 
 type exerciseService struct {
@@ -22,13 +22,27 @@ func NewExerciseService(exerciseRepo domain.ExerciseRepository) ExerciseService 
 	}
 }
 
-func (s *exerciseService) GetExercises(ctx context.Context, tenantIDStr string, muscleGroupCode string) ([]*domain.Exercise, error) {
-	tenantID, err := uuid.Parse(tenantIDStr)
+func (s *exerciseService) GetExercises(ctx context.Context, muscleGroupId, userId string) ([]*domain.Exercise, error) {
+	parsedMuscleGroupIdId, err := uuid.Parse(muscleGroupId)
 	if err != nil {
-		return nil, fmt.Errorf("invalid tenant id format: %w", err)
+		return nil, fmt.Errorf("failed to parse muscleGroupId: %w", err)
 	}
 
-	exercises, err := s.exerciseRepo.List(ctx, tenantID, muscleGroupCode)
+	if userId != "" {
+		parsedUserId, err := uuid.Parse(userId)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse user_id: %w", err)
+		}
+
+		exercises, err := s.exerciseRepo.UserFavoriteList(ctx, parsedMuscleGroupIdId, parsedUserId)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get user favorite exercises list from repo: %w", err)
+		}
+
+		return exercises, nil
+	}
+
+	exercises, err := s.exerciseRepo.List(ctx, parsedMuscleGroupIdId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get exercises list from repo: %w", err)
 	}

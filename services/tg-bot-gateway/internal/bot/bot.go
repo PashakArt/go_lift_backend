@@ -15,16 +15,13 @@ import (
 	"time"
 
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/clients/workout"
+	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/request"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/response"
 )
 
 const (
 	defaultTenantId = "00000000-0000-0000-0000-000000000000"
 )
-
-type InitDataRequest struct {
-	InitData string `json:"init_data"`
-}
 
 type HTTPServer struct {
 	workoutClient *workout.Client
@@ -41,12 +38,13 @@ func NewHTTPServer(botToken string, workoutClient *workout.Client) *HTTPServer {
 func (s *HTTPServer) Start(port string) error {
 	http.HandleFunc("POST /api/v1/auth", s.handleAuth)
 	http.HandleFunc("GET /api/v1/muscle-groups", s.handleGetMuscleGroups)
+	http.HandleFunc("GET /api/v1/{muscleGroupId}/exercises", s.handleGetExercises)
 
 	log.Printf("TG Gateway HTTP Server running on port :%s\n", port)
 	return http.ListenAndServe(":"+port, nil)
 }
 
-func (s *HTTPServer) handleGetMuscleGroups(w http.ResponseWriter, r *http.Request) {
+func (s *HTTPServer) handleGetExercises(w http.ResponseWriter, r *http.Request) {
 	// TODO отрефакторить: вынести все куда-нибудь
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -57,8 +55,46 @@ func (s *HTTPServer) handleGetMuscleGroups(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
+	muscleGroupId := r.PathValue("muscleGroupId")
+	if muscleGroupId == "" {
+		http.Error(w, "muscleGroupId not pass", http.StatusBadRequest)
+		return
+	}
+
+	queryParams := r.URL.Query()
+	userID := queryParams.Get("user_id")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	grpcResponse, err := s.workoutClient.GetExercises(ctx, userID, muscleGroupId)
+	if err != nil {
+		log.Printf("gRPC GetExercises failed: %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	exercises := []response.ExerciseResponse{}
+
+	for _, exercise := range grpcResponse.Exercises {
+		exercises = append(exercises, response.ExerciseResponse{
+			ExerciseId: exercise.ExerciseId,
+			Type:       exercise.Type.String(),
+			Name:       exercise.Name,
+		})
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(exercises)
+}
+
+func (s *HTTPServer) handleGetMuscleGroups(w http.ResponseWriter, r *http.Request) {
+	// TODO отрефакторить: вынести все куда-нибудь
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 
@@ -84,7 +120,6 @@ func (s *HTTPServer) handleGetMuscleGroups(w http.ResponseWriter, r *http.Reques
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(muscleGroups)
-
 }
 
 func (s *HTTPServer) handleAuth(w http.ResponseWriter, r *http.Request) {
@@ -102,7 +137,7 @@ func (s *HTTPServer) handleAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req InitDataRequest
+	var req request.InitDataRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
