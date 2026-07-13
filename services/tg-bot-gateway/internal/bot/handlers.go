@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/auth"
 )
 
 func (s *HTTPServer) HandleStartTraining(w http.ResponseWriter, r *http.Request) {
@@ -30,12 +32,12 @@ func (s *HTTPServer) HandleGetExercises(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	queryParams := r.URL.Query()
-	userID := queryParams.Get("user_id")
+	userId := auth.UserIDFromContext(r.Context())
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	grpcResponse, err := s.workoutClient.GetExercises(ctx, userID, muscleGroupId)
+	grpcResponse, err := s.workoutClient.GetExercises(ctx, userId, muscleGroupId)
 	if err != nil {
 		log.Printf("gRPC GetExercises failed: %v", err)
 		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
@@ -121,6 +123,13 @@ func (s *HTTPServer) HandleAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token, err := s.jwtManager.Generate(res.User.UserId, res.User.TenantId)
+	if err != nil {
+		log.Printf("Failed to generate JWT: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, "Internal Error")
+		return
+	}
+
 	var sessionId string
 	var hasActiveSession bool
 	if res.ActiveSession != nil {
@@ -139,7 +148,6 @@ func (s *HTTPServer) HandleAuth(w http.ResponseWriter, r *http.Request) {
 		UserID:           res.User.GetUserId(),
 		HasActiveSession: hasActiveSession,
 		SessionId:        sessionId,
-		// TODO: генерировать реальный токен
-		Token: "mock-jwt-token",
+		Token:            token,
 	})
 }

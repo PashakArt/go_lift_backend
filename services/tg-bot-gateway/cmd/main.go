@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/auth"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/bot"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/clients/workout"
 	"github.com/joho/godotenv"
@@ -47,7 +48,13 @@ func main() {
 		log.Fatalf("Failed to initialize workout gRPC client: %v", err)
 	}
 
-	server := bot.NewHTTPServer(botToken, workoutClient)
+	jwtSecretKey := os.Getenv("JWT_SECRET_KEY")
+	if jwtSecretKey == "" {
+		log.Fatalf("[ERROR] JWT_SECRET_KEY env is not set")
+	}
+	jwtManager := auth.NewJwtManager(jwtSecretKey, 24*time.Hour)
+
+	server := bot.NewHTTPServer(botToken, workoutClient, jwtManager)
 
 	go func() {
 		if err := server.Start(httpPort); err != nil {
