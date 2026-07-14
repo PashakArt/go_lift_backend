@@ -18,3 +18,9 @@ down_db:
 
 up_db:
 	docker compose up -d
+
+run_dev_gateway:
+	cd services/tg-bot-gateway && go run cmd/main.go
+
+run_dev_workout:
+	cd services/workout-service && go run cmd/main.go

@@ -3,7 +3,7 @@ package service
 import "github.com/PashakArt/go_lift_backend/services/workout-service/internal/repository"
 
 type Services struct {
-	Auth        AuthService
+	Auth        InitService
 	Exercise    ExerciseService
 	Session     WorkoutSessionService
 	MuscleGroup MuscleGroupService
@@ -11,7 +11,7 @@ type Services struct {
 
 func NewServices(repos *repository.Repositories) *Services {
 	return &Services{
-		Auth:        NewAuthService(repos.User, repos.Session),
+		Auth:        NewInitService(repos.User, repos.Session, repos.Tenant),
 		Exercise:    NewExerciseService(repos.Exercise),
 		Session:     NewWorkoutSessionService(repos.Session),
 		MuscleGroup: NewMuscleGroupService(repos.MuscleGroup),

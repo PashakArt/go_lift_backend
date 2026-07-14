@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS tenants (
     tenant_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL,
     code VARCHAR(100) NOT NULL,
+    -- bot_token TEXT NOT NULL,
     branding_json JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

@@ -7,8 +7,8 @@ option go_package = "github.com/PashakArt/go_lift_backend/api/proto/workout/v1;w
 import "google/protobuf/timestamp.proto";
 
 service WorkoutService {
-  // Авторизация / Регистрация
-  rpc SignInOrSignUp(SignInOrSignUpRequest) returns (SignInOrSignUpResponse);
+  // Инициализация
+  rpc Init(InitRequest) returns (InitResponse);
 
   // Получение списка мышечных групп
   rpc GetMuscleGroups(GetMuscleGroupsRequest) returns (GetMuscleGroupsResponse);
@@ -20,12 +20,12 @@ service WorkoutService {
   rpc StartWorkoutSession(StartWorkoutSessionRequest) returns (StartWorkoutSessionResponse);
 }
 
-message SignInOrSignUpRequest {
+message InitRequest {
   string tenant_id = 1;
   string telegram_id = 2;
 }
 
-message SignInOrSignUpResponse {
+message InitResponse {
   UserInfo user = 1;
   bool is_new_user = 2;
   optional ActiveSessionInfo active_session = 3;

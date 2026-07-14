@@ -127,7 +127,7 @@ func (SessionType) EnumDescriptor() ([]byte, []int) {
 	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{1}
 }
 
-type SignInOrSignUpRequest struct {
+type InitRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	TenantId      string                 `protobuf:"bytes,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
 	TelegramId    string                 `protobuf:"bytes,2,opt,name=telegram_id,json=telegramId,proto3" json:"telegram_id,omitempty"`
@@ -135,20 +135,20 @@ type SignInOrSignUpRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *SignInOrSignUpRequest) Reset() {
-	*x = SignInOrSignUpRequest{}
+func (x *InitRequest) Reset() {
+	*x = InitRequest{}
 	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SignInOrSignUpRequest) String() string {
+func (x *InitRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SignInOrSignUpRequest) ProtoMessage() {}
+func (*InitRequest) ProtoMessage() {}
 
-func (x *SignInOrSignUpRequest) ProtoReflect() protoreflect.Message {
+func (x *InitRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -160,26 +160,26 @@ func (x *SignInOrSignUpRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SignInOrSignUpRequest.ProtoReflect.Descriptor instead.
-func (*SignInOrSignUpRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use InitRequest.ProtoReflect.Descriptor instead.
+func (*InitRequest) Descriptor() ([]byte, []int) {
 	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *SignInOrSignUpRequest) GetTenantId() string {
+func (x *InitRequest) GetTenantId() string {
 	if x != nil {
 		return x.TenantId
 	}
 	return ""
 }
 
-func (x *SignInOrSignUpRequest) GetTelegramId() string {
+func (x *InitRequest) GetTelegramId() string {
 	if x != nil {
 		return x.TelegramId
 	}
 	return ""
 }
 
-type SignInOrSignUpResponse struct {
+type InitResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	User          *UserInfo              `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	IsNewUser     bool                   `protobuf:"varint,2,opt,name=is_new_user,json=isNewUser,proto3" json:"is_new_user,omitempty"`
@@ -188,20 +188,20 @@ type SignInOrSignUpResponse struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *SignInOrSignUpResponse) Reset() {
-	*x = SignInOrSignUpResponse{}
+func (x *InitResponse) Reset() {
+	*x = InitResponse{}
 	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SignInOrSignUpResponse) String() string {
+func (x *InitResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SignInOrSignUpResponse) ProtoMessage() {}
+func (*InitResponse) ProtoMessage() {}
 
-func (x *SignInOrSignUpResponse) ProtoReflect() protoreflect.Message {
+func (x *InitResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_api_proto_workout_v1_workout_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -213,26 +213,26 @@ func (x *SignInOrSignUpResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SignInOrSignUpResponse.ProtoReflect.Descriptor instead.
-func (*SignInOrSignUpResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use InitResponse.ProtoReflect.Descriptor instead.
+func (*InitResponse) Descriptor() ([]byte, []int) {
 	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *SignInOrSignUpResponse) GetUser() *UserInfo {
+func (x *InitResponse) GetUser() *UserInfo {
 	if x != nil {
 		return x.User
 	}
 	return nil
 }
 
-func (x *SignInOrSignUpResponse) GetIsNewUser() bool {
+func (x *InitResponse) GetIsNewUser() bool {
 	if x != nil {
 		return x.IsNewUser
 	}
 	return false
 }
 
-func (x *SignInOrSignUpResponse) GetActiveSession() *ActiveSessionInfo {
+func (x *InitResponse) GetActiveSession() *ActiveSessionInfo {
 	if x != nil {
 		return x.ActiveSession
 	}
@@ -836,12 +836,12 @@ var File_api_proto_workout_v1_workout_proto protoreflect.FileDescriptor
 const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\n" +
 	"\"api/proto/workout/v1/workout.proto\x12\n" +
-	"workout.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"U\n" +
-	"\x15SignInOrSignUpRequest\x12\x1b\n" +
+	"workout.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"K\n" +
+	"\vInitRequest\x12\x1b\n" +
 	"\ttenant_id\x18\x01 \x01(\tR\btenantId\x12\x1f\n" +
 	"\vtelegram_id\x18\x02 \x01(\tR\n" +
-	"telegramId\"\xc0\x01\n" +
-	"\x16SignInOrSignUpResponse\x12(\n" +
+	"telegramId\"\xb6\x01\n" +
+	"\fInitResponse\x12(\n" +
 	"\x04user\x18\x01 \x01(\v2\x14.workout.v1.UserInfoR\x04user\x12\x1e\n" +
 	"\vis_new_user\x18\x02 \x01(\bR\tisNewUser\x12I\n" +
 	"\x0eactive_session\x18\x03 \x01(\v2\x1d.workout.v1.ActiveSessionInfoH\x00R\ractiveSession\x88\x01\x01B\x11\n" +
@@ -906,9 +906,9 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\vSessionType\x12\x1c\n" +
 	"\x18SESSION_TYPE_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14SESSION_TYPE_CLASSIC\x10\x01\x12\x18\n" +
-	"\x14SESSION_TYPE_CIRCUIT\x10\x022\x80\x03\n" +
-	"\x0eWorkoutService\x12W\n" +
-	"\x0eSignInOrSignUp\x12!.workout.v1.SignInOrSignUpRequest\x1a\".workout.v1.SignInOrSignUpResponse\x12Z\n" +
+	"\x14SESSION_TYPE_CIRCUIT\x10\x022\xe2\x02\n" +
+	"\x0eWorkoutService\x129\n" +
+	"\x04Init\x12\x17.workout.v1.InitRequest\x1a\x18.workout.v1.InitResponse\x12Z\n" +
 	"\x0fGetMuscleGroups\x12\".workout.v1.GetMuscleGroupsRequest\x1a#.workout.v1.GetMuscleGroupsResponse\x12Q\n" +
 	"\fGetExercises\x12\x1f.workout.v1.GetExercisesRequest\x1a .workout.v1.GetExercisesResponse\x12f\n" +
 	"\x13StartWorkoutSession\x12&.workout.v1.StartWorkoutSessionRequest\x1a'.workout.v1.StartWorkoutSessionResponseBEZCgithub.com/PashakArt/go_lift_backend/api/proto/workout/v1;workoutv1b\x06proto3"
@@ -930,8 +930,8 @@ var file_api_proto_workout_v1_workout_proto_msgTypes = make([]protoimpl.MessageI
 var file_api_proto_workout_v1_workout_proto_goTypes = []any{
 	(ExerciseType)(0),                   // 0: workout.v1.ExerciseType
 	(SessionType)(0),                    // 1: workout.v1.SessionType
-	(*SignInOrSignUpRequest)(nil),       // 2: workout.v1.SignInOrSignUpRequest
-	(*SignInOrSignUpResponse)(nil),      // 3: workout.v1.SignInOrSignUpResponse
+	(*InitRequest)(nil),                 // 2: workout.v1.InitRequest
+	(*InitResponse)(nil),                // 3: workout.v1.InitResponse
 	(*ActiveSessionInfo)(nil),           // 4: workout.v1.ActiveSessionInfo
 	(*UserInfo)(nil),                    // 5: workout.v1.UserInfo
 	(*GetExercisesRequest)(nil),         // 6: workout.v1.GetExercisesRequest
@@ -945,8 +945,8 @@ var file_api_proto_workout_v1_workout_proto_goTypes = []any{
 	(*timestamppb.Timestamp)(nil),       // 14: google.protobuf.Timestamp
 }
 var file_api_proto_workout_v1_workout_proto_depIdxs = []int32{
-	5,  // 0: workout.v1.SignInOrSignUpResponse.user:type_name -> workout.v1.UserInfo
-	4,  // 1: workout.v1.SignInOrSignUpResponse.active_session:type_name -> workout.v1.ActiveSessionInfo
+	5,  // 0: workout.v1.InitResponse.user:type_name -> workout.v1.UserInfo
+	4,  // 1: workout.v1.InitResponse.active_session:type_name -> workout.v1.ActiveSessionInfo
 	0,  // 2: workout.v1.ExerciseInfo.type:type_name -> workout.v1.ExerciseType
 	14, // 3: workout.v1.ExerciseInfo.created_at:type_name -> google.protobuf.Timestamp
 	7,  // 4: workout.v1.GetExercisesResponse.exercises:type_name -> workout.v1.ExerciseInfo
@@ -954,11 +954,11 @@ var file_api_proto_workout_v1_workout_proto_depIdxs = []int32{
 	1,  // 6: workout.v1.StartWorkoutSessionResponse.type:type_name -> workout.v1.SessionType
 	14, // 7: workout.v1.StartWorkoutSessionResponse.started_at:type_name -> google.protobuf.Timestamp
 	13, // 8: workout.v1.GetMuscleGroupsResponse.muscle_groups:type_name -> workout.v1.MuscleGroup
-	2,  // 9: workout.v1.WorkoutService.SignInOrSignUp:input_type -> workout.v1.SignInOrSignUpRequest
+	2,  // 9: workout.v1.WorkoutService.Init:input_type -> workout.v1.InitRequest
 	11, // 10: workout.v1.WorkoutService.GetMuscleGroups:input_type -> workout.v1.GetMuscleGroupsRequest
 	6,  // 11: workout.v1.WorkoutService.GetExercises:input_type -> workout.v1.GetExercisesRequest
 	9,  // 12: workout.v1.WorkoutService.StartWorkoutSession:input_type -> workout.v1.StartWorkoutSessionRequest
-	3,  // 13: workout.v1.WorkoutService.SignInOrSignUp:output_type -> workout.v1.SignInOrSignUpResponse
+	3,  // 13: workout.v1.WorkoutService.Init:output_type -> workout.v1.InitResponse
 	12, // 14: workout.v1.WorkoutService.GetMuscleGroups:output_type -> workout.v1.GetMuscleGroupsResponse
 	8,  // 15: workout.v1.WorkoutService.GetExercises:output_type -> workout.v1.GetExercisesResponse
 	10, // 16: workout.v1.WorkoutService.StartWorkoutSession:output_type -> workout.v1.StartWorkoutSessionResponse

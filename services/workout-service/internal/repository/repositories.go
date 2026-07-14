@@ -5,12 +5,12 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// Репозитории собираются в одну удобную структуру
 type Repositories struct {
 	User        domain.UserRepository
 	Exercise    domain.ExerciseRepository
 	Session     domain.WorkoutSessionRepository
 	MuscleGroup domain.MuscleGroupRepository
+	Tenant      domain.TenantRepository
 }
 
 func NewRepositories(pool *pgxpool.Pool) *Repositories {
@@ -19,5 +19,6 @@ func NewRepositories(pool *pgxpool.Pool) *Repositories {
 		Exercise:    NewExerciseRepository(pool),
 		Session:     NewWorkoutSessionRepository(pool),
 		MuscleGroup: NewMuscleGroupRepository(pool),
+		Tenant:      NewTenantRepository(pool),
 	}
 }

@@ -33,7 +33,7 @@ func NewHTTPServer(
 func (s *HTTPServer) Start(port string) error {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /api/v1/auth", s.HandleAuth)
+	mux.HandleFunc("POST /api/v1/init", s.HandleInit)
 
 	mux.Handle("POST /api/v1/start", s.AuthMiddleware(http.HandlerFunc(s.HandleStartTraining)))
 	mux.Handle("GET /api/v1/muscle-groups", s.AuthMiddleware(http.HandlerFunc(s.HandleGetMuscleGroups)))

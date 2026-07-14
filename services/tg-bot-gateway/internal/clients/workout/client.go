@@ -24,15 +24,15 @@ func NewClient(addr string) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) Auth(ctx context.Context, tenantId, tgId string) (*workoutv1.SignInOrSignUpResponse, error) {
-	req := &workoutv1.SignInOrSignUpRequest{
+func (c *Client) Init(ctx context.Context, tenantId, tgId string) (*workoutv1.InitResponse, error) {
+	req := &workoutv1.InitRequest{
 		TenantId:   tenantId,
 		TelegramId: tgId,
 	}
 
-	res, err := c.client.SignInOrSignUp(ctx, req)
+	res, err := c.client.Init(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("gRPC auth call failed: %w", err)
+		return nil, fmt.Errorf("gRPC init call failed: %w", err)
 	}
 
 	return res, nil

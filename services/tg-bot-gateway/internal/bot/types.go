@@ -2,6 +2,7 @@ package bot
 
 type InitDataRequest struct {
 	InitData string `json:"init_data"`
+	TenantId string `json:"tenant_id"`
 }
 
 type AuthResponse struct {

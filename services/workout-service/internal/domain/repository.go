@@ -37,3 +37,7 @@ type WorkoutSetRepository interface {
 type MuscleGroupRepository interface {
 	List(ctx context.Context) ([]*MuscleGroup, error)
 }
+
+type TenantRepository interface {
+	GetById(ctx context.Context, id uuid.UUID) (*Tenant, error)
+}

@@ -80,7 +80,8 @@ func (s *HTTPServer) HandleGetMuscleGroups(w http.ResponseWriter, r *http.Reques
 	RespondWithJSON(w, http.StatusOK, muscleGroups)
 }
 
-func (s *HTTPServer) HandleAuth(w http.ResponseWriter, r *http.Request) {
+func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
+	log.Printf("123")
 	var req InitDataRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		RespondWithError(w, http.StatusBadRequest, "init data is incorrect")
@@ -107,7 +108,7 @@ func (s *HTTPServer) HandleAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tgIDStr := fmt.Sprintf("%d", tgUser.ID)
-	tenantID := params.Get("start_param")
+	tenantID := req.TenantId
 
 	if tenantID == "" {
 		tenantID = defaultTenantId
@@ -116,9 +117,9 @@ func (s *HTTPServer) HandleAuth(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	res, err := s.workoutClient.Auth(ctx, tenantID, tgIDStr)
+	res, err := s.workoutClient.Init(ctx, tenantID, tgIDStr)
 	if err != nil {
-		log.Printf("gRPC Auth failed: %v", err)
+		log.Printf("gRPC init failed: %v", err)
 		RespondWithError(w, http.StatusInternalServerError, "Internal Error")
 		return
 	}

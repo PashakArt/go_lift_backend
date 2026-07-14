@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/domain"
@@ -15,20 +16,29 @@ type SignInOrSignUpResponse struct {
 	ActiveSession *domain.WorkoutSession
 }
 
-type AuthService interface {
-	SignInOrSignUp(ctx context.Context, tenantId, tgId string) (*SignInOrSignUpResponse, error)
+type InitService interface {
+	Init(ctx context.Context, tenantId, tgId string) (*SignInOrSignUpResponse, error)
 }
 
-type authService struct {
+type initService struct {
 	userRepo    domain.UserRepository
 	sessionRepo domain.WorkoutSessionRepository
+	tenantRepo  domain.TenantRepository
 }
 
-func NewAuthService(ur domain.UserRepository, sr domain.WorkoutSessionRepository) AuthService {
-	return &authService{userRepo: ur, sessionRepo: sr}
+func NewInitService(
+	ur domain.UserRepository,
+	sr domain.WorkoutSessionRepository,
+	tr domain.TenantRepository,
+) InitService {
+	return &initService{
+		userRepo:    ur,
+		sessionRepo: sr,
+		tenantRepo:  tr,
+	}
 }
 
-func (s *authService) SignInOrSignUp(ctx context.Context, tenantId, tgId string) (*SignInOrSignUpResponse, error) {
+func (s *initService) Init(ctx context.Context, tenantId, tgId string) (*SignInOrSignUpResponse, error) {
 	parsedTenantId, err := uuid.Parse(tenantId)
 	if err != nil {
 		return nil, fmt.Errorf("invalid tenant id format in service: %w", err)
@@ -40,10 +50,22 @@ func (s *authService) SignInOrSignUp(ctx context.Context, tenantId, tgId string)
 	}
 
 	if existingUser == nil {
+		log.Printf("1111")
+		tenant, err := s.tenantRepo.GetById(ctx, parsedTenantId)
+		log.Printf("2222")
+		if err != nil {
+			return nil, fmt.Errorf("failed to checking tenantId: %w", err)
+		}
+
+		targetTenantID := parsedTenantId
+		if tenant == nil {
+			targetTenantID = uuid.Nil
+		}
+
 		newUser := &domain.User{
 			UserID:     uuid.New(),
 			TelegramID: tgId,
-			TenantID:   &parsedTenantId,
+			TenantID:   targetTenantID,
 			CreatedAt:  time.Now(),
 		}
 

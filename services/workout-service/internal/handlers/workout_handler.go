@@ -13,14 +13,14 @@ import (
 
 type WorkoutHandler struct {
 	workoutv1.UnimplementedWorkoutServiceServer
-	authService        service.AuthService
+	authService        service.InitService
 	exerciseService    service.ExerciseService
 	sessionService     service.WorkoutSessionService
 	muscleGroupService service.MuscleGroupService
 }
 
 func NewWorkoutHandler(
-	authService service.AuthService,
+	authService service.InitService,
 	exerciseService service.ExerciseService,
 	sessionService service.WorkoutSessionService,
 	muscleGroupService service.MuscleGroupService,
@@ -33,8 +33,8 @@ func NewWorkoutHandler(
 	}
 }
 
-func (h *WorkoutHandler) SignInOrSignUp(ctx context.Context, req *workoutv1.SignInOrSignUpRequest) (*workoutv1.SignInOrSignUpResponse, error) {
-	response, err := h.authService.SignInOrSignUp(ctx, req.TenantId, req.TelegramId)
+func (h *WorkoutHandler) Init(ctx context.Context, req *workoutv1.InitRequest) (*workoutv1.InitResponse, error) {
+	response, err := h.authService.Init(ctx, req.TenantId, req.TelegramId)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (h *WorkoutHandler) SignInOrSignUp(ctx context.Context, req *workoutv1.Sign
 		}
 	}
 
-	return &workoutv1.SignInOrSignUpResponse{
+	return &workoutv1.InitResponse{
 		User: &workoutv1.UserInfo{
 			UserId:     response.User.UserID.String(),
 			TenantId:   response.User.TenantID.String(),

@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WorkoutService_SignInOrSignUp_FullMethodName      = "/workout.v1.WorkoutService/SignInOrSignUp"
+	WorkoutService_Init_FullMethodName                = "/workout.v1.WorkoutService/Init"
 	WorkoutService_GetMuscleGroups_FullMethodName     = "/workout.v1.WorkoutService/GetMuscleGroups"
 	WorkoutService_GetExercises_FullMethodName        = "/workout.v1.WorkoutService/GetExercises"
 	WorkoutService_StartWorkoutSession_FullMethodName = "/workout.v1.WorkoutService/StartWorkoutSession"
@@ -29,8 +29,8 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WorkoutServiceClient interface {
-	// Авторизация / Регистрация
-	SignInOrSignUp(ctx context.Context, in *SignInOrSignUpRequest, opts ...grpc.CallOption) (*SignInOrSignUpResponse, error)
+	// Инициализация
+	Init(ctx context.Context, in *InitRequest, opts ...grpc.CallOption) (*InitResponse, error)
 	// Получение списка мышечных групп
 	GetMuscleGroups(ctx context.Context, in *GetMuscleGroupsRequest, opts ...grpc.CallOption) (*GetMuscleGroupsResponse, error)
 	// Справочники упражнений
@@ -47,10 +47,10 @@ func NewWorkoutServiceClient(cc grpc.ClientConnInterface) WorkoutServiceClient {
 	return &workoutServiceClient{cc}
 }
 
-func (c *workoutServiceClient) SignInOrSignUp(ctx context.Context, in *SignInOrSignUpRequest, opts ...grpc.CallOption) (*SignInOrSignUpResponse, error) {
+func (c *workoutServiceClient) Init(ctx context.Context, in *InitRequest, opts ...grpc.CallOption) (*InitResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SignInOrSignUpResponse)
-	err := c.cc.Invoke(ctx, WorkoutService_SignInOrSignUp_FullMethodName, in, out, cOpts...)
+	out := new(InitResponse)
+	err := c.cc.Invoke(ctx, WorkoutService_Init_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -91,8 +91,8 @@ func (c *workoutServiceClient) StartWorkoutSession(ctx context.Context, in *Star
 // All implementations must embed UnimplementedWorkoutServiceServer
 // for forward compatibility.
 type WorkoutServiceServer interface {
-	// Авторизация / Регистрация
-	SignInOrSignUp(context.Context, *SignInOrSignUpRequest) (*SignInOrSignUpResponse, error)
+	// Инициализация
+	Init(context.Context, *InitRequest) (*InitResponse, error)
 	// Получение списка мышечных групп
 	GetMuscleGroups(context.Context, *GetMuscleGroupsRequest) (*GetMuscleGroupsResponse, error)
 	// Справочники упражнений
@@ -109,8 +109,8 @@ type WorkoutServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedWorkoutServiceServer struct{}
 
-func (UnimplementedWorkoutServiceServer) SignInOrSignUp(context.Context, *SignInOrSignUpRequest) (*SignInOrSignUpResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method SignInOrSignUp not implemented")
+func (UnimplementedWorkoutServiceServer) Init(context.Context, *InitRequest) (*InitResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Init not implemented")
 }
 func (UnimplementedWorkoutServiceServer) GetMuscleGroups(context.Context, *GetMuscleGroupsRequest) (*GetMuscleGroupsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMuscleGroups not implemented")
@@ -142,20 +142,20 @@ func RegisterWorkoutServiceServer(s grpc.ServiceRegistrar, srv WorkoutServiceSer
 	s.RegisterService(&WorkoutService_ServiceDesc, srv)
 }
 
-func _WorkoutService_SignInOrSignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SignInOrSignUpRequest)
+func _WorkoutService_Init_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InitRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(WorkoutServiceServer).SignInOrSignUp(ctx, in)
+		return srv.(WorkoutServiceServer).Init(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: WorkoutService_SignInOrSignUp_FullMethodName,
+		FullMethod: WorkoutService_Init_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WorkoutServiceServer).SignInOrSignUp(ctx, req.(*SignInOrSignUpRequest))
+		return srv.(WorkoutServiceServer).Init(ctx, req.(*InitRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -222,8 +222,8 @@ var WorkoutService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*WorkoutServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SignInOrSignUp",
-			Handler:    _WorkoutService_SignInOrSignUp_Handler,
+			MethodName: "Init",
+			Handler:    _WorkoutService_Init_Handler,
 		},
 		{
 			MethodName: "GetMuscleGroups",
