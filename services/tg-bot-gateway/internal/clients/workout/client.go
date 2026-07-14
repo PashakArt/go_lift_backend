@@ -57,6 +57,17 @@ func (c *Client) GetExercises(ctx context.Context, userId, muscleGroupId string)
 	return res, nil
 }
 
-func (c *Client) StartTraining(ctx context.Context) (*workoutv1.StartWorkoutSessionResponse, error) {
-	return nil, nil
+func (c *Client) StartTraining(ctx context.Context, tenantId, userId string) (*workoutv1.StartWorkoutSessionResponse, error) {
+	res, err := c.client.StartWorkoutSession(ctx, &workoutv1.StartWorkoutSessionRequest{
+		UserId:   userId,
+		TenantId: tenantId,
+		// TODO расширить до кроссфит
+		Type: 1,
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("gRPC start session failed: %w", err)
+	}
+
+	return res, nil
 }

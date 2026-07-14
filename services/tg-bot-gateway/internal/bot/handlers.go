@@ -15,14 +15,26 @@ func (s *HTTPServer) HandleStartTraining(w http.ResponseWriter, r *http.Request)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := s.workoutClient.StartTraining(ctx)
+	userId := auth.UserIDFromContext(r.Context())
+	if userId == "" {
+		RespondWithError(w, http.StatusBadRequest, "JWT has not user_id")
+		return
+	}
+
+	tenantId := auth.TenantIDFromContext(r.Context())
+	if tenantId == "" {
+		RespondWithError(w, http.StatusBadRequest, "JWT has not tenant_id")
+		return
+	}
+
+	res, err := s.workoutClient.StartTraining(ctx, tenantId, userId)
 	if err != nil {
 		log.Printf("gRPC StartTraining failed: %v", err)
 		RespondWithError(w, http.StatusInternalServerError, "Internal error")
 		return
 	}
 
-	RespondWithJSON(w, http.StatusCreated, nil)
+	RespondWithJSON(w, http.StatusCreated, res)
 }
 
 func (s *HTTPServer) HandleGetExercises(w http.ResponseWriter, r *http.Request) {
