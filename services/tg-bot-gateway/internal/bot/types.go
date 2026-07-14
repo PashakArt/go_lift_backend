@@ -23,3 +23,7 @@ type ExerciseResponse struct {
 	Name       string `json:"name"`
 	Type       string `json:"type"`
 }
+
+type StartTrainingResponse struct {
+	SessionId string `json:"session_id"`
+}

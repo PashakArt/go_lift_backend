@@ -34,7 +34,7 @@ func (s *HTTPServer) HandleStartTraining(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	RespondWithJSON(w, http.StatusCreated, res)
+	RespondWithJSON(w, http.StatusCreated, StartTrainingResponse{SessionId: res.SessionId})
 }
 
 func (s *HTTPServer) HandleGetExercises(w http.ResponseWriter, r *http.Request) {
