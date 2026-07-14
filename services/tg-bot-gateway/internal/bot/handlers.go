@@ -81,7 +81,6 @@ func (s *HTTPServer) HandleGetMuscleGroups(w http.ResponseWriter, r *http.Reques
 }
 
 func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
-	log.Printf("123")
 	var req InitDataRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		RespondWithError(w, http.StatusBadRequest, "init data is incorrect")

@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/domain"
@@ -50,9 +49,7 @@ func (s *initService) Init(ctx context.Context, tenantId, tgId string) (*SignInO
 	}
 
 	if existingUser == nil {
-		log.Printf("1111")
 		tenant, err := s.tenantRepo.GetById(ctx, parsedTenantId)
-		log.Printf("2222")
 		if err != nil {
 			return nil, fmt.Errorf("failed to checking tenantId: %w", err)
 		}
