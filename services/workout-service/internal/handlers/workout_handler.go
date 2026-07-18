@@ -8,6 +8,7 @@ import (
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/service"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -47,6 +48,14 @@ func (h *WorkoutHandler) Init(ctx context.Context, req *workoutv1.InitRequest) (
 		}
 	}
 
+	brandingProto := &workoutv1.TenantBranding{}
+	if len(response.TenantBranding) > 0 {
+		err = protojson.Unmarshal(response.TenantBranding, brandingProto)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to unmarshal tenant branding json: %v", err)
+		}
+	}
+
 	return &workoutv1.InitResponse{
 		User: &workoutv1.UserInfo{
 			UserId:     response.User.UserID.String(),
@@ -55,9 +64,9 @@ func (h *WorkoutHandler) Init(ctx context.Context, req *workoutv1.InitRequest) (
 			Phone:      response.User.Phone,
 			CreatedAt:  response.User.CreatedAt.Format(time.RFC3339),
 		},
-		ActiveSession: activeSessionInfo,
-		IsNewUser:     response.IsNewUser,
-	}, nil
+		ActiveSession:  activeSessionInfo,
+		IsNewUser:      response.IsNewUser,
+		TenantBranding: brandingProto}, nil
 }
 
 func (h *WorkoutHandler) GetExercises(ctx context.Context, req *workoutv1.GetExercisesRequest) (*workoutv1.GetExercisesResponse, error) {

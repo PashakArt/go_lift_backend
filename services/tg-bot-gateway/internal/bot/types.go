@@ -1,15 +1,19 @@
 package bot
 
+import workoutv1 "github.com/PashakArt/go_lift_backend/api/proto/workout/v1"
+
 type InitDataRequest struct {
 	InitData string `json:"init_data"`
 	TenantId string `json:"tenant_id"`
 }
 
-type AuthResponse struct {
-	UserID           string `json:"user_id"`
-	Token            string `json:"token"`
-	HasActiveSession bool   `json:"has_active_session"`
-	SessionId        string `json:"session_id"`
+type InitResponse struct {
+	UserID           string                    `json:"user_id"`
+	Token            string                    `json:"token"`
+	HasActiveSession bool                      `json:"has_active_session"`
+	IsNewUser        bool                      `json:"is_new_user"`
+	SessionId        string                    `json:"session_id"`
+	Branding         *workoutv1.TenantBranding `json:"branding"`
 }
 
 type MuscleGroupsResponse struct {

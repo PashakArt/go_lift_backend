@@ -30,6 +30,7 @@ func (r *tenantRepository) GetById(ctx context.Context, id uuid.UUID) (*domain.T
 
 	err := r.pool.QueryRow(ctx, getTenantById, id).Scan(
 		&tenant.TenantID,
+		&tenant.BrandingJSON,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

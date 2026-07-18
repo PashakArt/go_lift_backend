@@ -21,14 +21,34 @@ service WorkoutService {
 }
 
 message InitRequest {
-  string tenant_id = 1;
+  string tenant_id   = 1;
   string telegram_id = 2;
 }
 
+message TenantTheme {
+  string mode             = 1;
+  string text_color       = 2;
+  string accent_color     = 3;
+  string primary_color    = 4;
+  string surface_color    = 5;
+  string background_color = 6;
+
+}
+
+message TenantAssets {
+  string logo_url = 1;
+}
+
+message TenantBranding {
+  TenantTheme  theme  = 1;
+  TenantAssets assets = 2;
+}
+
 message InitResponse {
-  UserInfo user = 1;
-  bool is_new_user = 2;
-  optional ActiveSessionInfo active_session = 3;
+  UserInfo                   user            = 1;
+  bool                       is_new_user     = 2;
+  optional ActiveSessionInfo active_session  = 3;
+  TenantBranding             tenant_branding = 4;
 }
 
 message ActiveSessionInfo {
@@ -37,33 +57,33 @@ message ActiveSessionInfo {
 }
 
 message UserInfo {
-  string user_id = 1;
-  string tenant_id = 2;
+  string user_id     = 1;
+  string tenant_id   = 2;
   string telegram_id = 3;
-  string phone = 4;
-  string created_at = 5;
+  string phone       = 4;
+  string created_at  = 5;
 }
 
 enum ExerciseType {
   EXERCISE_TYPE_UNSPECIFIED = 0;
-  EXERCISE_TYPE_DYNAMIC = 1;     // Вес + Повторения
-  EXERCISE_TYPE_STATIC = 2;      // Время в секундах
-  EXERCISE_TYPE_BODYWEIGHT = 3;  // Только повторения
-  EXERCISE_TYPE_CARDIO = 4;      // Дистанция + Время
+  EXERCISE_TYPE_DYNAMIC     = 1;     // Вес + Повторения
+  EXERCISE_TYPE_STATIC      = 2;      // Время в секундах
+  EXERCISE_TYPE_BODYWEIGHT  = 3;  // Только повторения
+  EXERCISE_TYPE_CARDIO      = 4;      // Дистанция + Время
 }
 
 message GetExercisesRequest {
-  string muscle_group_id = 1;
-  optional string user_id = 2;
+  string          muscle_group_id = 1;
+  optional string user_id         = 2;
 }
 
 message ExerciseInfo {
-  string exercise_id = 1;
-  string name = 2;
-  ExerciseType type = 3;
-  bool is_global = 4;
-  repeated string muscle_group_codes = 5;
-  google.protobuf.Timestamp created_at = 6;
+  string                    exercise_id        = 1;
+  string                    name               = 2;
+  ExerciseType              type               = 3;
+  bool                      is_global          = 4;
+  repeated string           muscle_group_codes = 5;
+  google.protobuf.Timestamp created_at         = 6;
 }
 
 message GetExercisesResponse {
@@ -73,27 +93,27 @@ message GetExercisesResponse {
 // Режим выполнения тренировки (соответствует ENUM в БД)
 enum SessionType {
   SESSION_TYPE_UNSPECIFIED = 0;
-  SESSION_TYPE_CLASSIC = 1;
-  SESSION_TYPE_CIRCUIT = 2;
+  SESSION_TYPE_CLASSIC     = 1;
+  SESSION_TYPE_CIRCUIT     = 2;
 }
 
 message StartWorkoutSessionRequest {
-  string tenant_id = 1;
-  string user_id = 2;
-  SessionType type = 3;
+  string          tenant_id   = 1;
+  string          user_id     = 2;
+  SessionType     type        = 3;
   optional string template_id = 4;
 }
 
 message StartWorkoutSessionResponse {
-  string session_id = 1;
-  string tenant_id = 2;
-  string user_id = 3;
-  SessionType type = 4;
+  string                    session_id = 1;
+  string                    tenant_id  = 2;
+  string                    user_id    = 3;
+  SessionType               type       = 4;
   google.protobuf.Timestamp started_at = 5;
 }
 
 message GetMuscleGroupsRequest {
-  
+
 }
 
 message GetMuscleGroupsResponse {
@@ -102,6 +122,6 @@ message GetMuscleGroupsResponse {
 
 message MuscleGroup {
   string muscle_group_id = 1;
-  string code = 2;
-  string name = 3;
+  string code            = 2;
+  string name            = 3;
 }

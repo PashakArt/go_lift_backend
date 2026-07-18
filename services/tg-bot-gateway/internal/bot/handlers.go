@@ -156,10 +156,12 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 		statusCode = http.StatusOK
 	}
 
-	RespondWithJSON(w, statusCode, AuthResponse{
+	RespondWithJSON(w, statusCode, InitResponse{
 		UserID:           res.User.GetUserId(),
 		HasActiveSession: hasActiveSession,
 		SessionId:        sessionId,
 		Token:            token,
+		IsNewUser:        res.IsNewUser,
+		Branding:         res.TenantBranding,
 	})
 }

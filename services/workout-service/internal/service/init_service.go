@@ -9,14 +9,15 @@ import (
 	"github.com/google/uuid"
 )
 
-type SignInOrSignUpResponse struct {
-	User          *domain.User
-	IsNewUser     bool
-	ActiveSession *domain.WorkoutSession
+type InitResponse struct {
+	User           *domain.User
+	IsNewUser      bool
+	ActiveSession  *domain.WorkoutSession
+	TenantBranding []byte
 }
 
 type InitService interface {
-	Init(ctx context.Context, tenantId, tgId string) (*SignInOrSignUpResponse, error)
+	Init(ctx context.Context, tenantId, tgId string) (*InitResponse, error)
 }
 
 type initService struct {
@@ -37,10 +38,15 @@ func NewInitService(
 	}
 }
 
-func (s *initService) Init(ctx context.Context, tenantId, tgId string) (*SignInOrSignUpResponse, error) {
+func (s *initService) Init(ctx context.Context, tenantId, tgId string) (*InitResponse, error) {
 	parsedTenantId, err := uuid.Parse(tenantId)
 	if err != nil {
 		return nil, fmt.Errorf("invalid tenant id format in service: %w", err)
+	}
+
+	tenant, err := s.tenantRepo.GetById(ctx, parsedTenantId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to checking tenantId: %w", err)
 	}
 
 	existingUser, err := s.userRepo.GetByTenantAndTelegramID(ctx, parsedTenantId, tgId)
@@ -49,20 +55,10 @@ func (s *initService) Init(ctx context.Context, tenantId, tgId string) (*SignInO
 	}
 
 	if existingUser == nil {
-		tenant, err := s.tenantRepo.GetById(ctx, parsedTenantId)
-		if err != nil {
-			return nil, fmt.Errorf("failed to checking tenantId: %w", err)
-		}
-
-		targetTenantID := parsedTenantId
-		if tenant == nil {
-			targetTenantID = uuid.Nil
-		}
-
 		newUser := &domain.User{
 			UserID:     uuid.New(),
 			TelegramID: tgId,
-			TenantID:   targetTenantID,
+			TenantID:   tenant.TenantID,
 			CreatedAt:  time.Now(),
 		}
 
@@ -71,10 +67,11 @@ func (s *initService) Init(ctx context.Context, tenantId, tgId string) (*SignInO
 			return nil, fmt.Errorf("failed to register new user: %w", err)
 		}
 
-		return &SignInOrSignUpResponse{
-			User:          newUser,
-			IsNewUser:     true,
-			ActiveSession: nil,
+		return &InitResponse{
+			User:           newUser,
+			IsNewUser:      true,
+			ActiveSession:  nil,
+			TenantBranding: tenant.BrandingJSON,
 		}, nil
 	}
 
@@ -83,9 +80,10 @@ func (s *initService) Init(ctx context.Context, tenantId, tgId string) (*SignInO
 		return nil, fmt.Errorf("failed to get active session by user_id: %w", err)
 	}
 
-	return &SignInOrSignUpResponse{
-		User:          existingUser,
-		IsNewUser:     false,
-		ActiveSession: activeSession,
+	return &InitResponse{
+		User:           existingUser,
+		IsNewUser:      false,
+		ActiveSession:  activeSession,
+		TenantBranding: tenant.BrandingJSON,
 	}, nil
 }
