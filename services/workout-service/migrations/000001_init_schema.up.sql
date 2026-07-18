@@ -151,7 +151,7 @@ CREATE TABLE workout_sets (
     session_id UUID REFERENCES workout_sessions(session_id) ON DELETE CASCADE,
     exercise_id UUID REFERENCES exercises(exercise_id) ON DELETE CASCADE,
     round_number INT NOT NULL DEFAULT 1,
-    sequence_order INT NOT NULL,
+    set_number INT NOT NULL DEFAULT 1,
     weight NUMERIC(6, 2),
     reps INT,
     duration_seconds INT,

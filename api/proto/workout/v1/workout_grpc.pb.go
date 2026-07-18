@@ -23,6 +23,7 @@ const (
 	WorkoutService_GetMuscleGroups_FullMethodName     = "/workout.v1.WorkoutService/GetMuscleGroups"
 	WorkoutService_GetExercises_FullMethodName        = "/workout.v1.WorkoutService/GetExercises"
 	WorkoutService_StartWorkoutSession_FullMethodName = "/workout.v1.WorkoutService/StartWorkoutSession"
+	WorkoutService_LogWorkoutSet_FullMethodName       = "/workout.v1.WorkoutService/LogWorkoutSet"
 )
 
 // WorkoutServiceClient is the client API for WorkoutService service.
@@ -37,6 +38,8 @@ type WorkoutServiceClient interface {
 	GetExercises(ctx context.Context, in *GetExercisesRequest, opts ...grpc.CallOption) (*GetExercisesResponse, error)
 	// Старт тренировочной сессии
 	StartWorkoutSession(ctx context.Context, in *StartWorkoutSessionRequest, opts ...grpc.CallOption) (*StartWorkoutSessionResponse, error)
+	// Сохранить/обновить выполненное упражнение
+	LogWorkoutSet(ctx context.Context, in *LogSetRequest, opts ...grpc.CallOption) (*LogSetResponse, error)
 }
 
 type workoutServiceClient struct {
@@ -87,6 +90,16 @@ func (c *workoutServiceClient) StartWorkoutSession(ctx context.Context, in *Star
 	return out, nil
 }
 
+func (c *workoutServiceClient) LogWorkoutSet(ctx context.Context, in *LogSetRequest, opts ...grpc.CallOption) (*LogSetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LogSetResponse)
+	err := c.cc.Invoke(ctx, WorkoutService_LogWorkoutSet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkoutServiceServer is the server API for WorkoutService service.
 // All implementations must embed UnimplementedWorkoutServiceServer
 // for forward compatibility.
@@ -99,6 +112,8 @@ type WorkoutServiceServer interface {
 	GetExercises(context.Context, *GetExercisesRequest) (*GetExercisesResponse, error)
 	// Старт тренировочной сессии
 	StartWorkoutSession(context.Context, *StartWorkoutSessionRequest) (*StartWorkoutSessionResponse, error)
+	// Сохранить/обновить выполненное упражнение
+	LogWorkoutSet(context.Context, *LogSetRequest) (*LogSetResponse, error)
 	mustEmbedUnimplementedWorkoutServiceServer()
 }
 
@@ -120,6 +135,9 @@ func (UnimplementedWorkoutServiceServer) GetExercises(context.Context, *GetExerc
 }
 func (UnimplementedWorkoutServiceServer) StartWorkoutSession(context.Context, *StartWorkoutSessionRequest) (*StartWorkoutSessionResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method StartWorkoutSession not implemented")
+}
+func (UnimplementedWorkoutServiceServer) LogWorkoutSet(context.Context, *LogSetRequest) (*LogSetResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method LogWorkoutSet not implemented")
 }
 func (UnimplementedWorkoutServiceServer) mustEmbedUnimplementedWorkoutServiceServer() {}
 func (UnimplementedWorkoutServiceServer) testEmbeddedByValue()                        {}
@@ -214,6 +232,24 @@ func _WorkoutService_StartWorkoutSession_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkoutService_LogWorkoutSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogSetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkoutServiceServer).LogWorkoutSet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkoutService_LogWorkoutSet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkoutServiceServer).LogWorkoutSet(ctx, req.(*LogSetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WorkoutService_ServiceDesc is the grpc.ServiceDesc for WorkoutService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -236,6 +272,10 @@ var WorkoutService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StartWorkoutSession",
 			Handler:    _WorkoutService_StartWorkoutSession_Handler,
+		},
+		{
+			MethodName: "LogWorkoutSet",
+			Handler:    _WorkoutService_LogWorkoutSet_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

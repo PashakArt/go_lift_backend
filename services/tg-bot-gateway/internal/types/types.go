@@ -1,10 +1,27 @@
-package bot
+package types
 
 import workoutv1 "github.com/PashakArt/go_lift_backend/api/proto/workout/v1"
 
 type InitDataRequest struct {
 	InitData string `json:"init_data"`
 	TenantId string `json:"tenant_id"`
+}
+
+type LogSetRequest struct {
+	SessionId  string `json:"session_id"`
+	ExerciseId string `json:"exercise_id"`
+	SetNumber  int32  `json:"set_number_id"`
+
+	SetID           *string  `json:"set_id,omitempty"`
+	Weight          *float32 `json:"weight,omitempty"`
+	Reps            *int32   `json:"reps,omitempty"`
+	DurationSeconds *int32   `json:"duration_seconds,omitempty"`
+	DistanceMeters  *int32   `json:"distance_meters,omitempty"`
+}
+
+type LogSetResponse struct {
+	SetID     string `json:"set_id"`
+	SetNumber int32  `json:"set_number"`
 }
 
 type InitResponse struct {

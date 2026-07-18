@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	workoutv1 "github.com/PashakArt/go_lift_backend/api/proto/workout/v1"
+	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -67,6 +68,25 @@ func (c *Client) StartTraining(ctx context.Context, tenantId, userId string) (*w
 
 	if err != nil {
 		return nil, fmt.Errorf("gRPC start session failed: %w", err)
+	}
+
+	return res, nil
+}
+
+func (c *Client) LogWorkoutSet(ctx context.Context, req types.LogSetRequest) (*workoutv1.LogSetResponse, error) {
+	res, err := c.client.LogWorkoutSet(ctx, &workoutv1.LogSetRequest{
+		SessionId:  req.SessionId,
+		ExerciseId: req.ExerciseId,
+		SetId:      req.SetID,
+		SetNumber:  req.SetNumber,
+
+		Weight:      req.Weight,
+		Reps:        req.Reps,
+		DurationSec: req.DurationSeconds,
+		DistanceMet: req.DistanceMeters,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gRPC log workout set failed: %w", err)
 	}
 
 	return res, nil

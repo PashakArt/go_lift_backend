@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/auth"
+	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/types"
 )
 
 func (s *HTTPServer) HandleStartTraining(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +35,7 @@ func (s *HTTPServer) HandleStartTraining(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	RespondWithJSON(w, http.StatusCreated, StartTrainingResponse{SessionId: res.SessionId})
+	RespondWithJSON(w, http.StatusCreated, types.StartTrainingResponse{SessionId: res.SessionId})
 }
 
 func (s *HTTPServer) HandleGetExercises(w http.ResponseWriter, r *http.Request) {
@@ -56,10 +57,10 @@ func (s *HTTPServer) HandleGetExercises(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	exercises := []ExerciseResponse{}
+	exercises := []types.ExerciseResponse{}
 
 	for _, exercise := range grpcResponse.Exercises {
-		exercises = append(exercises, ExerciseResponse{
+		exercises = append(exercises, types.ExerciseResponse{
 			ExerciseId: exercise.ExerciseId,
 			Type:       exercise.Type.String(),
 			Name:       exercise.Name,
@@ -79,10 +80,10 @@ func (s *HTTPServer) HandleGetMuscleGroups(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	muscleGroups := []MuscleGroupsResponse{}
+	muscleGroups := []types.MuscleGroupsResponse{}
 
 	for _, muscleGroup := range grpcResponse.MuscleGroups {
-		muscleGroups = append(muscleGroups, MuscleGroupsResponse{
+		muscleGroups = append(muscleGroups, types.MuscleGroupsResponse{
 			MuscleGroupId: muscleGroup.MuscleGroupId,
 			Code:          muscleGroup.Code,
 			Name:          muscleGroup.Name,
@@ -92,8 +93,35 @@ func (s *HTTPServer) HandleGetMuscleGroups(w http.ResponseWriter, r *http.Reques
 	RespondWithJSON(w, http.StatusOK, muscleGroups)
 }
 
+func (s *HTTPServer) LogWorkoutSet(w http.ResponseWriter, r *http.Request) {
+	var req types.LogSetRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		RespondWithError(w, http.StatusBadRequest, "handle workout set data is incorrect")
+		return
+	}
+	defer r.Body.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	grpcResponse, err := s.workoutClient.LogWorkoutSet(ctx, req)
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	RespondWithJSON(
+		w,
+		http.StatusOK,
+		types.LogSetResponse{
+			SetID:     grpcResponse.SetId,
+			SetNumber: grpcResponse.SetNumber,
+		},
+	)
+}
+
 func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
-	var req InitDataRequest
+	var req types.InitDataRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		RespondWithError(w, http.StatusBadRequest, "init data is incorrect")
 		return
@@ -156,7 +184,7 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 		statusCode = http.StatusOK
 	}
 
-	RespondWithJSON(w, statusCode, InitResponse{
+	RespondWithJSON(w, statusCode, types.InitResponse{
 		UserID:           res.User.GetUserId(),
 		HasActiveSession: hasActiveSession,
 		SessionId:        sessionId,

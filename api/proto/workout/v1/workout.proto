@@ -18,6 +18,9 @@ service WorkoutService {
 
   // Старт тренировочной сессии
   rpc StartWorkoutSession(StartWorkoutSessionRequest) returns (StartWorkoutSessionResponse);
+
+  // Сохранить/обновить выполненное упражнение
+  rpc LogWorkoutSet(LogSetRequest) returns (LogSetResponse);
 }
 
 message InitRequest {
@@ -124,4 +127,22 @@ message MuscleGroup {
   string muscle_group_id = 1;
   string code            = 2;
   string name            = 3;
+}
+
+message LogSetRequest {
+  string          session_id  = 1;
+  string          exercise_id = 2;
+  optional string set_id      = 3;
+  int32           set_number  = 4;
+
+  // Метрики выполнения
+  optional float weight       = 5;
+  optional int32 reps         = 6;
+  optional int32 duration_sec = 7;
+  optional int32 distance_met = 8;
+}
+
+message LogSetResponse {
+  string set_id     = 1;
+  int32  set_number = 2;
 }
