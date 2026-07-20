@@ -93,7 +93,7 @@ func (s *HTTPServer) HandleGetMuscleGroups(w http.ResponseWriter, r *http.Reques
 	RespondWithJSON(w, http.StatusOK, muscleGroups)
 }
 
-func (s *HTTPServer) LogWorkoutSet(w http.ResponseWriter, r *http.Request) {
+func (s *HTTPServer) HandleLogWorkoutSet(w http.ResponseWriter, r *http.Request) {
 	var req types.LogSetRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		RespondWithError(w, http.StatusBadRequest, "handle workout set data is incorrect")
@@ -101,11 +101,23 @@ func (s *HTTPServer) LogWorkoutSet(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	if err := s.validate.Struct(req); err != nil {
+		RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Validation error: %v", err))
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
-	grpcResponse, err := s.workoutClient.LogWorkoutSet(ctx, req)
+	tenantId := auth.TenantIDFromContext(ctx)
+	if tenantId == "" {
+		RespondWithError(w, http.StatusBadRequest, "JWT has not tenant_id")
+		return
+	}
+
+	grpcResponse, err := s.workoutClient.LogWorkoutSet(ctx, req, tenantId)
 	if err != nil {
+		log.Printf("[ERROR] LogWorkoutSet gRPC call failed: %v", err)
 		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
 		return
 	}

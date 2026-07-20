@@ -8,15 +8,15 @@ type InitDataRequest struct {
 }
 
 type LogSetRequest struct {
-	SessionId  string `json:"session_id"`
-	ExerciseId string `json:"exercise_id"`
-	SetNumber  int32  `json:"set_number_id"`
+	SessionId  string `json:"session_id" validate:"required,uuid4"`
+	ExerciseId string `json:"exercise_id" validate:"required,uuid4"`
+	SetNumber  int32  `json:"set_number" validate:"required,gt=0"`
 
-	SetID           *string  `json:"set_id,omitempty"`
-	Weight          *float32 `json:"weight,omitempty"`
-	Reps            *int32   `json:"reps,omitempty"`
-	DurationSeconds *int32   `json:"duration_seconds,omitempty"`
-	DistanceMeters  *int32   `json:"distance_meters,omitempty"`
+	SetID           *string  `json:"set_id,omitempty" validate:"omitempty,uuid4"`
+	Weight          *float32 `json:"weight,omitempty" validate:"omitempty,gte=0"`
+	Reps            *int32   `json:"reps,omitempty" validate:"omitempty,gte=0"`
+	DurationSeconds *int32   `json:"duration_seconds,omitempty" validate:"omitempty,gte=0"`
+	DistanceMeters  *int32   `json:"distance_meters,omitempty" validate:"omitempty,gte=0"`
 }
 
 type LogSetResponse struct {

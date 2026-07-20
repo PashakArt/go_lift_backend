@@ -149,7 +149,7 @@ func (h *WorkoutHandler) StartWorkoutSession(
 	}, nil
 }
 
-func (h *WorkoutHandler) LogWorkoutHandler(
+func (h *WorkoutHandler) LogWorkoutSet(
 	ctx context.Context,
 	protoReq *workoutv1.LogSetRequest,
 ) (*workoutv1.LogSetResponse, error) {

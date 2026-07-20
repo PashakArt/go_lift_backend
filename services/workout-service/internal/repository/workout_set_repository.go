@@ -22,11 +22,8 @@ func NewWWorkoutSetRepository(pool *pgxpool.Pool) domain.WorkoutSetRepository {
 }
 
 func (r *workoutSessionRepository) LogWorkoutSet(ctx context.Context, set *domain.WorkoutSet) (*domain.WorkoutSet, error) {
-	var setIDParam interface{}
-	if set.SetID != uuid.Nil {
-		setIDParam = set.SetID.String()
-	} else {
-		setIDParam = nil
+	if set.SetID == uuid.Nil {
+		set.SetID = uuid.New()
 	}
 
 	res := &domain.WorkoutSet{}
@@ -34,9 +31,10 @@ func (r *workoutSessionRepository) LogWorkoutSet(ctx context.Context, set *domai
 	err := r.pool.QueryRow(
 		ctx,
 		logWorkoutSetQuery,
-		setIDParam,
+		set.SetID,
 		set.SessionID,
 		set.ExerciseID,
+		set.TenantID,
 		set.SetNumber,
 		set.Weight,
 		set.Reps,
@@ -46,6 +44,7 @@ func (r *workoutSessionRepository) LogWorkoutSet(ctx context.Context, set *domai
 		&res.SetID,
 		&res.SessionID,
 		&res.ExerciseID,
+		&res.TenantID,
 		&res.SetNumber,
 		&res.Weight,
 		&res.Reps,

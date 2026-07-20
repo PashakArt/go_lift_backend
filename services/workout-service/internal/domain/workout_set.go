@@ -10,6 +10,7 @@ import (
 type WorkoutSet struct {
 	SetID       uuid.UUID `json:"set_id"`
 	SessionID   uuid.UUID `json:"session_id"`
+	TenantID    uuid.UUID `json:"tenant_id"`
 	ExerciseID  uuid.UUID `json:"exercise_id"`
 	RoundNumber int       `json:"round_number"`
 	SetNumber   int       `json:"set_number"`

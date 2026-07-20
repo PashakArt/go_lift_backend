@@ -73,10 +73,12 @@ func (c *Client) StartTraining(ctx context.Context, tenantId, userId string) (*w
 	return res, nil
 }
 
-func (c *Client) LogWorkoutSet(ctx context.Context, req types.LogSetRequest) (*workoutv1.LogSetResponse, error) {
+func (c *Client) LogWorkoutSet(ctx context.Context, req types.LogSetRequest, tenantId string) (*workoutv1.LogSetResponse, error) {
+	fmt.Println("222")
 	res, err := c.client.LogWorkoutSet(ctx, &workoutv1.LogSetRequest{
 		SessionId:  req.SessionId,
 		ExerciseId: req.ExerciseId,
+		TenantId:   tenantId,
 		SetId:      req.SetID,
 		SetNumber:  req.SetNumber,
 
@@ -85,9 +87,12 @@ func (c *Client) LogWorkoutSet(ctx context.Context, req types.LogSetRequest) (*w
 		DurationSec: req.DurationSeconds,
 		DistanceMet: req.DistanceMeters,
 	})
+	fmt.Println("333")
+
 	if err != nil {
 		return nil, fmt.Errorf("gRPC log workout set failed: %w", err)
 	}
+	fmt.Println("444")
 
 	return res, nil
 }

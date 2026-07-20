@@ -19,9 +19,10 @@ type trainingService struct {
 	workoutSetRepo domain.WorkoutSetRepository
 }
 
-func NewTrainingService(sessionRepo domain.WorkoutSessionRepository) TrainingService {
+func NewTrainingService(s domain.WorkoutSessionRepository, w domain.WorkoutSetRepository) TrainingService {
 	return &trainingService{
-		sessionRepo: sessionRepo,
+		sessionRepo:    s,
+		workoutSetRepo: w,
 	}
 }
 
@@ -73,6 +74,11 @@ func (s *trainingService) LogWorkoutSet(
 		return nil, fmt.Errorf("invalid exercise id: %w", err)
 	}
 
+	tenantID, err := uuid.Parse(protoReq.GetTenantId())
+	if err != nil {
+		return nil, fmt.Errorf("invalid tenant id: %w", err)
+	}
+
 	var setID uuid.UUID
 	if protoReq.SetId != nil && *protoReq.SetId != "" {
 		parsedSetID, err := uuid.Parse(*protoReq.SetId)
@@ -95,13 +101,13 @@ func (s *trainingService) LogWorkoutSet(
 	}
 
 	var durationSec *int
-	if protoReq.DurationSec != nil { // Если в proto было duration_sec
+	if protoReq.DurationSec != nil {
 		d := int(*protoReq.DurationSec)
 		durationSec = &d
 	}
 
 	var distanceMet *int
-	if protoReq.DistanceMet != nil { // Если в proto было distance_met
+	if protoReq.DistanceMet != nil {
 		dm := int(*protoReq.DistanceMet)
 		distanceMet = &dm
 	}
@@ -110,6 +116,7 @@ func (s *trainingService) LogWorkoutSet(
 		SetID:           setID,
 		SessionID:       sessionID,
 		ExerciseID:      exerciseID,
+		TenantID:        tenantID,
 		SetNumber:       int(protoReq.SetNumber),
 		Weight:          weight,
 		Reps:            reps,

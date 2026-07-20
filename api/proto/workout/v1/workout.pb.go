@@ -1023,13 +1023,14 @@ type LogSetRequest struct {
 	state      protoimpl.MessageState `protogen:"open.v1"`
 	SessionId  string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	ExerciseId string                 `protobuf:"bytes,2,opt,name=exercise_id,json=exerciseId,proto3" json:"exercise_id,omitempty"`
-	SetId      *string                `protobuf:"bytes,3,opt,name=set_id,json=setId,proto3,oneof" json:"set_id,omitempty"`
-	SetNumber  int32                  `protobuf:"varint,4,opt,name=set_number,json=setNumber,proto3" json:"set_number,omitempty"`
+	TenantId   string                 `protobuf:"bytes,3,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
+	SetId      *string                `protobuf:"bytes,4,opt,name=set_id,json=setId,proto3,oneof" json:"set_id,omitempty"`
+	SetNumber  int32                  `protobuf:"varint,5,opt,name=set_number,json=setNumber,proto3" json:"set_number,omitempty"`
 	// Метрики выполнения
-	Weight        *float32 `protobuf:"fixed32,5,opt,name=weight,proto3,oneof" json:"weight,omitempty"`
-	Reps          *int32   `protobuf:"varint,6,opt,name=reps,proto3,oneof" json:"reps,omitempty"`
-	DurationSec   *int32   `protobuf:"varint,7,opt,name=duration_sec,json=durationSec,proto3,oneof" json:"duration_sec,omitempty"`
-	DistanceMet   *int32   `protobuf:"varint,8,opt,name=distance_met,json=distanceMet,proto3,oneof" json:"distance_met,omitempty"`
+	Weight        *float32 `protobuf:"fixed32,6,opt,name=weight,proto3,oneof" json:"weight,omitempty"`
+	Reps          *int32   `protobuf:"varint,7,opt,name=reps,proto3,oneof" json:"reps,omitempty"`
+	DurationSec   *int32   `protobuf:"varint,8,opt,name=duration_sec,json=durationSec,proto3,oneof" json:"duration_sec,omitempty"`
+	DistanceMet   *int32   `protobuf:"varint,9,opt,name=distance_met,json=distanceMet,proto3,oneof" json:"distance_met,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1074,6 +1075,13 @@ func (x *LogSetRequest) GetSessionId() string {
 func (x *LogSetRequest) GetExerciseId() string {
 	if x != nil {
 		return x.ExerciseId
+	}
+	return ""
+}
+
+func (x *LogSetRequest) GetTenantId() string {
+	if x != nil {
+		return x.TenantId
 	}
 	return ""
 }
@@ -1251,19 +1259,20 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\vMuscleGroup\x12&\n" +
 	"\x0fmuscle_group_id\x18\x01 \x01(\tR\rmuscleGroupId\x12\x12\n" +
 	"\x04code\x18\x02 \x01(\tR\x04code\x12\x12\n" +
-	"\x04name\x18\x03 \x01(\tR\x04name\"\xd1\x02\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\"\xee\x02\n" +
 	"\rLogSetRequest\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1f\n" +
 	"\vexercise_id\x18\x02 \x01(\tR\n" +
-	"exerciseId\x12\x1a\n" +
-	"\x06set_id\x18\x03 \x01(\tH\x00R\x05setId\x88\x01\x01\x12\x1d\n" +
+	"exerciseId\x12\x1b\n" +
+	"\ttenant_id\x18\x03 \x01(\tR\btenantId\x12\x1a\n" +
+	"\x06set_id\x18\x04 \x01(\tH\x00R\x05setId\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"set_number\x18\x04 \x01(\x05R\tsetNumber\x12\x1b\n" +
-	"\x06weight\x18\x05 \x01(\x02H\x01R\x06weight\x88\x01\x01\x12\x17\n" +
-	"\x04reps\x18\x06 \x01(\x05H\x02R\x04reps\x88\x01\x01\x12&\n" +
-	"\fduration_sec\x18\a \x01(\x05H\x03R\vdurationSec\x88\x01\x01\x12&\n" +
-	"\fdistance_met\x18\b \x01(\x05H\x04R\vdistanceMet\x88\x01\x01B\t\n" +
+	"set_number\x18\x05 \x01(\x05R\tsetNumber\x12\x1b\n" +
+	"\x06weight\x18\x06 \x01(\x02H\x01R\x06weight\x88\x01\x01\x12\x17\n" +
+	"\x04reps\x18\a \x01(\x05H\x02R\x04reps\x88\x01\x01\x12&\n" +
+	"\fduration_sec\x18\b \x01(\x05H\x03R\vdurationSec\x88\x01\x01\x12&\n" +
+	"\fdistance_met\x18\t \x01(\x05H\x04R\vdistanceMet\x88\x01\x01B\t\n" +
 	"\a_set_idB\t\n" +
 	"\a_weightB\a\n" +
 	"\x05_repsB\x0f\n" +

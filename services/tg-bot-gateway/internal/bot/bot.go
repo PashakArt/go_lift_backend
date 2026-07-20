@@ -6,6 +6,7 @@ import (
 
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/auth"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/clients/workout"
+	"github.com/go-playground/validator/v10"
 )
 
 const (
@@ -16,6 +17,7 @@ type HTTPServer struct {
 	workoutClient *workout.Client
 	botToken      string
 	jwtManager    *auth.JwtManager
+	validate      *validator.Validate
 }
 
 func NewHTTPServer(
@@ -27,6 +29,7 @@ func NewHTTPServer(
 		workoutClient: workoutClient,
 		botToken:      botToken,
 		jwtManager:    jwtManager,
+		validate:      validator.New(),
 	}
 }
 
@@ -34,7 +37,8 @@ func (s *HTTPServer) Start(port string) error {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /api/v1/init", s.HandleInit)
-	mux.HandleFunc("POST /api/v1/workout/set", s.LogWorkoutSet)
+
+	mux.Handle("POST /api/v1/workout/set", s.AuthMiddleware(http.HandlerFunc(s.HandleLogWorkoutSet)))
 
 	mux.Handle("POST /api/v1/start", s.AuthMiddleware(http.HandlerFunc(s.HandleStartTraining)))
 	mux.Handle("GET /api/v1/muscle-groups", s.AuthMiddleware(http.HandlerFunc(s.HandleGetMuscleGroups)))

@@ -13,7 +13,7 @@ func NewServices(repos *repository.Repositories) *Services {
 	return &Services{
 		Auth:        NewInitService(repos.User, repos.Session, repos.Tenant),
 		Exercise:    NewExerciseService(repos.Exercise),
-		Session:     NewTrainingService(repos.Session),
+		Session:     NewTrainingService(repos.Session, repos.WorkoutSet),
 		MuscleGroup: NewMuscleGroupService(repos.MuscleGroup),
 	}
 }

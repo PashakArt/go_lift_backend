@@ -157,6 +157,9 @@ CREATE TABLE workout_sets (
     duration_seconds INT,
     distance_meters INT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+
+    CONSTRAINT uq_workout_sets_session_exercise_set_round 
+        UNIQUE (session_id, exercise_id, set_number, round_number)
 );
 
 COMMENT ON TABLE workout_sets IS 'Единая полиморфная таблица для логирования каждого выполненного подхода/раунда во всех типах физических нагрузок';
