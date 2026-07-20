@@ -11,6 +11,7 @@ type Repositories struct {
 	Session     domain.WorkoutSessionRepository
 	MuscleGroup domain.MuscleGroupRepository
 	Tenant      domain.TenantRepository
+	WorkoutSet  domain.WorkoutSetRepository
 }
 
 func NewRepositories(pool *pgxpool.Pool) *Repositories {
@@ -20,5 +21,6 @@ func NewRepositories(pool *pgxpool.Pool) *Repositories {
 		Session:     NewWorkoutSessionRepository(pool),
 		MuscleGroup: NewMuscleGroupRepository(pool),
 		Tenant:      NewTenantRepository(pool),
+		WorkoutSet:  NewWWorkoutSetRepository(pool),
 	}
 }

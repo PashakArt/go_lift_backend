@@ -16,20 +16,20 @@ type WorkoutHandler struct {
 	workoutv1.UnimplementedWorkoutServiceServer
 	authService        service.InitService
 	exerciseService    service.ExerciseService
-	sessionService     service.WorkoutSessionService
+	trainingService    service.TrainingService
 	muscleGroupService service.MuscleGroupService
 }
 
 func NewWorkoutHandler(
 	authService service.InitService,
 	exerciseService service.ExerciseService,
-	sessionService service.WorkoutSessionService,
+	sessionService service.TrainingService,
 	muscleGroupService service.MuscleGroupService,
 ) *WorkoutHandler {
 	return &WorkoutHandler{
 		authService:        authService,
 		exerciseService:    exerciseService,
-		sessionService:     sessionService,
+		trainingService:    sessionService,
 		muscleGroupService: muscleGroupService,
 	}
 }
@@ -129,7 +129,7 @@ func (h *WorkoutHandler) StartWorkoutSession(
 
 	domainType := MapProtoTypeToDomain(req.GetType())
 
-	session, err := h.sessionService.StartSession(
+	session, err := h.trainingService.StartSession(
 		ctx,
 		tenantId,
 		userId,
@@ -146,5 +146,20 @@ func (h *WorkoutHandler) StartWorkoutSession(
 		UserId:    userId,
 		Type:      req.GetType(),
 		StartedAt: timestamppb.New(session.StartedAt),
+	}, nil
+}
+
+func (h *WorkoutHandler) LogWorkoutHandler(
+	ctx context.Context,
+	protoReq *workoutv1.LogSetRequest,
+) (*workoutv1.LogSetResponse, error) {
+	workoutSet, err := h.trainingService.LogWorkoutSet(ctx, protoReq)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to log workout set: %v", err)
+	}
+
+	return &workoutv1.LogSetResponse{
+		SetId:     workoutSet.SetID.String(),
+		SetNumber: int32(workoutSet.SetNumber),
 	}, nil
 }

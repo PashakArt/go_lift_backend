@@ -26,12 +26,7 @@ type WorkoutSessionRepository interface {
 
 // WorkoutSetRepository описывает контракт для работы с подходами внутри сессии
 type WorkoutSetRepository interface {
-	// CreateMany позволяет сохранить пачку подходов за раз (актуально для круговых тренировок)
-	CreateMany(ctx context.Context, sets []*WorkoutSet) error
-	// ListBySessionID выгребает все подходы тренировки с сортировкой по sequence_order
-	ListBySessionID(ctx context.Context, sessionID uuid.UUID) ([]*WorkoutSet, error)
-	// Delete подходов конкретного упражнения в сессии (если юзер решил сбросить прогресс по нему)
-	DeleteByExercise(ctx context.Context, sessionID, exerciseID uuid.UUID) error
+	LogWorkoutSet(ctx context.Context, set *WorkoutSet) (*WorkoutSet, error)
 }
 
 type MuscleGroupRepository interface {
