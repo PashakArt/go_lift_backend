@@ -90,6 +90,49 @@ func (s *HTTPServer) HandleGetExercises(w http.ResponseWriter, r *http.Request) 
 	RespondWithJSON(w, http.StatusOK, exercises)
 }
 
+func (s *HTTPServer) HandleGetCompletedExercises(w http.ResponseWriter, r *http.Request) {
+	exerciseId := r.PathValue("exerciseId")
+	if exerciseId == "" {
+		RespondWithError(w, http.StatusBadRequest, "exerciseId not pass")
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	userId := auth.UserIDFromContext(ctx)
+	grpcRes, err := s.workoutClient.GetCompletedExercise(ctx, userId, exerciseId)
+	if err != nil {
+		log.Printf("gRPC GetCompletedExercises failed: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	completedExercises := make([]types.CompletedExerciseResponse, 0, len(grpcRes.GetSets()))
+	for _, set := range grpcRes.GetSets() {
+		item := types.CompletedExerciseResponse{
+			SetNumber: int(set.GetSetNumber()),
+		}
+
+		if set.Weight != nil {
+			item.Weight = set.Weight
+		}
+		if set.Reps != nil {
+			item.Reps = set.Reps
+		}
+		if set.DurationSec != nil {
+			item.DurationSec = set.DurationSec
+		}
+		if set.DistanceM != nil {
+			item.DistanceM = set.DistanceM
+		}
+
+		completedExercises = append(completedExercises, item)
+	}
+
+	RespondWithJSON(w, http.StatusOK, completedExercises)
+}
+
 func (s *HTTPServer) HandleGetMuscleGroups(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

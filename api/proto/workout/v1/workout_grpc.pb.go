@@ -19,12 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	WorkoutService_Init_FullMethodName                 = "/workout.v1.WorkoutService/Init"
-	WorkoutService_GetMuscleGroups_FullMethodName      = "/workout.v1.WorkoutService/GetMuscleGroups"
-	WorkoutService_GetExercises_FullMethodName         = "/workout.v1.WorkoutService/GetExercises"
-	WorkoutService_StartWorkoutSession_FullMethodName  = "/workout.v1.WorkoutService/StartWorkoutSession"
-	WorkoutService_FinishWorkoutSession_FullMethodName = "/workout.v1.WorkoutService/FinishWorkoutSession"
-	WorkoutService_LogWorkoutSet_FullMethodName        = "/workout.v1.WorkoutService/LogWorkoutSet"
+	WorkoutService_Init_FullMethodName                  = "/workout.v1.WorkoutService/Init"
+	WorkoutService_GetMuscleGroups_FullMethodName       = "/workout.v1.WorkoutService/GetMuscleGroups"
+	WorkoutService_GetExercises_FullMethodName          = "/workout.v1.WorkoutService/GetExercises"
+	WorkoutService_StartWorkoutSession_FullMethodName   = "/workout.v1.WorkoutService/StartWorkoutSession"
+	WorkoutService_FinishWorkoutSession_FullMethodName  = "/workout.v1.WorkoutService/FinishWorkoutSession"
+	WorkoutService_LogWorkoutSet_FullMethodName         = "/workout.v1.WorkoutService/LogWorkoutSet"
+	WorkoutService_GetCompletedExercises_FullMethodName = "/workout.v1.WorkoutService/GetCompletedExercises"
 )
 
 // WorkoutServiceClient is the client API for WorkoutService service.
@@ -43,6 +44,8 @@ type WorkoutServiceClient interface {
 	FinishWorkoutSession(ctx context.Context, in *FinishWorkoutSessionRequest, opts ...grpc.CallOption) (*FinishWorkoutSessionResponse, error)
 	// Сохранить/обновить выполненное упражнение
 	LogWorkoutSet(ctx context.Context, in *LogSetRequest, opts ...grpc.CallOption) (*LogSetResponse, error)
+	// Получить список выполненных упражнений определенного вида в активной сессии
+	GetCompletedExercises(ctx context.Context, in *GetCompletedExercisesRequest, opts ...grpc.CallOption) (*GetCompletedExercisesResponse, error)
 }
 
 type workoutServiceClient struct {
@@ -113,6 +116,16 @@ func (c *workoutServiceClient) LogWorkoutSet(ctx context.Context, in *LogSetRequ
 	return out, nil
 }
 
+func (c *workoutServiceClient) GetCompletedExercises(ctx context.Context, in *GetCompletedExercisesRequest, opts ...grpc.CallOption) (*GetCompletedExercisesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCompletedExercisesResponse)
+	err := c.cc.Invoke(ctx, WorkoutService_GetCompletedExercises_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkoutServiceServer is the server API for WorkoutService service.
 // All implementations must embed UnimplementedWorkoutServiceServer
 // for forward compatibility.
@@ -129,6 +142,8 @@ type WorkoutServiceServer interface {
 	FinishWorkoutSession(context.Context, *FinishWorkoutSessionRequest) (*FinishWorkoutSessionResponse, error)
 	// Сохранить/обновить выполненное упражнение
 	LogWorkoutSet(context.Context, *LogSetRequest) (*LogSetResponse, error)
+	// Получить список выполненных упражнений определенного вида в активной сессии
+	GetCompletedExercises(context.Context, *GetCompletedExercisesRequest) (*GetCompletedExercisesResponse, error)
 	mustEmbedUnimplementedWorkoutServiceServer()
 }
 
@@ -156,6 +171,9 @@ func (UnimplementedWorkoutServiceServer) FinishWorkoutSession(context.Context, *
 }
 func (UnimplementedWorkoutServiceServer) LogWorkoutSet(context.Context, *LogSetRequest) (*LogSetResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method LogWorkoutSet not implemented")
+}
+func (UnimplementedWorkoutServiceServer) GetCompletedExercises(context.Context, *GetCompletedExercisesRequest) (*GetCompletedExercisesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetCompletedExercises not implemented")
 }
 func (UnimplementedWorkoutServiceServer) mustEmbedUnimplementedWorkoutServiceServer() {}
 func (UnimplementedWorkoutServiceServer) testEmbeddedByValue()                        {}
@@ -286,6 +304,24 @@ func _WorkoutService_LogWorkoutSet_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkoutService_GetCompletedExercises_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCompletedExercisesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkoutServiceServer).GetCompletedExercises(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkoutService_GetCompletedExercises_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkoutServiceServer).GetCompletedExercises(ctx, req.(*GetCompletedExercisesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WorkoutService_ServiceDesc is the grpc.ServiceDesc for WorkoutService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -316,6 +352,10 @@ var WorkoutService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LogWorkoutSet",
 			Handler:    _WorkoutService_LogWorkoutSet_Handler,
+		},
+		{
+			MethodName: "GetCompletedExercises",
+			Handler:    _WorkoutService_GetCompletedExercises_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

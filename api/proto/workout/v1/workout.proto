@@ -24,6 +24,26 @@ service WorkoutService {
 
   // Сохранить/обновить выполненное упражнение
   rpc LogWorkoutSet(LogSetRequest) returns (LogSetResponse);
+
+  // Получить список выполненных упражнений определенного вида в активной сессии
+  rpc GetCompletedExercises(GetCompletedExercisesRequest) returns (GetCompletedExercisesResponse);
+}
+
+message GetCompletedExercisesRequest {
+  string user_id     = 1;
+  string exercise_id = 2;
+}
+
+message CompletedSet {
+  int32          set_number   = 1;
+  optional float weight       = 2;
+  optional int32 reps         = 3;
+  optional int32 duration_sec = 4;
+  optional int32 distance_m   = 5;
+}
+
+message GetCompletedExercisesResponse {
+  repeated CompletedSet sets = 1;
 }
 
 message InitRequest {

@@ -86,7 +86,6 @@ func (c *Client) FinishTraining(ctx context.Context, userId string) error {
 }
 
 func (c *Client) LogWorkoutSet(ctx context.Context, req types.LogSetRequest, tenantId string) (*workoutv1.LogSetResponse, error) {
-	fmt.Println("222")
 	res, err := c.client.LogWorkoutSet(ctx, &workoutv1.LogSetRequest{
 		SessionId:  req.SessionId,
 		ExerciseId: req.ExerciseId,
@@ -99,12 +98,26 @@ func (c *Client) LogWorkoutSet(ctx context.Context, req types.LogSetRequest, ten
 		DurationSec: req.DurationSeconds,
 		DistanceMet: req.DistanceMeters,
 	})
-	fmt.Println("333")
 
 	if err != nil {
 		return nil, fmt.Errorf("gRPC log workout set failed: %w", err)
 	}
-	fmt.Println("444")
+
+	return res, nil
+}
+
+func (c *Client) GetCompletedExercise(
+	ctx context.Context,
+	userId, exerciseId string,
+) (*workoutv1.GetCompletedExercisesResponse, error) {
+	res, err := c.client.GetCompletedExercises(ctx, &workoutv1.GetCompletedExercisesRequest{
+		UserId:     userId,
+		ExerciseId: exerciseId,
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("gRPC get completed exercise set failed: %w", err)
+	}
 
 	return res, nil
 }

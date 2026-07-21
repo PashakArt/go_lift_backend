@@ -48,3 +48,11 @@ type ExerciseResponse struct {
 type StartTrainingResponse struct {
 	SessionId string `json:"session_id"`
 }
+
+type CompletedExerciseResponse struct {
+	SetNumber   int      `json:"set_number"`
+	Weight      *float32 `json:"weight,omitempty"`
+	Reps        *int32   `json:"reps,omitempty"`
+	DurationSec *int32   `json:"duration_sec,omitempty"`
+	DistanceM   *int32   `json:"distance_m,omitempty"`
+}
