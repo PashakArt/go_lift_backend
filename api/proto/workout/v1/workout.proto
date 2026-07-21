@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package workout.v1;
 
-import "google/protobuf/empty.proto";
-
 option go_package = "github.com/PashakArt/go_lift_backend/api/proto/workout/v1;workoutv1";
 
 import "google/protobuf/timestamp.proto";
@@ -22,7 +20,7 @@ service WorkoutService {
   rpc StartWorkoutSession(StartWorkoutSessionRequest) returns (StartWorkoutSessionResponse);
 
   // Завершение тренировочной сессии
-  rpc FinishWorkoutSession(FinishWorkoutSessionRequest) returns (google.protobuf.Empty);
+  rpc FinishWorkoutSession(FinishWorkoutSessionRequest) returns (FinishWorkoutSessionResponse);
 
   // Сохранить/обновить выполненное упражнение
   rpc LogWorkoutSet(LogSetRequest) returns (LogSetResponse);
@@ -114,6 +112,10 @@ message StartWorkoutSessionRequest {
 
 message FinishWorkoutSessionRequest {
   string user_id = 1;
+}
+
+message FinishWorkoutSessionResponse {
+
 }
 
 message StartWorkoutSessionResponse {

@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -41,7 +40,7 @@ type WorkoutServiceClient interface {
 	// Старт тренировочной сессии
 	StartWorkoutSession(ctx context.Context, in *StartWorkoutSessionRequest, opts ...grpc.CallOption) (*StartWorkoutSessionResponse, error)
 	// Завершение тренировочной сессии
-	FinishWorkoutSession(ctx context.Context, in *FinishWorkoutSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	FinishWorkoutSession(ctx context.Context, in *FinishWorkoutSessionRequest, opts ...grpc.CallOption) (*FinishWorkoutSessionResponse, error)
 	// Сохранить/обновить выполненное упражнение
 	LogWorkoutSet(ctx context.Context, in *LogSetRequest, opts ...grpc.CallOption) (*LogSetResponse, error)
 }
@@ -94,9 +93,9 @@ func (c *workoutServiceClient) StartWorkoutSession(ctx context.Context, in *Star
 	return out, nil
 }
 
-func (c *workoutServiceClient) FinishWorkoutSession(ctx context.Context, in *FinishWorkoutSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *workoutServiceClient) FinishWorkoutSession(ctx context.Context, in *FinishWorkoutSessionRequest, opts ...grpc.CallOption) (*FinishWorkoutSessionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
+	out := new(FinishWorkoutSessionResponse)
 	err := c.cc.Invoke(ctx, WorkoutService_FinishWorkoutSession_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -127,7 +126,7 @@ type WorkoutServiceServer interface {
 	// Старт тренировочной сессии
 	StartWorkoutSession(context.Context, *StartWorkoutSessionRequest) (*StartWorkoutSessionResponse, error)
 	// Завершение тренировочной сессии
-	FinishWorkoutSession(context.Context, *FinishWorkoutSessionRequest) (*emptypb.Empty, error)
+	FinishWorkoutSession(context.Context, *FinishWorkoutSessionRequest) (*FinishWorkoutSessionResponse, error)
 	// Сохранить/обновить выполненное упражнение
 	LogWorkoutSet(context.Context, *LogSetRequest) (*LogSetResponse, error)
 	mustEmbedUnimplementedWorkoutServiceServer()
@@ -152,7 +151,7 @@ func (UnimplementedWorkoutServiceServer) GetExercises(context.Context, *GetExerc
 func (UnimplementedWorkoutServiceServer) StartWorkoutSession(context.Context, *StartWorkoutSessionRequest) (*StartWorkoutSessionResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method StartWorkoutSession not implemented")
 }
-func (UnimplementedWorkoutServiceServer) FinishWorkoutSession(context.Context, *FinishWorkoutSessionRequest) (*emptypb.Empty, error) {
+func (UnimplementedWorkoutServiceServer) FinishWorkoutSession(context.Context, *FinishWorkoutSessionRequest) (*FinishWorkoutSessionResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method FinishWorkoutSession not implemented")
 }
 func (UnimplementedWorkoutServiceServer) LogWorkoutSet(context.Context, *LogSetRequest) (*LogSetResponse, error) {

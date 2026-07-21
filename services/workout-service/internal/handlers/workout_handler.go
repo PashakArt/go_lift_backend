@@ -149,6 +149,19 @@ func (h *WorkoutHandler) StartWorkoutSession(
 	}, nil
 }
 
+func (h *WorkoutHandler) FinishWorkoutSession(
+	ctx context.Context,
+	req *workoutv1.FinishWorkoutSessionRequest,
+) (*workoutv1.FinishWorkoutSessionResponse, error) {
+	err := h.trainingService.FinishSession(ctx, req.GetUserId())
+
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to finish workout session: %v", err)
+	}
+
+	return nil, nil
+}
+
 func (h *WorkoutHandler) LogWorkoutSet(
 	ctx context.Context,
 	protoReq *workoutv1.LogSetRequest,

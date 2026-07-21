@@ -12,6 +12,7 @@ import (
 type TrainingService interface {
 	StartSession(ctx context.Context, tenantIDStr, userIDStr, sessionType, templateIDStr string) (*domain.WorkoutSession, error)
 	LogWorkoutSet(ctx context.Context, req *workoutv1.LogSetRequest) (*domain.WorkoutSet, error)
+	FinishSession(ctx context.Context, userId string) error
 }
 
 type trainingService struct {
@@ -58,6 +59,19 @@ func (s *trainingService) StartSession(ctx context.Context, tenantIDStr, userIDS
 	}
 
 	return session, nil
+}
+
+func (s *trainingService) FinishSession(ctx context.Context, userIDStr string) error {
+	userID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		return fmt.Errorf("invalid user id format: %w", err)
+	}
+
+	if err := s.sessionRepo.Finish(ctx, userID); err != nil {
+		return fmt.Errorf("failed to finish workout session in repo: %w", err)
+	}
+
+	return nil
 }
 
 func (s *trainingService) LogWorkoutSet(
