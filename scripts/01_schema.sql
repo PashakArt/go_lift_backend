@@ -95,6 +95,10 @@ CREATE TABLE IF NOT EXISTS workout_sessions (
     is_active   BOOLEAN DEFAULT true
 );
 
+CREATE UNIQUE INDEX idx_unique_active_session 
+ON workout_sessions (user_id) 
+WHERE is_active = true;
+
 CREATE TABLE IF NOT EXISTS workout_sets (
     set_id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     session_id       UUID NOT NULL REFERENCES workout_sessions(session_id) ON DELETE CASCADE,

@@ -38,9 +38,11 @@ func (s *HTTPServer) Start(port string) error {
 
 	mux.HandleFunc("POST /api/v1/init", s.HandleInit)
 
-	mux.Handle("POST /api/v1/workout/set", s.AuthMiddleware(http.HandlerFunc(s.HandleLogWorkoutSet)))
+	mux.Handle("POST /api/v1/workout/sets", s.AuthMiddleware(http.HandlerFunc(s.HandleLogWorkoutSet)))
 
 	mux.Handle("POST /api/v1/start", s.AuthMiddleware(http.HandlerFunc(s.HandleStartTraining)))
+	mux.Handle("POST /api/v1/finish", s.AuthMiddleware(http.HandlerFunc(s.HandleFinishTraining)))
+
 	mux.Handle("GET /api/v1/muscle-groups", s.AuthMiddleware(http.HandlerFunc(s.HandleGetMuscleGroups)))
 	mux.Handle("GET /api/v1/{muscleGroupId}/exercises", s.AuthMiddleware(http.HandlerFunc(s.HandleGetExercises)))
 

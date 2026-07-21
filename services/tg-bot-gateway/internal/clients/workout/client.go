@@ -73,6 +73,18 @@ func (c *Client) StartTraining(ctx context.Context, tenantId, userId string) (*w
 	return res, nil
 }
 
+func (c *Client) FinishTraining(ctx context.Context, userId string) error {
+	_, err := c.client.FinishWorkoutSession(ctx, &workoutv1.FinishWorkoutSessionRequest{
+		UserId: userId,
+	})
+
+	if err != nil {
+		return fmt.Errorf("gRPC start session failed: %w", err)
+	}
+
+	return nil
+}
+
 func (c *Client) LogWorkoutSet(ctx context.Context, req types.LogSetRequest, tenantId string) (*workoutv1.LogSetResponse, error) {
 	fmt.Println("222")
 	res, err := c.client.LogWorkoutSet(ctx, &workoutv1.LogSetRequest{

@@ -38,6 +38,26 @@ func (s *HTTPServer) HandleStartTraining(w http.ResponseWriter, r *http.Request)
 	RespondWithJSON(w, http.StatusCreated, types.StartTrainingResponse{SessionId: res.SessionId})
 }
 
+func (s *HTTPServer) HandleFinishTraining(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	userId := auth.UserIDFromContext(r.Context())
+	if userId == "" {
+		RespondWithError(w, http.StatusBadRequest, "JWT has not user_id")
+		return
+	}
+
+	err := s.workoutClient.FinishTraining(ctx, userId)
+	if err != nil {
+		log.Printf("gRPC FinishTraining failed: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, "Internal error")
+		return
+	}
+
+	RespondWithJSON(w, http.StatusOK, nil)
+}
+
 func (s *HTTPServer) HandleGetExercises(w http.ResponseWriter, r *http.Request) {
 	muscleGroupId := r.PathValue("muscleGroupId")
 	if muscleGroupId == "" {
