@@ -1,4 +1,5 @@
 SELECT 
+    ws.set_id,
     ws.set_number,
     ws.weight,
     ws.reps,

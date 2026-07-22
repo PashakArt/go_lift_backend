@@ -24,7 +24,6 @@ INSERT INTO workout_sets (
     $8
 )
 ON CONFLICT (set_id) DO UPDATE SET
-    set_number       = EXCLUDED.set_number,
     weight           = EXCLUDED.weight,
     reps             = EXCLUDED.reps,
     duration_seconds = EXCLUDED.duration_seconds,

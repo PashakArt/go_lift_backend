@@ -36,10 +36,11 @@ message GetCompletedExercisesRequest {
 
 message CompletedSet {
   int32          set_number   = 1;
-  optional float weight       = 2;
-  optional int32 reps         = 3;
-  optional int32 duration_sec = 4;
-  optional int32 distance_m   = 5;
+  string         set_id       = 2;
+  optional float weight       = 3;
+  optional int32 reps         = 4;
+  optional int32 duration_sec = 5;
+  optional int32 distance_m   = 6;
 }
 
 message GetCompletedExercisesResponse {

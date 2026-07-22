@@ -182,10 +182,11 @@ func (x *GetCompletedExercisesRequest) GetExerciseId() string {
 type CompletedSet struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	SetNumber     int32                  `protobuf:"varint,1,opt,name=set_number,json=setNumber,proto3" json:"set_number,omitempty"`
-	Weight        *float32               `protobuf:"fixed32,2,opt,name=weight,proto3,oneof" json:"weight,omitempty"`
-	Reps          *int32                 `protobuf:"varint,3,opt,name=reps,proto3,oneof" json:"reps,omitempty"`
-	DurationSec   *int32                 `protobuf:"varint,4,opt,name=duration_sec,json=durationSec,proto3,oneof" json:"duration_sec,omitempty"`
-	DistanceM     *int32                 `protobuf:"varint,5,opt,name=distance_m,json=distanceM,proto3,oneof" json:"distance_m,omitempty"`
+	SetId         string                 `protobuf:"bytes,2,opt,name=set_id,json=setId,proto3" json:"set_id,omitempty"`
+	Weight        *float32               `protobuf:"fixed32,3,opt,name=weight,proto3,oneof" json:"weight,omitempty"`
+	Reps          *int32                 `protobuf:"varint,4,opt,name=reps,proto3,oneof" json:"reps,omitempty"`
+	DurationSec   *int32                 `protobuf:"varint,5,opt,name=duration_sec,json=durationSec,proto3,oneof" json:"duration_sec,omitempty"`
+	DistanceM     *int32                 `protobuf:"varint,6,opt,name=distance_m,json=distanceM,proto3,oneof" json:"distance_m,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -225,6 +226,13 @@ func (x *CompletedSet) GetSetNumber() int32 {
 		return x.SetNumber
 	}
 	return 0
+}
+
+func (x *CompletedSet) GetSetId() string {
+	if x != nil {
+		return x.SetId
+	}
+	return ""
 }
 
 func (x *CompletedSet) GetWeight() float32 {
@@ -1433,15 +1441,16 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\x1cGetCompletedExercisesRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1f\n" +
 	"\vexercise_id\x18\x02 \x01(\tR\n" +
-	"exerciseId\"\xe3\x01\n" +
+	"exerciseId\"\xfa\x01\n" +
 	"\fCompletedSet\x12\x1d\n" +
 	"\n" +
-	"set_number\x18\x01 \x01(\x05R\tsetNumber\x12\x1b\n" +
-	"\x06weight\x18\x02 \x01(\x02H\x00R\x06weight\x88\x01\x01\x12\x17\n" +
-	"\x04reps\x18\x03 \x01(\x05H\x01R\x04reps\x88\x01\x01\x12&\n" +
-	"\fduration_sec\x18\x04 \x01(\x05H\x02R\vdurationSec\x88\x01\x01\x12\"\n" +
+	"set_number\x18\x01 \x01(\x05R\tsetNumber\x12\x15\n" +
+	"\x06set_id\x18\x02 \x01(\tR\x05setId\x12\x1b\n" +
+	"\x06weight\x18\x03 \x01(\x02H\x00R\x06weight\x88\x01\x01\x12\x17\n" +
+	"\x04reps\x18\x04 \x01(\x05H\x01R\x04reps\x88\x01\x01\x12&\n" +
+	"\fduration_sec\x18\x05 \x01(\x05H\x02R\vdurationSec\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"distance_m\x18\x05 \x01(\x05H\x03R\tdistanceM\x88\x01\x01B\t\n" +
+	"distance_m\x18\x06 \x01(\x05H\x03R\tdistanceM\x88\x01\x01B\t\n" +
 	"\a_weightB\a\n" +
 	"\x05_repsB\x0f\n" +
 	"\r_duration_secB\r\n" +

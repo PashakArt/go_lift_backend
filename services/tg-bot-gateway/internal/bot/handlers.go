@@ -112,6 +112,7 @@ func (s *HTTPServer) HandleGetCompletedExercises(w http.ResponseWriter, r *http.
 	for _, set := range grpcRes.GetSets() {
 		item := types.CompletedExerciseResponse{
 			SetNumber: int(set.GetSetNumber()),
+			SetId:     set.SetId,
 		}
 
 		if set.Weight != nil {

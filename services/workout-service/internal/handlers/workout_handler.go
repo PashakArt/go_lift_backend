@@ -190,6 +190,7 @@ func (h *WorkoutHandler) GetCompletedExercises(
 	for _, set := range completedExercises {
 		item := &workoutv1.CompletedSet{
 			SetNumber: int32(set.SetNumber),
+			SetId:     set.SetID.String(),
 		}
 
 		if set.Weight != nil {

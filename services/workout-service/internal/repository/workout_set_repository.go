@@ -76,6 +76,7 @@ func (r *workoutSetRepository) GetCompletedExercises(ctx context.Context, userId
 		var exercise domain.WorkoutSet
 
 		err = rows.Scan(
+			&exercise.SetID,
 			&exercise.SetNumber,
 			&exercise.Weight,
 			&exercise.Reps,
