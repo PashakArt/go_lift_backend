@@ -1277,7 +1277,6 @@ type LogSetRequest struct {
 	ExerciseId string                 `protobuf:"bytes,2,opt,name=exercise_id,json=exerciseId,proto3" json:"exercise_id,omitempty"`
 	TenantId   string                 `protobuf:"bytes,3,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
 	SetId      *string                `protobuf:"bytes,4,opt,name=set_id,json=setId,proto3,oneof" json:"set_id,omitempty"`
-	SetNumber  int32                  `protobuf:"varint,5,opt,name=set_number,json=setNumber,proto3" json:"set_number,omitempty"`
 	// Метрики выполнения
 	Weight        *float32 `protobuf:"fixed32,6,opt,name=weight,proto3,oneof" json:"weight,omitempty"`
 	Reps          *int32   `protobuf:"varint,7,opt,name=reps,proto3,oneof" json:"reps,omitempty"`
@@ -1343,13 +1342,6 @@ func (x *LogSetRequest) GetSetId() string {
 		return *x.SetId
 	}
 	return ""
-}
-
-func (x *LogSetRequest) GetSetNumber() int32 {
-	if x != nil {
-		return x.SetNumber
-	}
-	return 0
 }
 
 func (x *LogSetRequest) GetWeight() float32 {
@@ -1532,16 +1524,14 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\vMuscleGroup\x12&\n" +
 	"\x0fmuscle_group_id\x18\x01 \x01(\tR\rmuscleGroupId\x12\x12\n" +
 	"\x04code\x18\x02 \x01(\tR\x04code\x12\x12\n" +
-	"\x04name\x18\x03 \x01(\tR\x04name\"\xee\x02\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\"\xcf\x02\n" +
 	"\rLogSetRequest\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1f\n" +
 	"\vexercise_id\x18\x02 \x01(\tR\n" +
 	"exerciseId\x12\x1b\n" +
 	"\ttenant_id\x18\x03 \x01(\tR\btenantId\x12\x1a\n" +
-	"\x06set_id\x18\x04 \x01(\tH\x00R\x05setId\x88\x01\x01\x12\x1d\n" +
-	"\n" +
-	"set_number\x18\x05 \x01(\x05R\tsetNumber\x12\x1b\n" +
+	"\x06set_id\x18\x04 \x01(\tH\x00R\x05setId\x88\x01\x01\x12\x1b\n" +
 	"\x06weight\x18\x06 \x01(\x02H\x01R\x06weight\x88\x01\x01\x12\x17\n" +
 	"\x04reps\x18\a \x01(\x05H\x02R\x04reps\x88\x01\x01\x12&\n" +
 	"\fduration_sec\x18\b \x01(\x05H\x03R\vdurationSec\x88\x01\x01\x12&\n" +

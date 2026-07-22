@@ -91,7 +91,6 @@ func (c *Client) LogWorkoutSet(ctx context.Context, req types.LogSetRequest, ten
 		ExerciseId: req.ExerciseId,
 		TenantId:   tenantId,
 		SetId:      req.SetID,
-		SetNumber:  req.SetNumber,
 
 		Weight:      req.Weight,
 		Reps:        req.Reps,

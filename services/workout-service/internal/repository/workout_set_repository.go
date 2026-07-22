@@ -40,7 +40,6 @@ func (r *workoutSetRepository) LogWorkoutSet(ctx context.Context, set *domain.Wo
 		set.SessionID,
 		set.ExerciseID,
 		set.TenantID,
-		set.SetNumber,
 		set.Weight,
 		set.Reps,
 		set.DurationSeconds,

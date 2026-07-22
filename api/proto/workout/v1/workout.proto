@@ -165,7 +165,6 @@ message LogSetRequest {
   string          exercise_id = 2;
   string          tenant_id   = 3;
   optional string set_id      = 4;
-  int32           set_number  = 5;
 
   // Метрики выполнения
   optional float weight       = 6;

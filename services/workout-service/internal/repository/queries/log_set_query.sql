@@ -9,7 +9,19 @@ INSERT INTO workout_sets (
     duration_seconds,
     distance_meters
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9
+    $1,
+    $2,
+    $3,
+    $4,
+    COALESCE((
+        SELECT MAX(ws.set_number) 
+        FROM workout_sets ws 
+        WHERE ws.session_id = $2 AND ws.exercise_id = $3
+    ), 0) + 1,
+    $5,
+    $6,
+    $7,
+    $8
 )
 ON CONFLICT (set_id) DO UPDATE SET
     set_number       = EXCLUDED.set_number,

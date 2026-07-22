@@ -132,7 +132,6 @@ func (s *trainingService) LogWorkoutSet(
 		SessionID:       sessionID,
 		ExerciseID:      exerciseID,
 		TenantID:        tenantID,
-		SetNumber:       int(protoReq.SetNumber),
 		Weight:          weight,
 		Reps:            reps,
 		DurationSeconds: durationSec,
