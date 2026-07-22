@@ -13,10 +13,10 @@ import (
 )
 
 func (s *HTTPServer) HandleStartTraining(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
-	userId := auth.UserIDFromContext(r.Context())
+	userId := auth.UserIDFromContext(ctx)
 	if userId == "" {
 		RespondWithError(w, http.StatusBadRequest, "JWT has not user_id")
 		return
@@ -39,10 +39,10 @@ func (s *HTTPServer) HandleStartTraining(w http.ResponseWriter, r *http.Request)
 }
 
 func (s *HTTPServer) HandleFinishTraining(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
-	userId := auth.UserIDFromContext(r.Context())
+	userId := auth.UserIDFromContext(ctx)
 	if userId == "" {
 		RespondWithError(w, http.StatusBadRequest, "JWT has not user_id")
 		return
@@ -65,10 +65,10 @@ func (s *HTTPServer) HandleGetExercises(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	userId := auth.UserIDFromContext(r.Context())
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
+
+	userId := auth.UserIDFromContext(ctx)
 
 	grpcResponse, err := s.workoutClient.GetExercises(ctx, userId, muscleGroupId)
 	if err != nil {
@@ -97,7 +97,7 @@ func (s *HTTPServer) HandleGetCompletedExercises(w http.ResponseWriter, r *http.
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
 	userId := auth.UserIDFromContext(ctx)
@@ -134,7 +134,7 @@ func (s *HTTPServer) HandleGetCompletedExercises(w http.ResponseWriter, r *http.
 }
 
 func (s *HTTPServer) HandleGetMuscleGroups(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
 	grpcResponse, err := s.workoutClient.GetMuscleGroups(ctx)
@@ -228,7 +228,7 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 		tenantID = defaultTenantId
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
 	res, err := s.workoutClient.Init(ctx, tenantID, tgIDStr)

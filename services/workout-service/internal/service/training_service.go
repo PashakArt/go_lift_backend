@@ -13,6 +13,7 @@ type TrainingService interface {
 	StartSession(ctx context.Context, tenantIDStr, userIDStr, sessionType, templateIDStr string) (*domain.WorkoutSession, error)
 	LogWorkoutSet(ctx context.Context, req *workoutv1.LogSetRequest) (*domain.WorkoutSet, error)
 	FinishSession(ctx context.Context, userId string) error
+	GetCompletedExercises(ctx context.Context, userId, exerciseId string) ([]domain.WorkoutSet, error)
 }
 
 type trainingService struct {
@@ -141,6 +142,15 @@ func (s *trainingService) LogWorkoutSet(
 	res, err := s.workoutSetRepo.LogWorkoutSet(ctx, set)
 	if err != nil {
 		return nil, fmt.Errorf("failed to log workout set: %w", err)
+	}
+
+	return res, nil
+}
+
+func (s *trainingService) GetCompletedExercises(ctx context.Context, userId, exerciseId string) ([]domain.WorkoutSet, error) {
+	res, err := s.workoutSetRepo.GetCompletedExercises(ctx, userId, exerciseId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get completed exercises: %w", err)
 	}
 
 	return res, nil

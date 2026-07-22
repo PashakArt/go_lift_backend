@@ -28,6 +28,7 @@ type WorkoutSessionRepository interface {
 // WorkoutSetRepository описывает контракт для работы с подходами внутри сессии
 type WorkoutSetRepository interface {
 	LogWorkoutSet(ctx context.Context, set *WorkoutSet) (*WorkoutSet, error)
+	GetCompletedExercises(ctx context.Context, userId, exerciseId string) ([]WorkoutSet, error)
 }
 
 type MuscleGroupRepository interface {

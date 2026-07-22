@@ -10,18 +10,23 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-//go:embed queries/log_set_query.sql
-var logWorkoutSetQuery string
+var (
+	//go:embed queries/log_set_query.sql
+	logWorkoutSetQuery string
 
-type WorkoutSetRepository struct {
+	//go:embed queries/get_completed_exercises.sql
+	getCompletedExercisesQuery string
+)
+
+type workoutSetRepository struct {
 	pool *pgxpool.Pool
 }
 
 func NewWWorkoutSetRepository(pool *pgxpool.Pool) domain.WorkoutSetRepository {
-	return &workoutSessionRepository{pool: pool}
+	return &workoutSetRepository{pool: pool}
 }
 
-func (r *workoutSessionRepository) LogWorkoutSet(ctx context.Context, set *domain.WorkoutSet) (*domain.WorkoutSet, error) {
+func (r *workoutSetRepository) LogWorkoutSet(ctx context.Context, set *domain.WorkoutSet) (*domain.WorkoutSet, error) {
 	if set.SetID == uuid.Nil {
 		set.SetID = uuid.New()
 	}
@@ -58,4 +63,31 @@ func (r *workoutSessionRepository) LogWorkoutSet(ctx context.Context, set *domai
 	}
 
 	return res, nil
+}
+
+func (r *workoutSetRepository) GetCompletedExercises(ctx context.Context, userId, exerciseId string) ([]domain.WorkoutSet, error) {
+	rows, err := r.pool.Query(ctx, getCompletedExercisesQuery, userId, exerciseId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute GetCompletedExercises query: %w", err)
+	}
+	defer rows.Close()
+
+	var exercises []domain.WorkoutSet
+	for rows.Next() {
+		var exercise domain.WorkoutSet
+
+		err = rows.Scan(
+			&exercise.SetNumber,
+			&exercise.Weight,
+			&exercise.Reps,
+			&exercise.DurationSeconds,
+			&exercise.DistanceMeters,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan exercise row: %w", err)
+		}
+		exercises = append(exercises, exercise)
+	}
+
+	return exercises, nil
 }

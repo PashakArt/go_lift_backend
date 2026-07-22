@@ -176,3 +176,43 @@ func (h *WorkoutHandler) LogWorkoutSet(
 		SetNumber: int32(workoutSet.SetNumber),
 	}, nil
 }
+
+func (h *WorkoutHandler) GetCompletedExercises(
+	ctx context.Context,
+	req *workoutv1.GetCompletedExercisesRequest,
+) (*workoutv1.GetCompletedExercisesResponse, error) {
+	completedExercises, err := h.trainingService.GetCompletedExercises(ctx, req.GetUserId(), req.GetExerciseId())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get completed exercises: %v", err)
+	}
+
+	sets := make([]*workoutv1.CompletedSet, 0, len(completedExercises))
+	for _, set := range completedExercises {
+		item := &workoutv1.CompletedSet{
+			SetNumber: int32(set.SetNumber),
+		}
+
+		if set.Weight != nil {
+			w := float32(*set.Weight)
+			item.Weight = &w
+		}
+		if set.Reps != nil {
+			r := int32(*set.Reps)
+			item.Reps = &r
+		}
+		if set.DurationSeconds != nil {
+			d := int32(*set.DurationSeconds)
+			item.DurationSec = &d
+		}
+		if set.DistanceMeters != nil {
+			dist := int32(*set.DistanceMeters)
+			item.DistanceM = &dist
+		}
+
+		sets = append(sets, item)
+	}
+
+	return &workoutv1.GetCompletedExercisesResponse{
+		Sets: sets,
+	}, nil
+}

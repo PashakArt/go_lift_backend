@@ -46,7 +46,7 @@ func (s *HTTPServer) Start(port string) error {
 	mux.Handle("GET /api/v1/muscle-groups", s.AuthMiddleware(http.HandlerFunc(s.HandleGetMuscleGroups)))
 	mux.Handle("GET /api/v1/{muscleGroupId}/exercises", s.AuthMiddleware(http.HandlerFunc(s.HandleGetExercises)))
 	mux.Handle(
-		"GET /api/v1/completed-exercises/{exerciseId}",
+		"GET /api/v1/exercises/{exerciseId}/completed",
 		s.AuthMiddleware(http.HandlerFunc(s.HandleGetCompletedExercises)),
 	)
 
