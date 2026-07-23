@@ -55,7 +55,9 @@ DECLARE
     barbell_row_id UUID;
     squats_id UUID;
     leg_press_id UUID;
+    leg_extension_id UUID;      -- Разгибание ног в тренажере
     adductor_machine_id UUID;
+    abductor_machine_id UUID;   -- Разведение ног в тренажере
     bicep_curl_id UUID;
     tricep_extension_id UUID;
     plank_id UUID;
@@ -106,7 +108,7 @@ BEGIN
         (hyperextension_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'back')),
         (hyperextension_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'glutes'));
 
-    -- 3. НОГИ, ЯГОДИЦЫ И ПРИВОДЯЩИЕ
+    -- 3. НОГИ, ЯГОДИЦЫ И ПРИВОДЯЩИЕ/ОТВОДЯЩИЕ
     INSERT INTO exercises (name, type, is_global, tenant_id) 
     VALUES ('Приседания со штангой', 'dynamic', true, def_tenant_id) RETURNING exercise_id INTO squats_id;
 
@@ -114,7 +116,13 @@ BEGIN
     VALUES ('Жим ногами в тренажере', 'dynamic', true, def_tenant_id) RETURNING exercise_id INTO leg_press_id;
 
     INSERT INTO exercises (name, type, is_global, tenant_id) 
+    VALUES ('Разгибание ног в тренажере', 'dynamic', true, def_tenant_id) RETURNING exercise_id INTO leg_extension_id;
+
+    INSERT INTO exercises (name, type, is_global, tenant_id) 
     VALUES ('Сведение ног в тренажере', 'dynamic', true, def_tenant_id) RETURNING exercise_id INTO adductor_machine_id;
+
+    INSERT INTO exercises (name, type, is_global, tenant_id) 
+    VALUES ('Разведение ног в тренажере', 'dynamic', true, def_tenant_id) RETURNING exercise_id INTO abductor_machine_id;
 
     INSERT INTO exercises (name, type, is_global, tenant_id) 
     VALUES ('Ягодичный мостик со штангой', 'dynamic', true, def_tenant_id) RETURNING exercise_id INTO hip_thrust_id;
@@ -129,7 +137,9 @@ BEGIN
         (squats_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'adductors')),
         (leg_press_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'quads')),
         (leg_press_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'glutes')),
+        (leg_extension_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'quads')),
         (adductor_machine_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'adductors')),
+        (abductor_machine_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'glutes')),
         (hip_thrust_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'glutes')),
         (hip_thrust_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'hamstrings')),
         (lunges_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'quads')),
