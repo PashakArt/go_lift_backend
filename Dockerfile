@@ -1,17 +1,20 @@
-# 1. Этап сборки (Build)
-FROM golang:1.22-alpine AS builder
+# 1. Этап сборки (Build) - берем актуальный Go alpine
+FROM golang:alpine AS builder
 
 ARG SERVICE_PATH
 
 WORKDIR /app
 
+# Включаем автоматическое скачивание нужной версии Go, если в go.mod прописана новее
+ENV GOTOOLCHAIN=auto
+
 # Копируем весь workspace
 COPY . .
 
-# Переходим в папку конкретного сервиса для сборки
+# Переходим в папку конкретного сервиса
 WORKDIR /app/${SERVICE_PATH}
 
-# Собираем бинарник с учетом go.work из родительской папки
+# Собираем бинарник
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/app ./cmd/main.go
 
 # 2. Этап запуска (Production)
