@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: golift_postgres_prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Жестко берем из .env
+      POSTGRES_DB: ${POSTGRES_DB:-golift}
+    ports:
+      - "127.0.0.1:5432:5432" # На проде открываем порт БК только для localhost (для безопасности)
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+      - ./scripts:/docker-entrypoint-initdb.d/
+    networks:
+      - golift_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-golift}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  workout-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: services/workout-service
+    container_name: golift_workout_service
+    restart: always
+    environment:
+      - PORT=50051
+      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-golift}?sslmode=disable
+    networks:
+      - golift_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  tg-bot-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_PATH: services/tg-bot-gateway
+    container_name: golift_gateway
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - WORKOUT_SERVICE_HOST=workout-service:50051
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+    networks:
+      - golift_network
+    depends_on:
+      - workout-service
+
+networks:
+  golift_network:
+    driver: bridge
+
+volumes:
+  pgdata_prod:
