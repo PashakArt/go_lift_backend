@@ -1,4 +1,3 @@
-# 1. Этап сборки (Build)
 FROM golang:alpine AS builder
 
 ARG SERVICE_PATH
@@ -7,19 +6,14 @@ WORKDIR /app
 
 ENV GOTOOLCHAIN=auto
 
-# Копируем весь workspace
 COPY . .
 
-# Переходим в папку конкретного сервиса
 WORKDIR /app/${SERVICE_PATH}
 
-# Актуализируем go.sum подтягиванием всех косвенных зависимостей
 RUN go mod tidy
 
-# Собираем бинарник
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/app ./cmd/main.go
 
-# 2. Этап запуска (Production)
 FROM alpine:3.19
 
 WORKDIR /app

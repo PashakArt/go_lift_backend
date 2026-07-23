@@ -10,7 +10,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      # Пробрасываем 5432 только на 127.0.0.1, чтобы базa не торчала наружу в интернет
       - "127.0.0.1:5432:5432"
     volumes:
       - pgdata_prod:/var/lib/postgresql/data
