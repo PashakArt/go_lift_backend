@@ -5,28 +5,46 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func (s *HTTPServer) ValidateAndParseInitData(initData string) (url.Values, error) {
 	params, err := url.ParseQuery(initData)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse initData query: %w", err)
 	}
 
-	if s.botToken == "mock_token_123456" {
-		log.Println("[DEBUG] Running in mock mode, skipping Telegram hash validation")
+	if s.botToken == "mock_token_123456" || s.botToken == "" {
+		log.Println("[WARN] Running initData validation in MOCK mode")
 		return params, nil
 	}
 
 	hash := params.Get("hash")
 	if hash == "" {
-		return nil, fmt.Errorf("hash is missing")
+		return nil, errors.New("hash is missing in initData")
+	}
+
+	authDateStr := params.Get("auth_date")
+	if authDateStr == "" {
+		return nil, errors.New("auth_date is missing")
+	}
+
+	authTimestamp, err := strconv.ParseInt(authDateStr, 10, 64)
+	if err != nil {
+		return nil, errors.New("invalid auth_date format")
+	}
+
+	// Считаем данные просроченными, если им больше 24 часов (86400 секунд)
+	if time.Now().Unix()-authTimestamp > 86400 {
+		return nil, errors.New("initData is outdated (expired)")
 	}
 
 	var keys []string
@@ -35,7 +53,6 @@ func (s *HTTPServer) ValidateAndParseInitData(initData string) (url.Values, erro
 			keys = append(keys, k)
 		}
 	}
-
 	sort.Strings(keys)
 
 	var checkStrings []string
@@ -50,10 +67,15 @@ func (s *HTTPServer) ValidateAndParseInitData(initData string) (url.Values, erro
 
 	mac := hmac.New(sha256.New, secretKey)
 	mac.Write([]byte(checkString))
-	expectedHash := hex.EncodeToString(mac.Sum(nil))
+	calculatedHashBytes := mac.Sum(nil)
 
-	if hash != expectedHash {
-		return nil, fmt.Errorf("invalid hash signature")
+	receivedHashBytes, err := hex.DecodeString(hash)
+	if err != nil {
+		return nil, errors.New("failed to decode hash from hex")
+	}
+
+	if !hmac.Equal(calculatedHashBytes, receivedHashBytes) {
+		return nil, errors.New("invalid hash signature")
 	}
 
 	return params, nil
