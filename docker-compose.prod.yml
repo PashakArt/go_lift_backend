@@ -6,19 +6,20 @@ services:
     container_name: golift_postgres_prod
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD} # Жестко берем из .env
-      POSTGRES_DB: ${POSTGRES_DB:-golift}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "127.0.0.1:5432:5432" # На проде открываем порт БК только для localhost (для безопасности)
+      # Пробрасываем 5432 только на 127.0.0.1, чтобы базa не торчала наружу в интернет
+      - "127.0.0.1:5432:5432"
     volumes:
       - pgdata_prod:/var/lib/postgresql/data
       - ./scripts:/docker-entrypoint-initdb.d/
     networks:
       - golift_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-golift}"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 3s
       timeout: 5s
       retries: 5
 
@@ -31,8 +32,8 @@ services:
     container_name: golift_workout_service
     restart: always
     environment:
-      - PORT=50051
-      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-golift}?sslmode=disable
+      - PORT=${WORKOUT_GRPC_PORT}
+      - DATABASE_URL=${DATABASE_URL}
     networks:
       - golift_network
     depends_on:
@@ -48,11 +49,12 @@ services:
     container_name: golift_gateway
     restart: always
     ports:
-      - "8080:8080"
+      - "${TG_HTTP_PORT}:${TG_HTTP_PORT}"
     environment:
-      - PORT=8080
-      - WORKOUT_SERVICE_HOST=workout-service:50051
+      - PORT=${TG_HTTP_PORT}
+      - WORKOUT_SERVICE_ADDR=${WORKOUT_SERVICE_ADDR}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     networks:
       - golift_network
     depends_on:
