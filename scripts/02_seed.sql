@@ -7,18 +7,18 @@ VALUES (
     'GoLift', 
     'default', 
     '{
-        "theme": {
-            "mode": "dark",
-            "primary_color": "#FF5722",
-            "background_color": "#121212",
-            "surface_color": "#1E1E1E",
-            "text_color": "#FFFFFF",
-            "accent_color": "#00E676"
-        },
-        "assets": {
-            "logo_url": "https://assets.golift.app/logos/default_logo.png"
-        }
-    }'::jsonb
+    "theme": {
+        "mode": "dark",
+        "text_color": "#FFFFFF",
+        "accent_color": "#FF7B7B",
+        "primary_color": "#FF5252",
+        "surface_color": "#1E1E1E",
+        "background_color": "#121212"
+    },
+    "assets": {
+        "logo_url": "https://go-lift.ru/logo.png"
+    }
+}'::jsonb
 )
 ON CONFLICT (tenant_id) DO NOTHING;
 
@@ -51,13 +51,16 @@ DECLARE
     
     bench_press_id UUID;
     pushups_id UUID;
+    rings_dips_id UUID;          -- Отжимания на кольцах
     pullups_id UUID;
+    rings_pullups_id UUID;       -- Подтягивания на кольцах
+    single_ring_pullup_id UUID;  -- Подтягивание на одном кольце
     barbell_row_id UUID;
     squats_id UUID;
     leg_press_id UUID;
-    leg_extension_id UUID;      -- Разгибание ног в тренажере
+    leg_extension_id UUID;      
     adductor_machine_id UUID;
-    abductor_machine_id UUID;   -- Разведение ног в тренажере
+    abductor_machine_id UUID;   
     bicep_curl_id UUID;
     tricep_extension_id UUID;
     plank_id UUID;
@@ -80,15 +83,27 @@ BEGIN
     INSERT INTO exercises (name, type, is_global, tenant_id) 
     VALUES ('Отжимания от пола', 'bodyweight', true, def_tenant_id) RETURNING exercise_id INTO pushups_id;
 
+    INSERT INTO exercises (name, type, is_global, tenant_id) 
+    VALUES ('Отжимания на гимнастических кольцах', 'bodyweight', true, def_tenant_id) RETURNING exercise_id INTO rings_dips_id;
+
     INSERT INTO exercise_muscle_groups (exercise_id, muscle_group_id) VALUES 
         (bench_press_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'chest')),
         (bench_press_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'triceps')),
         (pushups_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'chest')),
-        (pushups_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'triceps'));
+        (pushups_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'triceps')),
+        (rings_dips_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'chest')),
+        (rings_dips_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'triceps')),
+        (rings_dips_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'shoulders'));
 
     -- 2. СПИНА И БИЦЕПС
     INSERT INTO exercises (name, type, is_global, tenant_id) 
     VALUES ('Подтягивания на турнике', 'bodyweight', true, def_tenant_id) RETURNING exercise_id INTO pullups_id;
+
+    INSERT INTO exercises (name, type, is_global, tenant_id) 
+    VALUES ('Подтягивания на гимнастических кольцах', 'bodyweight', true, def_tenant_id) RETURNING exercise_id INTO rings_pullups_id;
+
+    INSERT INTO exercises (name, type, is_global, tenant_id) 
+    VALUES ('Подтягивание на одном кольце', 'bodyweight', true, def_tenant_id) RETURNING exercise_id INTO single_ring_pullup_id;
 
     INSERT INTO exercises (name, type, is_global, tenant_id) 
     VALUES ('Тяга штанги в наклоне', 'dynamic', true, def_tenant_id) RETURNING exercise_id INTO barbell_row_id;
@@ -102,6 +117,11 @@ BEGIN
     INSERT INTO exercise_muscle_groups (exercise_id, muscle_group_id) VALUES 
         (pullups_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'back')),
         (pullups_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'biceps')),
+        (rings_pullups_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'back')),
+        (rings_pullups_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'biceps')),
+        (single_ring_pullup_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'back')),
+        (single_ring_pullup_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'biceps')),
+        (single_ring_pullup_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'forearms')),
         (barbell_row_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'back')),
         (lat_pulldown_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'back')),
         (lat_pulldown_id, (SELECT muscle_group_id FROM muscle_groups WHERE code = 'biceps')),
