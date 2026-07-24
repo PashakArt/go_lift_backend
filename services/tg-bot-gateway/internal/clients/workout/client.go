@@ -59,7 +59,17 @@ func (c *Client) GetExercises(ctx context.Context, userId, muscleGroupId string)
 }
 
 func (c *Client) GetTrainingDays(ctx context.Context, userId string, year, month int) (*workoutv1.GetTrainingDaysResponse, error) {
-	return nil, nil
+	res, err := c.client.GetTrainingDays(ctx, &workoutv1.GetTrainingDaysRequest{
+		UserId: userId,
+		Year:   int64(year),
+		Months: int64(month),
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("gRPC get exercises failed: %w", err)
+	}
+
+	return res, nil
 }
 
 func (c *Client) StartTraining(ctx context.Context, tenantId, userId string) (*workoutv1.StartWorkoutSessionResponse, error) {

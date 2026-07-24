@@ -14,6 +14,7 @@ type TrainingService interface {
 	LogWorkoutSet(ctx context.Context, req *workoutv1.LogSetRequest) (*domain.WorkoutSet, error)
 	FinishSession(ctx context.Context, userId string) error
 	GetCompletedExercises(ctx context.Context, userId, exerciseId string) ([]domain.WorkoutSet, error)
+	GetTrainingDays(ctx context.Context, userId string, year, month int) ([]string, error)
 }
 
 type trainingService struct {
@@ -150,6 +151,15 @@ func (s *trainingService) GetCompletedExercises(ctx context.Context, userId, exe
 	res, err := s.workoutSetRepo.GetCompletedExercises(ctx, userId, exerciseId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get completed exercises: %w", err)
+	}
+
+	return res, nil
+}
+
+func (s *trainingService) GetTrainingDays(ctx context.Context, userId string, year, month int) ([]string, error) {
+	res, err := s.sessionRepo.GetTrainingDays(ctx, userId, year, month)
+	if err != nil {
+		return nil, fmt.Errorf("TrainingService: failed to get completed exercises: %w", err)
 	}
 
 	return res, nil

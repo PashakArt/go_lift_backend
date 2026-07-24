@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/domain"
 	"github.com/google/uuid"
@@ -21,6 +22,9 @@ var (
 
 	//go:embed queries/get_active_session_by_user_id.sql
 	getActiveSessionByUserId string
+
+	//go:embed queries/get_training_days.sql
+	getTrainingDaysQuery string
 )
 
 type workoutSessionRepository struct {
@@ -83,4 +87,31 @@ func (r *workoutSessionRepository) GetActiveByUserID(ctx context.Context, userId
 	}
 
 	return &session, nil
+}
+
+func (s *workoutSessionRepository) GetTrainingDays(ctx context.Context, userId string, year, month int) ([]string, error) {
+	startDate := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+	endDate := startDate.AddDate(0, 1, 0)
+
+	rows, err := s.pool.Query(ctx, getTrainingDaysQuery, userId, startDate, endDate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute get training days query: %w", err)
+	}
+	defer rows.Close()
+
+	days := make([]string, 0)
+
+	for rows.Next() {
+		var day string
+		if err := rows.Scan(&day); err != nil {
+			return nil, fmt.Errorf("failed to scan training day: %w", err)
+		}
+		days = append(days, day)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error during rows iteration: %w", err)
+	}
+
+	return days, nil
 }
