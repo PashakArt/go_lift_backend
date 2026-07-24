@@ -27,6 +27,19 @@ service WorkoutService {
 
   // Получить список выполненных упражнений определенного вида в активной сессии
   rpc GetCompletedExercises(GetCompletedExercisesRequest) returns (GetCompletedExercisesResponse);
+
+  // Получить список тренировочных дней
+  rpc GetTrainingDays(GetTrainingDaysRequest) returns (GetTrainingDaysResponse);
+}
+
+message GetTrainingDaysRequest {
+  string userId = 1;
+  int64 year = 2;
+  int64 months = 3; // 1..12
+}
+
+message GetTrainingDaysResponse {
+  repeated string training_days = 1;
 }
 
 message GetCompletedExercisesRequest {

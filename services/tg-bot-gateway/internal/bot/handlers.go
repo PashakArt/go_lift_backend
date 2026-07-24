@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/auth"
@@ -55,7 +56,56 @@ func (s *HTTPServer) HandleFinishTraining(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	RespondWithJSON(w, http.StatusOK, nil)
+	RespondWithJSON[any](w, http.StatusOK, nil)
+}
+
+func (s *HTTPServer) HandleGetTrainingDays(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	yearStr := query.Get("year")
+	monthStr := query.Get("month")
+
+	if yearStr == "" || monthStr == "" {
+		RespondWithError(w, http.StatusBadRequest, "Query parameters 'year' and 'month' are required")
+		return
+	}
+
+	year, err := strconv.Atoi(yearStr)
+	if err != nil || year < 2000 || year > 2100 {
+		RespondWithError(w, http.StatusBadRequest, "Invalid 'year' parameter")
+		return
+	}
+
+	month, err := strconv.Atoi(monthStr)
+	if err != nil || month < 1 || month > 12 {
+		RespondWithError(w, http.StatusBadRequest, "Invalid 'month' parameter (must be between 1 and 12)")
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	userId := auth.UserIDFromContext(ctx)
+	if userId == "" {
+		RespondWithError(w, http.StatusBadRequest, "JWT missing user_id")
+		return
+	}
+
+	grpcResponse, err := s.workoutClient.GetTrainingDays(ctx, userId, year, month)
+	if err != nil {
+		log.Printf("gRPC GetTrainingDays failed: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	daysResp := types.TrainingDaysResponse{
+		Days: grpcResponse.GetTrainingDays(),
+	}
+
+	if daysResp.Days == nil {
+		daysResp.Days = make([]string, 0)
+	}
+
+	RespondWithJSON(w, http.StatusOK, daysResp)
 }
 
 func (s *HTTPServer) HandleGetExercises(w http.ResponseWriter, r *http.Request) {

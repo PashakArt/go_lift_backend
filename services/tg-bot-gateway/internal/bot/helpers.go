@@ -81,11 +81,12 @@ func (s *HTTPServer) ValidateAndParseInitData(initData string) (url.Values, erro
 	return params, nil
 }
 
-func RespondWithJSON(w http.ResponseWriter, status int, payload interface{}) {
+func RespondWithJSON[T any](w http.ResponseWriter, status int, payload T) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
+
 	if err := json.NewEncoder(w).Encode(payload); err != nil {
-		log.Printf("Failed to encode JSON response: %v", err)
+		log.Printf("[ERROR] Failed to encode JSON response: %v", err)
 	}
 }
 

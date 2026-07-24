@@ -58,6 +58,10 @@ func (c *Client) GetExercises(ctx context.Context, userId, muscleGroupId string)
 	return res, nil
 }
 
+func (c *Client) GetTrainingDays(ctx context.Context, userId string, year, month int) (*workoutv1.GetTrainingDaysResponse, error) {
+	return nil, nil
+}
+
 func (c *Client) StartTraining(ctx context.Context, tenantId, userId string) (*workoutv1.StartWorkoutSessionResponse, error) {
 	res, err := c.client.StartWorkoutSession(ctx, &workoutv1.StartWorkoutSessionRequest{
 		UserId:   userId,

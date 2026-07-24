@@ -7,6 +7,10 @@ type InitDataRequest struct {
 	TenantId string `json:"tenant_id"`
 }
 
+type TrainingDaysResponse struct {
+	Days []string `json:"days"`
+}
+
 type LogSetRequest struct {
 	SessionId  string `json:"session_id" validate:"required,uuid4"`
 	ExerciseId string `json:"exercise_id" validate:"required,uuid4"`
