@@ -30,7 +30,36 @@ service WorkoutService {
 
   // Получить список тренировочных дней
   rpc GetTrainingDays(GetTrainingDaysRequest) returns (GetTrainingDaysResponse);
+
+  // Получить выполненные упражнения за день
+  rpc GetWorkoutsForDay(GetWorkoutsForDayRequest) returns (GetWorkoutsForDayResponse);
 }
+
+message GetWorkoutsForDayRequest {
+  string user_id = 1;
+  string date = 2;
+}
+
+message GetWorkoutsForDayResponse {
+  string date = 1;
+  repeated WorkoutSessionDTO sessions = 2;
+}
+
+message WorkoutSessionDTO {
+  string session_id = 1;
+  string started_at = 2;
+  string ended_at = 3;
+  int64 duration_seconds = 4;
+  repeated ExerciseDTO exercises = 5;
+}
+
+message ExerciseDTO {
+  string exercise_id = 1;
+  string name = 2;
+  string type = 3;
+  repeated CompletedSet sets = 4;
+}
+
 
 message GetTrainingDaysRequest {
   string userId = 1;

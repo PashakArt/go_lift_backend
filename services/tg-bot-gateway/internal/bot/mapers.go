@@ -1,0 +1,82 @@
+package bot
+
+import (
+	"time"
+
+	workoutv1 "github.com/PashakArt/go_lift_backend/api/proto/workout/v1"
+	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/types"
+)
+
+func MapGetWorkoutsForDayToHTTP(res *workoutv1.GetWorkoutsForDayResponse) types.WorkoutForDay {
+	sessions := make([]types.WorkoutSession, 0, len(res.GetSessions()))
+
+	for _, s := range res.GetSessions() {
+		exercises := make([]types.WorkoutExercise, 0, len(s.GetExercises()))
+
+		for _, e := range s.GetExercises() {
+			sets := make([]types.CompletedExerciseResponse, 0, len(e.GetSets()))
+
+			for _, st := range e.GetSets() {
+				var weight *float32
+				if st.Weight != nil {
+					w := st.GetWeight() // Если в proto вес float32, берем как есть, иначе float32(st.GetWeight())
+					weight = &w
+				}
+
+				var reps *int32
+				if st.Reps != nil {
+					r := st.GetReps() // Если в proto int32, иначе int32(st.GetReps())
+					reps = &r
+				}
+
+				var durationSec *int32
+				if st.DurationSec != nil {
+					d := st.GetDurationSec()
+					durationSec = &d
+				}
+
+				sets = append(sets, types.CompletedExerciseResponse{
+					SetId:       st.GetSetId(),
+					SetNumber:   int(st.GetSetNumber()),
+					Weight:      weight,
+					Reps:        reps,
+					DurationSec: durationSec,
+				})
+			}
+
+			exercises = append(exercises, types.WorkoutExercise{
+				ExerciseID: e.GetExerciseId(),
+				Name:       e.GetName(),
+				Type:       e.GetType(),
+				Sets:       sets,
+			})
+		}
+
+		// Парсим время начала и конца сессии в time.Time
+		var startedAt time.Time
+		if s.GetStartedAt() != "" {
+			startedAt, _ = time.Parse(time.RFC3339, s.GetStartedAt())
+		}
+
+		var endedAt *time.Time
+		if s.GetEndedAt() != "" {
+			t, err := time.Parse(time.RFC3339, s.GetEndedAt())
+			if err == nil {
+				endedAt = &t
+			}
+		}
+
+		sessions = append(sessions, types.WorkoutSession{
+			SessionID:       s.GetSessionId(),
+			StartedAt:       startedAt,
+			EndedAt:         endedAt,
+			DurationSeconds: s.GetDurationSeconds(),
+			Exercises:       exercises,
+		})
+	}
+
+	return types.WorkoutForDay{
+		Date:     res.GetDate(),
+		Sessions: sessions,
+	}
+}

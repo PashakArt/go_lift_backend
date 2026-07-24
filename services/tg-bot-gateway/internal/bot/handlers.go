@@ -140,6 +140,30 @@ func (s *HTTPServer) HandleGetExercises(w http.ResponseWriter, r *http.Request) 
 	RespondWithJSON(w, http.StatusOK, exercises)
 }
 
+func (s *HTTPServer) HandleGetWorkoutsForDay(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	dateStr := query.Get("date")
+
+	if dateStr == "" {
+		RespondWithError(w, http.StatusBadRequest, "Query parameters 'date' are required")
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	userId := auth.UserIDFromContext(ctx)
+	res, err := s.workoutClient.GetWorkoutsForDay(ctx, userId, dateStr)
+	if err != nil {
+		log.Printf("gRPC GetWorkoutsForDay failed: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	response := MapGetWorkoutsForDayToHTTP(res)
+	RespondWithJSON(w, http.StatusOK, response)
+}
+
 func (s *HTTPServer) HandleGetCompletedExercises(w http.ResponseWriter, r *http.Request) {
 	exerciseId := r.PathValue("exerciseId")
 	if exerciseId == "" {

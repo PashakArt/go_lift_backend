@@ -66,7 +66,20 @@ func (c *Client) GetTrainingDays(ctx context.Context, userId string, year, month
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("gRPC get exercises failed: %w", err)
+		return nil, fmt.Errorf("gRPC get training days failed: %w", err)
+	}
+
+	return res, nil
+}
+
+func (c *Client) GetWorkoutsForDay(ctx context.Context, userId, date string) (*workoutv1.GetWorkoutsForDayResponse, error) {
+	res, err := c.client.GetWorkoutsForDay(ctx, &workoutv1.GetWorkoutsForDayRequest{
+		UserId: userId,
+		Date:   date,
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("gRPC get workouts for day failed: %w", err)
 	}
 
 	return res, nil

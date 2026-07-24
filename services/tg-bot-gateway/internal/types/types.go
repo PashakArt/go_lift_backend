@@ -1,10 +1,34 @@
 package types
 
-import workoutv1 "github.com/PashakArt/go_lift_backend/api/proto/workout/v1"
+import (
+	"time"
+
+	workoutv1 "github.com/PashakArt/go_lift_backend/api/proto/workout/v1"
+)
 
 type InitDataRequest struct {
 	InitData string `json:"init_data"`
 	TenantId string `json:"tenant_id"`
+}
+
+type WorkoutForDay struct {
+	Date     string           `json:"date"` // "2026-07-05"
+	Sessions []WorkoutSession `json:"sessions"`
+}
+
+type WorkoutSession struct {
+	SessionID       string            `json:"session_id"`
+	StartedAt       time.Time         `json:"started_at"`
+	EndedAt         *time.Time        `json:"ended_at,omitempty"`
+	DurationSeconds int64             `json:"duration_seconds"`
+	Exercises       []WorkoutExercise `json:"exercises"`
+}
+
+type WorkoutExercise struct {
+	ExerciseID string                      `json:"exercise_id"`
+	Name       string                      `json:"name"`
+	Type       string                      `json:"type"`
+	Sets       []CompletedExerciseResponse `json:"sets"`
 }
 
 type TrainingDaysResponse struct {

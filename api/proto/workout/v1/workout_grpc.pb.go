@@ -27,6 +27,7 @@ const (
 	WorkoutService_LogWorkoutSet_FullMethodName         = "/workout.v1.WorkoutService/LogWorkoutSet"
 	WorkoutService_GetCompletedExercises_FullMethodName = "/workout.v1.WorkoutService/GetCompletedExercises"
 	WorkoutService_GetTrainingDays_FullMethodName       = "/workout.v1.WorkoutService/GetTrainingDays"
+	WorkoutService_GetWorkoutsForDay_FullMethodName     = "/workout.v1.WorkoutService/GetWorkoutsForDay"
 )
 
 // WorkoutServiceClient is the client API for WorkoutService service.
@@ -49,6 +50,8 @@ type WorkoutServiceClient interface {
 	GetCompletedExercises(ctx context.Context, in *GetCompletedExercisesRequest, opts ...grpc.CallOption) (*GetCompletedExercisesResponse, error)
 	// Получить список тренировочных дней
 	GetTrainingDays(ctx context.Context, in *GetTrainingDaysRequest, opts ...grpc.CallOption) (*GetTrainingDaysResponse, error)
+	// Получить выполненные упражнения за день
+	GetWorkoutsForDay(ctx context.Context, in *GetWorkoutsForDayRequest, opts ...grpc.CallOption) (*GetWorkoutsForDayResponse, error)
 }
 
 type workoutServiceClient struct {
@@ -139,6 +142,16 @@ func (c *workoutServiceClient) GetTrainingDays(ctx context.Context, in *GetTrain
 	return out, nil
 }
 
+func (c *workoutServiceClient) GetWorkoutsForDay(ctx context.Context, in *GetWorkoutsForDayRequest, opts ...grpc.CallOption) (*GetWorkoutsForDayResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetWorkoutsForDayResponse)
+	err := c.cc.Invoke(ctx, WorkoutService_GetWorkoutsForDay_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkoutServiceServer is the server API for WorkoutService service.
 // All implementations must embed UnimplementedWorkoutServiceServer
 // for forward compatibility.
@@ -159,6 +172,8 @@ type WorkoutServiceServer interface {
 	GetCompletedExercises(context.Context, *GetCompletedExercisesRequest) (*GetCompletedExercisesResponse, error)
 	// Получить список тренировочных дней
 	GetTrainingDays(context.Context, *GetTrainingDaysRequest) (*GetTrainingDaysResponse, error)
+	// Получить выполненные упражнения за день
+	GetWorkoutsForDay(context.Context, *GetWorkoutsForDayRequest) (*GetWorkoutsForDayResponse, error)
 	mustEmbedUnimplementedWorkoutServiceServer()
 }
 
@@ -192,6 +207,9 @@ func (UnimplementedWorkoutServiceServer) GetCompletedExercises(context.Context, 
 }
 func (UnimplementedWorkoutServiceServer) GetTrainingDays(context.Context, *GetTrainingDaysRequest) (*GetTrainingDaysResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetTrainingDays not implemented")
+}
+func (UnimplementedWorkoutServiceServer) GetWorkoutsForDay(context.Context, *GetWorkoutsForDayRequest) (*GetWorkoutsForDayResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetWorkoutsForDay not implemented")
 }
 func (UnimplementedWorkoutServiceServer) mustEmbedUnimplementedWorkoutServiceServer() {}
 func (UnimplementedWorkoutServiceServer) testEmbeddedByValue()                        {}
@@ -358,6 +376,24 @@ func _WorkoutService_GetTrainingDays_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkoutService_GetWorkoutsForDay_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetWorkoutsForDayRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkoutServiceServer).GetWorkoutsForDay(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkoutService_GetWorkoutsForDay_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkoutServiceServer).GetWorkoutsForDay(ctx, req.(*GetWorkoutsForDayRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WorkoutService_ServiceDesc is the grpc.ServiceDesc for WorkoutService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -396,6 +432,10 @@ var WorkoutService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTrainingDays",
 			Handler:    _WorkoutService_GetTrainingDays_Handler,
+		},
+		{
+			MethodName: "GetWorkoutsForDay",
+			Handler:    _WorkoutService_GetWorkoutsForDay_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

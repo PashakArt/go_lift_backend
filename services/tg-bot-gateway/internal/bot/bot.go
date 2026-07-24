@@ -51,6 +51,7 @@ func (s *HTTPServer) Start(port string) error {
 	)
 
 	mux.Handle("GET /api/v1/workouts/calendar", s.AuthMiddleware(http.HandlerFunc(s.HandleGetTrainingDays)))
+	mux.Handle("GET /api/v1/workouts/day", s.AuthMiddleware(http.HandlerFunc(s.HandleGetWorkoutsForDay)))
 
 	handler := CorsMiddleware(mux)
 
