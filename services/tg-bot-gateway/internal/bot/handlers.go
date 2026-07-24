@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/auth"
@@ -278,27 +280,39 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	params, err := s.ValidateAndParseInitData(req.InitData)
-	if err != nil {
-		log.Printf("Telegram InitData validation failed: %v\n", err)
-		RespondWithError(w, http.StatusUnauthorized, "Telegram InitData validation failed")
-		return
+	var tgIDStr string
+
+	// 🛠 CHECKS FOR LOCAL DEV MOCK DATA
+	// Если мы в dev-режиме и пришли тестовые данные, пропускаем валидацию HMAC
+	isDev := os.Getenv("ENV") == "local" || os.Getenv("ENV") == "development"
+	if isDev && strings.Contains(req.InitData, "user=%7B%22id%22%3A") {
+		log.Println("⚠️ [DEV MODE] Skipping Telegram InitData HMAC validation for mock data")
+
+		tgIDStr = "77777"
+	} else {
+		// PRODUCTION LOGIC
+		params, err := s.ValidateAndParseInitData(req.InitData)
+		if err != nil {
+			log.Printf("Telegram InitData validation failed: %v\n", err)
+			RespondWithError(w, http.StatusUnauthorized, "Telegram InitData validation failed")
+			return
+		}
+
+		var tgUser struct {
+			ID int64 `json:"id"`
+		}
+
+		err = json.Unmarshal([]byte(params.Get("user")), &tgUser)
+		if err != nil {
+			log.Printf("Failed to unmarshal telegram user data: %v\n", err)
+			RespondWithError(w, http.StatusBadRequest, "Failed to unmarshal telegram user data")
+			return
+		}
+
+		tgIDStr = fmt.Sprintf("%d", tgUser.ID)
 	}
 
-	var tgUser struct {
-		ID int64 `json:"id"`
-	}
-
-	err = json.Unmarshal([]byte(params.Get("user")), &tgUser)
-	if err != nil {
-		log.Printf("Failed to unmarshal telegram user data: %v\n", err)
-		RespondWithError(w, http.StatusBadRequest, "Failed to unmarshal telegram user data")
-		return
-	}
-
-	tgIDStr := fmt.Sprintf("%d", tgUser.ID)
 	tenantID := req.TenantId
-
 	if tenantID == "" {
 		tenantID = defaultTenantId
 	}

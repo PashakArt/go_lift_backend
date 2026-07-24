@@ -221,10 +221,19 @@ func (h *WorkoutHandler) GetCompletedExercises(
 func (h *WorkoutHandler) GetTrainingDays(ctx context.Context, req *workoutv1.GetTrainingDaysRequest) (*workoutv1.GetTrainingDaysResponse, error) {
 	days, err := h.trainingService.GetTrainingDays(ctx, req.GetUserId(), int(req.GetYear()), int(req.GetMonths()))
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get training days exercises: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get training days: %v", err)
 	}
 
 	return &workoutv1.GetTrainingDaysResponse{
 		TrainingDays: days,
 	}, nil
+}
+
+func (h *WorkoutHandler) GetWorkoutForDay(ctx context.Context, req *workoutv1.GetWorkoutsForDayRequest) (*workoutv1.GetWorkoutsForDayResponse, error) {
+	_, err := h.trainingService.GetWorkoutForDay(ctx, req.GetUserId(), req.GetDate())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get workout for day: %v", err)
+	}
+
+	return nil, nil
 }

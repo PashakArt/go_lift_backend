@@ -19,13 +19,13 @@ func MapGetWorkoutsForDayToHTTP(res *workoutv1.GetWorkoutsForDayResponse) types.
 			for _, st := range e.GetSets() {
 				var weight *float32
 				if st.Weight != nil {
-					w := st.GetWeight() // Если в proto вес float32, берем как есть, иначе float32(st.GetWeight())
+					w := st.GetWeight()
 					weight = &w
 				}
 
 				var reps *int32
 				if st.Reps != nil {
-					r := st.GetReps() // Если в proto int32, иначе int32(st.GetReps())
+					r := st.GetReps()
 					reps = &r
 				}
 
@@ -52,7 +52,6 @@ func MapGetWorkoutsForDayToHTTP(res *workoutv1.GetWorkoutsForDayResponse) types.
 			})
 		}
 
-		// Парсим время начала и конца сессии в time.Time
 		var startedAt time.Time
 		if s.GetStartedAt() != "" {
 			startedAt, _ = time.Parse(time.RFC3339, s.GetStartedAt())

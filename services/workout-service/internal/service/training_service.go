@@ -6,6 +6,7 @@ import (
 
 	workoutv1 "github.com/PashakArt/go_lift_backend/api/proto/workout/v1"
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/domain"
+	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/types"
 	"github.com/google/uuid"
 )
 
@@ -15,6 +16,7 @@ type TrainingService interface {
 	FinishSession(ctx context.Context, userId string) error
 	GetCompletedExercises(ctx context.Context, userId, exerciseId string) ([]domain.WorkoutSet, error)
 	GetTrainingDays(ctx context.Context, userId string, year, month int) ([]string, error)
+	GetWorkoutForDay(ctx context.Context, userId, date string) (*types.WorkoutForDay, error)
 }
 
 type trainingService struct {
@@ -163,4 +165,8 @@ func (s *trainingService) GetTrainingDays(ctx context.Context, userId string, ye
 	}
 
 	return res, nil
+}
+
+func (s *trainingService) GetWorkoutForDay(ctx context.Context, userId, date string) (*types.WorkoutForDay, error) {
+	return nil, nil
 }
