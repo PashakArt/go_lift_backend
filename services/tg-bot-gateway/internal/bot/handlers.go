@@ -198,7 +198,7 @@ func (s *HTTPServer) HandleGetCompletedExercises(w http.ResponseWriter, r *http.
 			item.Reps = set.Reps
 		}
 		if set.DurationSec != nil {
-			item.DurationSec = set.DurationSec
+			item.DurationSeconds = set.DurationSec
 		}
 		if set.DistanceM != nil {
 			item.DistanceM = set.DistanceM

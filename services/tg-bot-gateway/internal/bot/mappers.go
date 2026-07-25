@@ -36,11 +36,11 @@ func MapGetWorkoutsForDayToHTTP(res *workoutv1.GetWorkoutsForDayResponse) types.
 				}
 
 				sets = append(sets, types.CompletedExerciseResponse{
-					SetId:       st.GetSetId(),
-					SetNumber:   int(st.GetSetNumber()),
-					Weight:      weight,
-					Reps:        reps,
-					DurationSec: durationSec,
+					SetId:           st.GetSetId(),
+					SetNumber:       int(st.GetSetNumber()),
+					Weight:          weight,
+					Reps:            reps,
+					DurationSeconds: durationSec,
 				})
 			}
 

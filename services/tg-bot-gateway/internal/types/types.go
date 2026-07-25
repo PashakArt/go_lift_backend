@@ -77,10 +77,10 @@ type StartTrainingResponse struct {
 }
 
 type CompletedExerciseResponse struct {
-	SetNumber   int      `json:"set_number"`
-	SetId       string   `json:"set_id"`
-	Weight      *float32 `json:"weight,omitempty"`
-	Reps        *int32   `json:"reps,omitempty"`
-	DurationSec *int32   `json:"duration_sec,omitempty"`
-	DistanceM   *int32   `json:"distance_m,omitempty"`
+	SetNumber       int      `json:"set_number"`
+	SetId           string   `json:"set_id"`
+	Weight          *float32 `json:"weight,omitempty"`
+	Reps            *int32   `json:"reps,omitempty"`
+	DurationSeconds *int32   `json:"duration_seconds,omitempty"`
+	DistanceM       *int32   `json:"distance_m,omitempty"`
 }
