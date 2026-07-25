@@ -25,3 +25,13 @@ type WorkoutSession struct {
 	EndedAt    *time.Time  `json:"ended_at,omitempty"`
 	IsACtive   bool        `json:"is_active"`
 }
+
+type WorkoutDaySetRow struct {
+	WorkoutSession `json:"-"`
+
+	ExerciseID   uuid.UUID    `json:"exercise_id"`
+	ExerciseName string       `json:"exercise_name"`
+	ExerciseType ExerciseType `json:"exercise_type"`
+
+	WorkoutSet `json:"-"`
+}

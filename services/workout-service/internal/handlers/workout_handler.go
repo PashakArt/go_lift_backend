@@ -229,11 +229,67 @@ func (h *WorkoutHandler) GetTrainingDays(ctx context.Context, req *workoutv1.Get
 	}, nil
 }
 
-func (h *WorkoutHandler) GetWorkoutForDay(ctx context.Context, req *workoutv1.GetWorkoutsForDayRequest) (*workoutv1.GetWorkoutsForDayResponse, error) {
-	_, err := h.trainingService.GetWorkoutForDay(ctx, req.GetUserId(), req.GetDate())
+func (h *WorkoutHandler) GetWorkoutsForDay(ctx context.Context, req *workoutv1.GetWorkoutsForDayRequest) (*workoutv1.GetWorkoutsForDayResponse, error) {
+	workoutForDay, err := h.trainingService.GetWorkoutsForDay(ctx, req.GetUserId(), req.GetDate())
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get workout for day: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get workouts for day: %v", err)
 	}
 
-	return nil, nil
+	pbSessions := make([]*workoutv1.WorkoutSessionDTO, 0, len(workoutForDay.Sessions))
+	for _, session := range workoutForDay.Sessions {
+
+		pbExercises := make([]*workoutv1.ExerciseDTO, 0, len(session.Exercises))
+		for _, ex := range session.Exercises {
+
+			pbSets := make([]*workoutv1.CompletedSet, 0, len(ex.Sets))
+			for _, st := range ex.Sets {
+				pbSet := &workoutv1.CompletedSet{
+					SetId:     st.SetId,
+					SetNumber: int32(st.SetNumber),
+				}
+				if st.Weight != nil {
+					w := float32(*st.Weight)
+					pbSet.Weight = &w
+				}
+				if st.Reps != nil {
+					r := *st.Reps
+					pbSet.Reps = &r
+				}
+				if st.DurationSec != nil {
+					d := *st.DurationSec
+					pbSet.DurationSec = &d
+				}
+				if st.DistanceM != nil {
+					d := *st.DistanceM
+					pbSet.DistanceM = &d
+				}
+				pbSets = append(pbSets, pbSet)
+			}
+
+			pbExercises = append(pbExercises, &workoutv1.ExerciseDTO{
+				ExerciseId: ex.ExerciseID,
+				Name:       ex.Name,
+				Type:       ex.Type,
+				Sets:       pbSets,
+			})
+		}
+
+		var endedAtStr string
+		if session.EndedAt != nil {
+			endedAtStr = session.EndedAt.Format(time.RFC3339)
+		}
+
+		pbSessions = append(pbSessions, &workoutv1.WorkoutSessionDTO{
+			SessionId:       session.SessionID,
+			StartedAt:       session.StartedAt.Format(time.RFC3339),
+			EndedAt:         endedAtStr,
+			DurationSeconds: session.DurationSeconds,
+			Exercises:       pbExercises,
+		})
+	}
+
+	return &workoutv1.GetWorkoutsForDayResponse{
+		Date:     workoutForDay.Date,
+		Sessions: pbSessions,
+	}, nil
 }

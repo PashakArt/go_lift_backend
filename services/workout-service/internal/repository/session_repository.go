@@ -25,6 +25,9 @@ var (
 
 	//go:embed queries/get_training_days.sql
 	getTrainingDaysQuery string
+
+	//go:embed queries/get_workouts_for_day.sql
+	getWorkoutsForDayQuery string
 )
 
 type workoutSessionRepository struct {
@@ -114,4 +117,50 @@ func (s *workoutSessionRepository) GetTrainingDays(ctx context.Context, userId s
 	}
 
 	return days, nil
+}
+
+func (r *workoutSessionRepository) GetWorkoutsForDay(ctx context.Context, userId, dateStr string) ([]domain.WorkoutDaySetRow, error) {
+	t, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid date format, expected YYYY-MM-DD: %w", err)
+	}
+
+	startOfDay := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+	endOfDay := startOfDay.AddDate(0, 0, 1)
+
+	rows, err := r.pool.Query(ctx, getWorkoutsForDayQuery, userId, startOfDay, endOfDay)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute get_workouts_for_day query: %w", err)
+	}
+	defer rows.Close()
+
+	var result []domain.WorkoutDaySetRow
+	for rows.Next() {
+		var row domain.WorkoutDaySetRow
+		err := rows.Scan(
+			&row.WorkoutSession.SessionID,
+			&row.StartedAt,
+			&row.EndedAt,
+			&row.Type,
+			&row.SetID,
+			&row.ExerciseID,
+			&row.ExerciseName,
+			&row.ExerciseType,
+			&row.SetNumber,
+			&row.Weight,
+			&row.Reps,
+			&row.DurationSeconds,
+			&row.DistanceMeters,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan WorkoutDaySetRow: %w", err)
+		}
+		result = append(result, row)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return result, nil
 }

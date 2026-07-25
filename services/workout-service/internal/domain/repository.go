@@ -20,6 +20,7 @@ type ExerciseRepository interface {
 
 // WorkoutSessionRepository описывает контракт для управления тренировочными сессиями
 type WorkoutSessionRepository interface {
+	GetWorkoutsForDay(ctx context.Context, userId, date string) ([]WorkoutDaySetRow, error)
 	Create(ctx context.Context, session *WorkoutSession) error
 	GetActiveByUserID(ctx context.Context, userId string) (*WorkoutSession, error)
 	Finish(ctx context.Context, userId uuid.UUID) error
