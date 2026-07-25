@@ -17,4 +17,4 @@ SELECT
  JOIN exercises e ON e.exercise_id = wset.exercise_id
  WHERE ws.is_active = false AND ws.user_id = $1
    AND ws.started_at >= $2 AND ws.started_at < $3
- ORDER BY ws.started_at, wset.exercise_id, wset.set_number;
+ORDER BY ws.started_at ASC, wset.created_at ASC, wset.set_number ASC;
