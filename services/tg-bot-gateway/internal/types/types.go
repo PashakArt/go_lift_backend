@@ -92,10 +92,9 @@ type CreateTemplateRequest struct {
 
 type CreateTemplateItem struct {
 	ExerciseID string      `json:"exercise_id" validate:"required,uuid4"`
-	OrderIndex int32       `json:"order_index" validate:"required,gte=0"`
+	OrderIndex int32       `json:"order_index" validate:"gte=0"`
 	TargetSets []TargetSet `json:"target_sets" validate:"required,min=1,dive"`
 }
-
 type TargetSet struct {
 	SetNum          int32    `json:"set_num" validate:"required,gt=0"`
 	Weight          *float32 `json:"weight,omitempty" validate:"omitempty,gte=0"`

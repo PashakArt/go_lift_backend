@@ -12,6 +12,7 @@ type Repositories struct {
 	MuscleGroup domain.MuscleGroupRepository
 	Tenant      domain.TenantRepository
 	WorkoutSet  domain.WorkoutSetRepository
+	Template    domain.TemplateRepository
 }
 
 func NewRepositories(pool *pgxpool.Pool) *Repositories {
@@ -22,5 +23,6 @@ func NewRepositories(pool *pgxpool.Pool) *Repositories {
 		MuscleGroup: NewMuscleGroupRepository(pool),
 		Tenant:      NewTenantRepository(pool),
 		WorkoutSet:  NewWWorkoutSetRepository(pool),
+		Template:    NewTemplateRepository(pool),
 	}
 }

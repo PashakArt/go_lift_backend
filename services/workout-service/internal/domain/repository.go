@@ -40,3 +40,7 @@ type MuscleGroupRepository interface {
 type TenantRepository interface {
 	GetById(ctx context.Context, id uuid.UUID) (*Tenant, error)
 }
+
+type TemplateRepository interface {
+	Create(ctx context.Context, template *WorkoutTemplate) (uuid.UUID, error)
+}

@@ -7,6 +7,7 @@ type Services struct {
 	Exercise    ExerciseService
 	Session     TrainingService
 	MuscleGroup MuscleGroupService
+	Template    TemplateService
 }
 
 func NewServices(repos *repository.Repositories) *Services {
@@ -15,5 +16,6 @@ func NewServices(repos *repository.Repositories) *Services {
 		Exercise:    NewExerciseService(repos.Exercise),
 		Session:     NewTrainingService(repos.Session, repos.WorkoutSet),
 		MuscleGroup: NewMuscleGroupService(repos.MuscleGroup),
+		Template:    NewTemplateService(repos.Template),
 	}
 }

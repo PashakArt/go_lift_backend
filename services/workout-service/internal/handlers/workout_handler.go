@@ -18,6 +18,7 @@ type WorkoutHandler struct {
 	exerciseService    service.ExerciseService
 	trainingService    service.TrainingService
 	muscleGroupService service.MuscleGroupService
+	templateService    service.TemplateService
 }
 
 func NewWorkoutHandler(
@@ -25,12 +26,14 @@ func NewWorkoutHandler(
 	exerciseService service.ExerciseService,
 	sessionService service.TrainingService,
 	muscleGroupService service.MuscleGroupService,
+	templateService service.TemplateService,
 ) *WorkoutHandler {
 	return &WorkoutHandler{
 		authService:        authService,
 		exerciseService:    exerciseService,
 		trainingService:    sessionService,
 		muscleGroupService: muscleGroupService,
+		templateService:    templateService,
 	}
 }
 
@@ -291,5 +294,31 @@ func (h *WorkoutHandler) GetWorkoutsForDay(ctx context.Context, req *workoutv1.G
 	return &workoutv1.GetWorkoutsForDayResponse{
 		Date:     workoutForDay.Date,
 		Sessions: pbSessions,
+	}, nil
+}
+
+func (h *WorkoutHandler) CreateTemplate(
+	ctx context.Context,
+	req *workoutv1.CreateTemplateRequest,
+) (*workoutv1.CreateTemplateResponse, error) {
+	if req.GetUserId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "user_id is required")
+	}
+
+	if req.GetName() == "" {
+		return nil, status.Error(codes.InvalidArgument, "name is required")
+	}
+
+	if len(req.GetItems()) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "template items cannot be empty")
+	}
+
+	templateID, err := h.templateService.CreateTemplate(ctx, req)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create template: %v", err)
+	}
+
+	return &workoutv1.CreateTemplateResponse{
+		TemplateId: templateID,
 	}, nil
 }
