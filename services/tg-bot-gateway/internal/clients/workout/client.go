@@ -147,3 +147,38 @@ func (c *Client) GetCompletedExercise(
 
 	return res, nil
 }
+
+func (c *Client) CreateTemplate(ctx context.Context, req types.CreateTemplateRequest, userId string) (*workoutv1.CreateTemplateResponse, error) {
+	items := make([]*workoutv1.TemplateItem, 0, len(req.Items))
+
+	for _, item := range req.Items {
+		targetSets := make([]*workoutv1.TargetSet, 0, len(item.TargetSets))
+
+		for _, set := range item.TargetSets {
+			targetSets = append(targetSets, &workoutv1.TargetSet{
+				SetNum:      set.SetNum,
+				Weight:      set.Weight,
+				Reps:        set.Reps,
+				DurationSec: set.DurationSeconds,
+				DistanceM:   set.DistanceMeters,
+			})
+		}
+
+		items = append(items, &workoutv1.TemplateItem{
+			ExerciseId: item.ExerciseID,
+			OrderIndex: item.OrderIndex,
+			TargetSets: targetSets,
+		})
+	}
+
+	res, err := c.client.CreateTemplate(ctx, &workoutv1.CreateTemplateRequest{
+		UserId: userId,
+		Name:   req.Name,
+		Items:  items,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gRPC create template failed: %w", err)
+	}
+
+	return res, nil
+}

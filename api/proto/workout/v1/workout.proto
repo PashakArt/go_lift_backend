@@ -33,6 +33,33 @@ service WorkoutService {
 
   // Получить выполненные упражнения за день
   rpc GetWorkoutsForDay(GetWorkoutsForDayRequest) returns (GetWorkoutsForDayResponse);
+
+  // Создание шаблона тренировки
+  rpc CreateTemplate(CreateTemplateRequest) returns (CreateTemplateResponse);
+}
+
+message TargetSet {
+  int32 set_num = 1;
+  optional float weight = 2;
+  optional int32 reps = 3;
+  optional int32 duration_sec = 4;
+  optional int32 distance_m = 5;
+}
+
+message TemplateItem {
+  string exercise_id = 1;
+  int32 order_index = 2;
+  repeated TargetSet target_sets = 3;
+}
+
+message CreateTemplateRequest {
+  string user_id = 1;
+  string name = 2;
+  repeated TemplateItem items = 3;
+}
+
+message CreateTemplateResponse {
+  string template_id = 1;
 }
 
 message GetWorkoutsForDayRequest {

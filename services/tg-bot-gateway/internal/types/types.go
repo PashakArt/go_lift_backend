@@ -84,3 +84,26 @@ type CompletedExerciseResponse struct {
 	DurationSeconds *int32   `json:"duration_seconds,omitempty"`
 	DistanceM       *int32   `json:"distance_m,omitempty"`
 }
+
+type CreateTemplateRequest struct {
+	Name  string               `json:"name" validate:"required,min=1,max=255"`
+	Items []CreateTemplateItem `json:"items" validate:"required,min=1,dive"`
+}
+
+type CreateTemplateItem struct {
+	ExerciseID string      `json:"exercise_id" validate:"required,uuid4"`
+	OrderIndex int32       `json:"order_index" validate:"required,gte=0"`
+	TargetSets []TargetSet `json:"target_sets" validate:"required,min=1,dive"`
+}
+
+type TargetSet struct {
+	SetNum          int32    `json:"set_num" validate:"required,gt=0"`
+	Weight          *float32 `json:"weight,omitempty" validate:"omitempty,gte=0"`
+	Reps            *int32   `json:"reps,omitempty" validate:"omitempty,gte=0"`
+	DurationSeconds *int32   `json:"duration_seconds,omitempty" validate:"omitempty,gte=0"`
+	DistanceMeters  *int32   `json:"distance_meters,omitempty" validate:"omitempty,gte=0"`
+}
+
+type CreateTemplateResponse struct {
+	TemplateID string `json:"template_id"`
+}

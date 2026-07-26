@@ -357,3 +357,37 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 		Branding:         res.TenantBranding,
 	})
 }
+
+func (s *HTTPServer) HandleCreateTemplate(w http.ResponseWriter, r *http.Request) {
+	var req types.CreateTemplateRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		RespondWithError(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+	defer r.Body.Close()
+
+	if err := s.validate.Struct(req); err != nil {
+		RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Validation error: %v", err))
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	userId := auth.UserIDFromContext(ctx)
+	if userId == "" {
+		RespondWithError(w, http.StatusBadRequest, "JWT missing user_id")
+		return
+	}
+
+	res, err := s.workoutClient.CreateTemplate(ctx, req, userId)
+	if err != nil {
+		log.Printf("[ERROR] CreateTemplate gRPC call failed: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	RespondWithJSON(w, http.StatusCreated, types.CreateTemplateResponse{
+		TemplateID: res.TemplateId,
+	})
+}
