@@ -106,3 +106,10 @@ type TargetSet struct {
 type CreateTemplateResponse struct {
 	TemplateID string `json:"template_id"`
 }
+
+type TemplateSummaryResponse struct {
+	ID             string `json:"id"`
+	Name           string `json:"name"`
+	ExercisesCount int    `json:"exercises_count"`
+	CreatedAt      string `json:"created_at"`
+}

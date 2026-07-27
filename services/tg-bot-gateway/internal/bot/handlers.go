@@ -391,3 +391,38 @@ func (s *HTTPServer) HandleCreateTemplate(w http.ResponseWriter, r *http.Request
 		TemplateID: res.TemplateId,
 	})
 }
+
+func (s *HTTPServer) HandleGetTemplates(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	userId := auth.UserIDFromContext(ctx)
+	if userId == "" {
+		RespondWithError(w, http.StatusBadRequest, "JWT missing user_id")
+		return
+	}
+
+	grpcRes, err := s.workoutClient.GetTemplates(ctx, userId)
+	if err != nil {
+		log.Printf("[ERROR] GetTemplates gRPC call failed: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	templates := make([]types.TemplateSummaryResponse, 0, len(grpcRes.GetTemplates()))
+	for _, t := range grpcRes.GetTemplates() {
+		createdAt := ""
+		if t.CreatedAt != nil {
+			createdAt = t.CreatedAt.AsTime().Format(time.RFC3339)
+		}
+
+		templates = append(templates, types.TemplateSummaryResponse{
+			ID:             t.GetId(),
+			Name:           t.GetName(),
+			ExercisesCount: int(t.GetExercisesCount()),
+			CreatedAt:      createdAt,
+		})
+	}
+
+	RespondWithJSON(w, http.StatusOK, templates)
+}
