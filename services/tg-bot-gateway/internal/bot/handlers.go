@@ -417,7 +417,7 @@ func (s *HTTPServer) HandleGetTemplates(w http.ResponseWriter, r *http.Request) 
 		}
 
 		templates = append(templates, types.TemplateSummaryResponse{
-			ID:             t.GetId(),
+			TemplateID:     t.GetTemplateId(),
 			Name:           t.GetName(),
 			ExercisesCount: int(t.GetExercisesCount()),
 			CreatedAt:      createdAt,

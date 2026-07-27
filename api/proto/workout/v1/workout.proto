@@ -46,7 +46,7 @@ message GetTemplatesRequest {
 }
 
 message TemplateSummary {
-  string id = 1;
+  string template_id = 1;
   string name = 2;
   int32 exercises_count = 3;
   google.protobuf.Timestamp created_at = 4;

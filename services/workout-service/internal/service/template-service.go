@@ -11,6 +11,7 @@ import (
 
 type TemplateService interface {
 	CreateTemplate(ctx context.Context, req *workoutv1.CreateTemplateRequest) (string, error)
+	GetTemplates(ctx context.Context, userID string) ([]*domain.WorkoutTemplate, error)
 }
 
 type templateService struct {
@@ -66,4 +67,18 @@ func (s *templateService) CreateTemplate(ctx context.Context, req *workoutv1.Cre
 	}
 
 	return templateID.String(), nil
+}
+
+func (s *templateService) GetTemplates(ctx context.Context, rawUserID string) ([]*domain.WorkoutTemplate, error) {
+	userID, err := uuid.Parse(rawUserID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid user_id: %w", err)
+	}
+
+	templates, err := s.templateRepo.GetByUserID(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get templates from repository: %w", err)
+	}
+
+	return templates, nil
 }

@@ -322,3 +322,30 @@ func (h *WorkoutHandler) CreateTemplate(
 		TemplateId: templateID,
 	}, nil
 }
+func (h *WorkoutHandler) GetTemplates(
+	ctx context.Context,
+	req *workoutv1.GetTemplatesRequest,
+) (*workoutv1.GetTemplatesResponse, error) {
+	if req.GetUserId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "user_id is required")
+	}
+
+	domainTemplates, err := h.templateService.GetTemplates(ctx, req.GetUserId())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch templates: %v", err)
+	}
+
+	protoTemplates := make([]*workoutv1.TemplateSummary, 0, len(domainTemplates))
+	for _, t := range domainTemplates {
+		protoTemplates = append(protoTemplates, &workoutv1.TemplateSummary{
+			TemplateId:     t.TemplateID.String(),
+			Name:           t.Name,
+			ExercisesCount: int32(len(t.Items)),
+			CreatedAt:      timestamppb.New(t.CreatedAt),
+		})
+	}
+
+	return &workoutv1.GetTemplatesResponse{
+		Templates: protoTemplates,
+	}, nil
+}

@@ -108,7 +108,7 @@ type CreateTemplateResponse struct {
 }
 
 type TemplateSummaryResponse struct {
-	ID             string `json:"id"`
+	TemplateID     string `json:"template_id"`
 	Name           string `json:"name"`
 	ExercisesCount int    `json:"exercises_count"`
 	CreatedAt      string `json:"created_at"`
