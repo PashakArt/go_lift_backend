@@ -23,6 +23,9 @@ var (
 
 	//go:embed queries/delete_template.sql
 	deleteTemplateQuery string
+
+	//go:embed queries/update_template.sql
+	updateTemplateQuery string
 )
 
 type templateRepository struct {
@@ -127,6 +130,31 @@ func (r *templateRepository) Delete(ctx context.Context, templateID, userID uuid
 	_, err := r.pool.Exec(ctx, deleteTemplateQuery, templateID, userID)
 	if err != nil {
 		return fmt.Errorf("failed to delete workout template: %w", err)
+	}
+
+	return nil
+}
+
+func (r *templateRepository) Update(ctx context.Context, template *domain.WorkoutTemplate) error {
+	itemsJSON, err := json.Marshal(template.Items)
+	if err != nil {
+		return fmt.Errorf("failed to marshal template items to json: %w", err)
+	}
+
+	cmdTag, err := r.pool.Exec(
+		ctx,
+		updateTemplateQuery,
+		template.Name,
+		itemsJSON,
+		template.TemplateID,
+		template.UserID,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update workout template: %w", err)
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("workout template not found or access denied")
 	}
 
 	return nil

@@ -14,6 +14,7 @@ type TemplateService interface {
 	GetTemplates(ctx context.Context, userID string) ([]*domain.WorkoutTemplate, error)
 	GetTemplate(ctx context.Context, templateID, userID string) (*domain.WorkoutTemplate, error)
 	DeleteTemplate(ctx context.Context, rawTemplateID, rawUserID string) error
+	UpdateTemplate(ctx context.Context, req *workoutv1.UpdateTemplateRequest) error
 }
 
 type templateService struct {
@@ -169,6 +170,81 @@ func (s *templateService) DeleteTemplate(ctx context.Context, rawTemplateID, raw
 
 	if err := s.templateRepo.Delete(ctx, templateID, userID); err != nil {
 		return fmt.Errorf("failed to delete template from repository: %w", err)
+	}
+
+	return nil
+}
+
+func (s *templateService) UpdateTemplate(ctx context.Context, req *workoutv1.UpdateTemplateRequest) error {
+	templateID, err := uuid.Parse(req.GetTemplateId())
+	if err != nil {
+		return fmt.Errorf("invalid template_id: %w", err)
+	}
+
+	userID, err := uuid.Parse(req.GetUserId())
+	if err != nil {
+		return fmt.Errorf("invalid user_id: %w", err)
+	}
+
+	if req.GetName() == "" {
+		return fmt.Errorf("template name cannot be empty")
+	}
+
+	if len(req.GetItems()) == 0 {
+		return fmt.Errorf("template items cannot be empty")
+	}
+
+	exIDMap := make(map[uuid.UUID]struct{})
+	var uniqueExIDs []uuid.UUID
+
+	items := make([]domain.TemplateItem, 0, len(req.GetItems()))
+	for _, itemReq := range req.GetItems() {
+		exerciseID, err := uuid.Parse(itemReq.GetExerciseId())
+		if err != nil {
+			return fmt.Errorf("invalid exercise_id %s: %w", itemReq.GetExerciseId(), err)
+		}
+
+		if _, exists := exIDMap[exerciseID]; !exists {
+			exIDMap[exerciseID] = struct{}{}
+			uniqueExIDs = append(uniqueExIDs, exerciseID)
+		}
+
+		targetSets := make([]domain.TargetSet, 0, len(itemReq.GetTargetSets()))
+		for _, setReq := range itemReq.GetTargetSets() {
+			targetSets = append(targetSets, domain.TargetSet{
+				SetNum:          setReq.GetSetNum(),
+				Weight:          setReq.Weight,
+				Reps:            setReq.Reps,
+				DurationSeconds: setReq.DurationSec,
+				DistanceMeters:  setReq.DistanceM,
+			})
+		}
+
+		items = append(items, domain.TemplateItem{
+			ExerciseID: exerciseID,
+			OrderIndex: itemReq.GetOrderIndex(),
+			TargetSets: targetSets,
+		})
+	}
+
+	existingExercises, err := s.exerciseRepo.GetByIDs(ctx, uniqueExIDs)
+	if err != nil {
+		return fmt.Errorf("failed to validate exercise ids: %w", err)
+	}
+
+	if len(existingExercises) != len(uniqueExIDs) {
+		return fmt.Errorf("validation failed: one or more exercise_ids do not exist")
+	}
+
+	template := &domain.WorkoutTemplate{
+		TemplateID: templateID,
+		UserID:     userID,
+		Name:       req.GetName(),
+		Items:      items,
+	}
+
+	if err := s.templateRepo.Update(ctx, template); err != nil {
+		return fmt.Errorf("failed to update template in repository: %w", err)
 	}
 
 	return nil

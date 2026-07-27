@@ -217,3 +217,39 @@ func (c *Client) DeleteTemplate(ctx context.Context, templateId, userId string) 
 
 	return nil
 }
+
+func (c *Client) UpdateTemplate(ctx context.Context, templateId, userId string, req types.UpdateTemplateRequest) error {
+	items := make([]*workoutv1.TemplateItem, 0, len(req.Items))
+
+	for _, item := range req.Items {
+		targetSets := make([]*workoutv1.TargetSet, 0, len(item.TargetSets))
+
+		for _, set := range item.TargetSets {
+			targetSets = append(targetSets, &workoutv1.TargetSet{
+				SetNum:      set.SetNum,
+				Weight:      set.Weight,
+				Reps:        set.Reps,
+				DurationSec: set.DurationSeconds,
+				DistanceM:   set.DistanceMeters,
+			})
+		}
+
+		items = append(items, &workoutv1.TemplateItem{
+			ExerciseId: item.ExerciseID,
+			OrderIndex: item.OrderIndex,
+			TargetSets: targetSets,
+		})
+	}
+
+	_, err := c.client.UpdateTemplate(ctx, &workoutv1.UpdateTemplateRequest{
+		TemplateId: templateId,
+		UserId:     userId,
+		Name:       req.Name,
+		Items:      items,
+	})
+	if err != nil {
+		return fmt.Errorf("gRPC update template failed: %w", err)
+	}
+
+	return nil
+}

@@ -128,3 +128,8 @@ type TemplateDetailItem struct {
 	OrderIndex int32       `json:"order_index"`
 	TargetSets []TargetSet `json:"target_sets"`
 }
+
+type UpdateTemplateRequest struct {
+	Name  string               `json:"name" validate:"required,min=1,max=100"`
+	Items []TemplateDetailItem `json:"items" validate:"required,dive"`
+}

@@ -45,6 +45,20 @@ service WorkoutService {
 
   // Удаление шаблона
   rpc DeleteTemplate(DeleteTemplateRequest) returns (DeleteTemplateResponse);
+
+  // Обновление шаблона
+  rpc UpdateTemplate(UpdateTemplateRequest) returns (UpdateTemplateResponse);
+}
+
+message UpdateTemplateRequest {
+  string template_id = 1;
+  string user_id = 2;
+  string name = 3;
+  repeated TemplateItem items = 4;
+}
+
+message UpdateTemplateResponse {
+
 }
 
 message DeleteTemplateRequest {

@@ -416,3 +416,31 @@ func (h *WorkoutHandler) DeleteTemplate(
 
 	return &workoutv1.DeleteTemplateResponse{}, nil
 }
+
+func (h *WorkoutHandler) UpdateTemplate(
+	ctx context.Context,
+	req *workoutv1.UpdateTemplateRequest,
+) (*workoutv1.UpdateTemplateResponse, error) {
+	if req.GetTemplateId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "template_id is required")
+	}
+
+	if req.GetUserId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "user_id is required")
+	}
+
+	if req.GetName() == "" {
+		return nil, status.Error(codes.InvalidArgument, "name is required")
+	}
+
+	if len(req.GetItems()) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "template items cannot be empty")
+	}
+
+	err := h.templateService.UpdateTemplate(ctx, req)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to update template: %v", err)
+	}
+
+	return &workoutv1.UpdateTemplateResponse{}, nil
+}

@@ -512,3 +512,41 @@ func (s *HTTPServer) HandleDeleteTemplate(w http.ResponseWriter, r *http.Request
 
 	RespondWithJSON[any](w, http.StatusOK, nil)
 }
+
+func (s *HTTPServer) HandleUpdateTemplate(w http.ResponseWriter, r *http.Request) {
+	templateId := r.PathValue("templateId")
+	if templateId == "" {
+		RespondWithError(w, http.StatusBadRequest, "templateId is required")
+		return
+	}
+
+	var req types.UpdateTemplateRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		RespondWithError(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+	defer r.Body.Close()
+
+	if err := s.validate.Struct(req); err != nil {
+		RespondWithError(w, http.StatusBadRequest, fmt.Sprintf("Validation error: %v", err))
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	userId := auth.UserIDFromContext(ctx)
+	if userId == "" {
+		RespondWithError(w, http.StatusBadRequest, "JWT missing user_id")
+		return
+	}
+
+	err := s.workoutClient.UpdateTemplate(ctx, templateId, userId, req)
+	if err != nil {
+		log.Printf("[ERROR] UpdateTemplate gRPC call failed: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	RespondWithJSON[any](w, http.StatusOK, nil)
+}

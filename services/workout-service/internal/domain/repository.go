@@ -47,4 +47,5 @@ type TemplateRepository interface {
 	GetByUserID(ctx context.Context, userID uuid.UUID) ([]*WorkoutTemplate, error)
 	GetByID(ctx context.Context, templateID, userID uuid.UUID) (*WorkoutTemplate, error)
 	Delete(ctx context.Context, templateID, userID uuid.UUID) error
+	Update(ctx context.Context, template *WorkoutTemplate) error
 }

@@ -7,18 +7,16 @@ VALUES (
     'GoLift', 
     'default', 
     '{
-    "theme": {
-        "mode": "dark",
-        "text_color": "#FFFFFF",
-        "accent_color": "#FF7B7B",
-        "primary_color": "#FF5252",
-        "surface_color": "#1E1E1E",
-        "background_color": "#121212"
-    },
-    "assets": {
-        "logo_url": "https://go-lift.ru/logo.png"
-    }
-}'::jsonb
+        "theme": {
+            "mode": "dark",
+            "text_color": "#FFFFFF",
+            "accent_color": "#2AABEE",
+            "primary_color": "#2AABEE",
+            "surface_color": "#1E1E1E",
+            "background_color": "#121212"
+        },
+        "assets": { "logo_url": "https://go-lift.ru/logo.png" }
+    }'::jsonb
 )
 ON CONFLICT (tenant_id) DO NOTHING;
 
