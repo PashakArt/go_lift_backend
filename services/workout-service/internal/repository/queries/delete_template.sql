@@ -1,2 +1,2 @@
 DELETE FROM workout_templates
-WHERE id = $1 AND user_id = $2
+WHERE template_id = $1 AND user_id = $2
