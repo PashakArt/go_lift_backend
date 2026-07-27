@@ -181,7 +181,7 @@ func (x *GetTemplateRequest) GetUserId() string {
 
 type GetTemplateResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	TemplateId    string                 `protobuf:"bytes,1,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	Items         []*TemplateItem        `protobuf:"bytes,3,rep,name=items,proto3" json:"items,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
@@ -219,9 +219,9 @@ func (*GetTemplateResponse) Descriptor() ([]byte, []int) {
 	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GetTemplateResponse) GetId() string {
+func (x *GetTemplateResponse) GetTemplateId() string {
 	if x != nil {
-		return x.Id
+		return x.TemplateId
 	}
 	return ""
 }
@@ -2309,9 +2309,10 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\x12GetTemplateRequest\x12\x1f\n" +
 	"\vtemplate_id\x18\x01 \x01(\tR\n" +
 	"templateId\x12\x17\n" +
-	"\auser_id\x18\x02 \x01(\tR\x06userId\"\xa4\x01\n" +
-	"\x13GetTemplateResponse\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\"\xb5\x01\n" +
+	"\x13GetTemplateResponse\x12\x1f\n" +
+	"\vtemplate_id\x18\x01 \x01(\tR\n" +
+	"templateId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12.\n" +
 	"\x05items\x18\x03 \x03(\v2\x18.workout.v1.TemplateItemR\x05items\x129\n" +
 	"\n" +

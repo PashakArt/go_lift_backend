@@ -17,6 +17,9 @@ var (
 
 	//go:embed queries/get_templates.sql
 	getTemplatesQuery string
+
+	//go:embed queries/get_template_by_id.sql
+	getTemplateByIDQuery string
 )
 
 type templateRepository struct {
@@ -89,4 +92,30 @@ func (r *templateRepository) GetByUserID(ctx context.Context, userID uuid.UUID) 
 	}
 
 	return templates, nil
+}
+
+func (r *templateRepository) GetByID(ctx context.Context, templateID, userID uuid.UUID) (*domain.WorkoutTemplate, error) {
+	var (
+		t         domain.WorkoutTemplate
+		itemsJSON []byte
+	)
+
+	err := r.pool.QueryRow(ctx, getTemplateByIDQuery, templateID, userID).Scan(
+		&t.TemplateID,
+		&t.UserID,
+		&t.Name,
+		&itemsJSON,
+		&t.CreatedAt,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to scan template by id: %w", err)
+	}
+
+	if len(itemsJSON) > 0 {
+		if err := json.Unmarshal(itemsJSON, &t.Items); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal template items: %w", err)
+		}
+	}
+
+	return &t, nil
 }

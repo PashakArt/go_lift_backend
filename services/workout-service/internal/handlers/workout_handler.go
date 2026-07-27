@@ -349,3 +349,48 @@ func (h *WorkoutHandler) GetTemplates(
 		Templates: protoTemplates,
 	}, nil
 }
+
+func (h *WorkoutHandler) GetTemplate(
+	ctx context.Context,
+	req *workoutv1.GetTemplateRequest,
+) (*workoutv1.GetTemplateResponse, error) {
+	if req.GetTemplateId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "template_id is required")
+	}
+
+	if req.GetUserId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "user_id is required")
+	}
+
+	tpl, err := h.templateService.GetTemplate(ctx, req.GetTemplateId(), req.GetUserId())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch template: %v", err)
+	}
+
+	protoItems := make([]*workoutv1.TemplateItem, 0, len(tpl.Items))
+	for _, item := range tpl.Items {
+		targetSets := make([]*workoutv1.TargetSet, 0, len(item.TargetSets))
+		for _, set := range item.TargetSets {
+			targetSets = append(targetSets, &workoutv1.TargetSet{
+				SetNum:      set.SetNum,
+				Weight:      set.Weight,
+				Reps:        set.Reps,
+				DurationSec: set.DurationSeconds,
+				DistanceM:   set.DistanceMeters,
+			})
+		}
+
+		protoItems = append(protoItems, &workoutv1.TemplateItem{
+			ExerciseId: item.ExerciseID.String(),
+			OrderIndex: item.OrderIndex,
+			TargetSets: targetSets,
+		})
+	}
+
+	return &workoutv1.GetTemplateResponse{
+		TemplateId: tpl.TemplateID.String(),
+		Name:       tpl.Name,
+		Items:      protoItems,
+		CreatedAt:  timestamppb.New(tpl.CreatedAt),
+	}, nil
+}

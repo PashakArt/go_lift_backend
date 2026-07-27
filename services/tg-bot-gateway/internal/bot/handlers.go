@@ -476,7 +476,7 @@ func (s *HTTPServer) HandleGetTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := types.TemplateDetailResponse{
-		TemplateID: grpcRes.GetId(),
+		TemplateID: grpcRes.GetTemplateId(),
 		Name:       grpcRes.GetName(),
 		CreatedAt:  createdAt,
 		Items:      items,

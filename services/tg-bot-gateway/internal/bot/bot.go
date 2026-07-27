@@ -57,6 +57,8 @@ func (s *HTTPServer) Start(port string) error {
 
 	mux.Handle("GET /api/v1/templates", s.AuthMiddleware(http.HandlerFunc(s.HandleGetTemplates)))
 
+	mux.Handle("GET /api/v1/templates/detail/{templateId}", s.AuthMiddleware(http.HandlerFunc(s.HandleGetTemplate)))
+
 	handler := CorsMiddleware(mux)
 
 	log.Printf("TG Gateway HTTP Server running on port :%s\n", port)

@@ -50,7 +50,7 @@ message GetTemplateRequest {
 }
 
 message GetTemplateResponse {
-  string id = 1;
+  string template_id = 1;
   string name = 2;
   repeated TemplateItem items = 3;
   google.protobuf.Timestamp created_at = 4;

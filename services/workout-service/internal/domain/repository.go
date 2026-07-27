@@ -44,4 +44,5 @@ type TenantRepository interface {
 type TemplateRepository interface {
 	Create(ctx context.Context, template *WorkoutTemplate) (uuid.UUID, error)
 	GetByUserID(ctx context.Context, userID uuid.UUID) ([]*WorkoutTemplate, error)
+	GetByID(ctx context.Context, templateID, userID uuid.UUID) (*WorkoutTemplate, error)
 }
