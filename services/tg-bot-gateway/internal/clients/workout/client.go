@@ -193,3 +193,15 @@ func (c *Client) GetTemplates(ctx context.Context, userId string) (*workoutv1.Ge
 
 	return res, nil
 }
+
+func (c *Client) GetTemplate(ctx context.Context, templateId, userId string) (*workoutv1.GetTemplateResponse, error) {
+	res, err := c.client.GetTemplate(ctx, &workoutv1.GetTemplateRequest{
+		TemplateId: templateId,
+		UserId:     userId,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gRPC get template failed: %w", err)
+	}
+
+	return res, nil
+}

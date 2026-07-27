@@ -426,3 +426,61 @@ func (s *HTTPServer) HandleGetTemplates(w http.ResponseWriter, r *http.Request) 
 
 	RespondWithJSON(w, http.StatusOK, templates)
 }
+
+func (s *HTTPServer) HandleGetTemplate(w http.ResponseWriter, r *http.Request) {
+	templateId := r.PathValue("templateId")
+	if templateId == "" {
+		RespondWithError(w, http.StatusBadRequest, "templateId is required")
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	userId := auth.UserIDFromContext(ctx)
+	if userId == "" {
+		RespondWithError(w, http.StatusBadRequest, "JWT missing user_id")
+		return
+	}
+
+	grpcRes, err := s.workoutClient.GetTemplate(ctx, templateId, userId)
+	if err != nil {
+		log.Printf("[ERROR] GetTemplate gRPC call failed: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	items := make([]types.TemplateDetailItem, 0, len(grpcRes.GetItems()))
+	for _, item := range grpcRes.GetItems() {
+		targetSets := make([]types.TargetSet, 0, len(item.GetTargetSets()))
+		for _, set := range item.GetTargetSets() {
+			targetSets = append(targetSets, types.TargetSet{
+				SetNum:          int32(set.GetSetNum()),
+				Weight:          set.Weight,
+				Reps:            set.Reps,
+				DurationSeconds: set.DurationSec,
+				DistanceMeters:  set.DistanceM,
+			})
+		}
+
+		items = append(items, types.TemplateDetailItem{
+			ExerciseID: item.GetExerciseId(),
+			OrderIndex: item.GetOrderIndex(),
+			TargetSets: targetSets,
+		})
+	}
+
+	createdAt := ""
+	if grpcRes.CreatedAt != nil {
+		createdAt = grpcRes.CreatedAt.AsTime().Format(time.RFC3339)
+	}
+
+	response := types.TemplateDetailResponse{
+		TemplateID: grpcRes.GetId(),
+		Name:       grpcRes.GetName(),
+		CreatedAt:  createdAt,
+		Items:      items,
+	}
+
+	RespondWithJSON(w, http.StatusOK, response)
+}

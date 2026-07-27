@@ -113,3 +113,18 @@ type TemplateSummaryResponse struct {
 	ExercisesCount int    `json:"exercises_count"`
 	CreatedAt      string `json:"created_at"`
 }
+
+type TemplateDetailResponse struct {
+	TemplateID string               `json:"template_id"`
+	Name       string               `json:"name"`
+	CreatedAt  string               `json:"created_at"`
+	Items      []TemplateDetailItem `json:"items"`
+}
+
+type TemplateDetailItem struct {
+	ExerciseID string      `json:"exercise_id"`
+	Name       string      `json:"name"`
+	Type       string      `json:"type"` // "strength", "cardio", "time" и т.д.
+	OrderIndex int32       `json:"order_index"`
+	TargetSets []TargetSet `json:"target_sets"`
+}

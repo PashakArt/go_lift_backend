@@ -30,6 +30,7 @@ const (
 	WorkoutService_GetWorkoutsForDay_FullMethodName     = "/workout.v1.WorkoutService/GetWorkoutsForDay"
 	WorkoutService_CreateTemplate_FullMethodName        = "/workout.v1.WorkoutService/CreateTemplate"
 	WorkoutService_GetTemplates_FullMethodName          = "/workout.v1.WorkoutService/GetTemplates"
+	WorkoutService_GetTemplate_FullMethodName           = "/workout.v1.WorkoutService/GetTemplate"
 )
 
 // WorkoutServiceClient is the client API for WorkoutService service.
@@ -58,6 +59,8 @@ type WorkoutServiceClient interface {
 	CreateTemplate(ctx context.Context, in *CreateTemplateRequest, opts ...grpc.CallOption) (*CreateTemplateResponse, error)
 	// Получить список шаблонов пользователя
 	GetTemplates(ctx context.Context, in *GetTemplatesRequest, opts ...grpc.CallOption) (*GetTemplatesResponse, error)
+	// Получить детализацию конкретного шаблона по ID
+	GetTemplate(ctx context.Context, in *GetTemplateRequest, opts ...grpc.CallOption) (*GetTemplateResponse, error)
 }
 
 type workoutServiceClient struct {
@@ -178,6 +181,16 @@ func (c *workoutServiceClient) GetTemplates(ctx context.Context, in *GetTemplate
 	return out, nil
 }
 
+func (c *workoutServiceClient) GetTemplate(ctx context.Context, in *GetTemplateRequest, opts ...grpc.CallOption) (*GetTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetTemplateResponse)
+	err := c.cc.Invoke(ctx, WorkoutService_GetTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkoutServiceServer is the server API for WorkoutService service.
 // All implementations must embed UnimplementedWorkoutServiceServer
 // for forward compatibility.
@@ -204,6 +217,8 @@ type WorkoutServiceServer interface {
 	CreateTemplate(context.Context, *CreateTemplateRequest) (*CreateTemplateResponse, error)
 	// Получить список шаблонов пользователя
 	GetTemplates(context.Context, *GetTemplatesRequest) (*GetTemplatesResponse, error)
+	// Получить детализацию конкретного шаблона по ID
+	GetTemplate(context.Context, *GetTemplateRequest) (*GetTemplateResponse, error)
 	mustEmbedUnimplementedWorkoutServiceServer()
 }
 
@@ -246,6 +261,9 @@ func (UnimplementedWorkoutServiceServer) CreateTemplate(context.Context, *Create
 }
 func (UnimplementedWorkoutServiceServer) GetTemplates(context.Context, *GetTemplatesRequest) (*GetTemplatesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetTemplates not implemented")
+}
+func (UnimplementedWorkoutServiceServer) GetTemplate(context.Context, *GetTemplateRequest) (*GetTemplateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetTemplate not implemented")
 }
 func (UnimplementedWorkoutServiceServer) mustEmbedUnimplementedWorkoutServiceServer() {}
 func (UnimplementedWorkoutServiceServer) testEmbeddedByValue()                        {}
@@ -466,6 +484,24 @@ func _WorkoutService_GetTemplates_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkoutService_GetTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkoutServiceServer).GetTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkoutService_GetTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkoutServiceServer).GetTemplate(ctx, req.(*GetTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WorkoutService_ServiceDesc is the grpc.ServiceDesc for WorkoutService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -516,6 +552,10 @@ var WorkoutService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTemplates",
 			Handler:    _WorkoutService_GetTemplates_Handler,
+		},
+		{
+			MethodName: "GetTemplate",
+			Handler:    _WorkoutService_GetTemplate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

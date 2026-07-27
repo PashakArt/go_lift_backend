@@ -39,6 +39,21 @@ service WorkoutService {
 
   // Получить список шаблонов пользователя
   rpc GetTemplates(GetTemplatesRequest) returns (GetTemplatesResponse);
+
+  // Получить детализацию конкретного шаблона по ID
+  rpc GetTemplate(GetTemplateRequest) returns (GetTemplateResponse);
+}
+
+message GetTemplateRequest {
+  string template_id = 1;
+  string user_id = 2;
+}
+
+message GetTemplateResponse {
+  string id = 1;
+  string name = 2;
+  repeated TemplateItem items = 3;
+  google.protobuf.Timestamp created_at = 4;
 }
 
 message GetTemplatesRequest {
