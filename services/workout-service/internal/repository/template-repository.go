@@ -20,6 +20,9 @@ var (
 
 	//go:embed queries/get_template_by_id.sql
 	getTemplateByIDQuery string
+
+	//go:embed queries/delete_template.sql
+	deleteTemplateQuery string
 )
 
 type templateRepository struct {
@@ -118,4 +121,13 @@ func (r *templateRepository) GetByID(ctx context.Context, templateID, userID uui
 	}
 
 	return &t, nil
+}
+
+func (r *templateRepository) Delete(ctx context.Context, templateID, userID uuid.UUID) error {
+	_, err := r.pool.Exec(ctx, deleteTemplateQuery, templateID, userID)
+	if err != nil {
+		return fmt.Errorf("failed to delete workout template: %w", err)
+	}
+
+	return nil
 }

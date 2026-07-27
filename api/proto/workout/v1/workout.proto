@@ -42,6 +42,17 @@ service WorkoutService {
 
   // Получить детализацию конкретного шаблона по ID
   rpc GetTemplate(GetTemplateRequest) returns (GetTemplateResponse);
+
+  // Удаление шаблона
+  rpc DeleteTemplate(DeleteTemplateRequest) returns (DeleteTemplateResponse);
+}
+
+message DeleteTemplateRequest {
+  string template_id = 1;
+  string user_id = 2;
+}
+
+message DeleteTemplateResponse {
 }
 
 message GetTemplateRequest {

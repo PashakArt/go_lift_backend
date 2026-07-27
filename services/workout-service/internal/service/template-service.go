@@ -13,6 +13,7 @@ type TemplateService interface {
 	CreateTemplate(ctx context.Context, req *workoutv1.CreateTemplateRequest) (string, error)
 	GetTemplates(ctx context.Context, userID string) ([]*domain.WorkoutTemplate, error)
 	GetTemplate(ctx context.Context, templateID, userID string) (*domain.WorkoutTemplate, error)
+	DeleteTemplate(ctx context.Context, rawTemplateID, rawUserID string) error
 }
 
 type templateService struct {
@@ -153,4 +154,22 @@ func (s *templateService) GetTemplate(ctx context.Context, rawTemplateID, rawUse
 	}
 
 	return template, nil
+}
+
+func (s *templateService) DeleteTemplate(ctx context.Context, rawTemplateID, rawUserID string) error {
+	templateID, err := uuid.Parse(rawTemplateID)
+	if err != nil {
+		return fmt.Errorf("invalid template_id: %w", err)
+	}
+
+	userID, err := uuid.Parse(rawUserID)
+	if err != nil {
+		return fmt.Errorf("invalid user_id: %w", err)
+	}
+
+	if err := s.templateRepo.Delete(ctx, templateID, userID); err != nil {
+		return fmt.Errorf("failed to delete template from repository: %w", err)
+	}
+
+	return nil
 }

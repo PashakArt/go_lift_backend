@@ -31,6 +31,7 @@ const (
 	WorkoutService_CreateTemplate_FullMethodName        = "/workout.v1.WorkoutService/CreateTemplate"
 	WorkoutService_GetTemplates_FullMethodName          = "/workout.v1.WorkoutService/GetTemplates"
 	WorkoutService_GetTemplate_FullMethodName           = "/workout.v1.WorkoutService/GetTemplate"
+	WorkoutService_DeleteTemplate_FullMethodName        = "/workout.v1.WorkoutService/DeleteTemplate"
 )
 
 // WorkoutServiceClient is the client API for WorkoutService service.
@@ -61,6 +62,8 @@ type WorkoutServiceClient interface {
 	GetTemplates(ctx context.Context, in *GetTemplatesRequest, opts ...grpc.CallOption) (*GetTemplatesResponse, error)
 	// Получить детализацию конкретного шаблона по ID
 	GetTemplate(ctx context.Context, in *GetTemplateRequest, opts ...grpc.CallOption) (*GetTemplateResponse, error)
+	// Удаление шаблона
+	DeleteTemplate(ctx context.Context, in *DeleteTemplateRequest, opts ...grpc.CallOption) (*DeleteTemplateResponse, error)
 }
 
 type workoutServiceClient struct {
@@ -191,6 +194,16 @@ func (c *workoutServiceClient) GetTemplate(ctx context.Context, in *GetTemplateR
 	return out, nil
 }
 
+func (c *workoutServiceClient) DeleteTemplate(ctx context.Context, in *DeleteTemplateRequest, opts ...grpc.CallOption) (*DeleteTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteTemplateResponse)
+	err := c.cc.Invoke(ctx, WorkoutService_DeleteTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkoutServiceServer is the server API for WorkoutService service.
 // All implementations must embed UnimplementedWorkoutServiceServer
 // for forward compatibility.
@@ -219,6 +232,8 @@ type WorkoutServiceServer interface {
 	GetTemplates(context.Context, *GetTemplatesRequest) (*GetTemplatesResponse, error)
 	// Получить детализацию конкретного шаблона по ID
 	GetTemplate(context.Context, *GetTemplateRequest) (*GetTemplateResponse, error)
+	// Удаление шаблона
+	DeleteTemplate(context.Context, *DeleteTemplateRequest) (*DeleteTemplateResponse, error)
 	mustEmbedUnimplementedWorkoutServiceServer()
 }
 
@@ -264,6 +279,9 @@ func (UnimplementedWorkoutServiceServer) GetTemplates(context.Context, *GetTempl
 }
 func (UnimplementedWorkoutServiceServer) GetTemplate(context.Context, *GetTemplateRequest) (*GetTemplateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetTemplate not implemented")
+}
+func (UnimplementedWorkoutServiceServer) DeleteTemplate(context.Context, *DeleteTemplateRequest) (*DeleteTemplateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteTemplate not implemented")
 }
 func (UnimplementedWorkoutServiceServer) mustEmbedUnimplementedWorkoutServiceServer() {}
 func (UnimplementedWorkoutServiceServer) testEmbeddedByValue()                        {}
@@ -502,6 +520,24 @@ func _WorkoutService_GetTemplate_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkoutService_DeleteTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkoutServiceServer).DeleteTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkoutService_DeleteTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkoutServiceServer).DeleteTemplate(ctx, req.(*DeleteTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WorkoutService_ServiceDesc is the grpc.ServiceDesc for WorkoutService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -556,6 +592,10 @@ var WorkoutService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTemplate",
 			Handler:    _WorkoutService_GetTemplate_Handler,
+		},
+		{
+			MethodName: "DeleteTemplate",
+			Handler:    _WorkoutService_DeleteTemplate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

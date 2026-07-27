@@ -396,3 +396,23 @@ func (h *WorkoutHandler) GetTemplate(
 		CreatedAt:  timestamppb.New(tpl.CreatedAt),
 	}, nil
 }
+
+func (h *WorkoutHandler) DeleteTemplate(
+	ctx context.Context,
+	req *workoutv1.DeleteTemplateRequest,
+) (*workoutv1.DeleteTemplateResponse, error) {
+	if req.GetTemplateId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "template_id is required")
+	}
+
+	if req.GetUserId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "user_id is required")
+	}
+
+	err := h.templateService.DeleteTemplate(ctx, req.GetTemplateId(), req.GetUserId())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete template: %v", err)
+	}
+
+	return &workoutv1.DeleteTemplateResponse{}, nil
+}

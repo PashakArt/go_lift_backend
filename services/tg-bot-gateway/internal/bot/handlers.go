@@ -486,3 +486,29 @@ func (s *HTTPServer) HandleGetTemplate(w http.ResponseWriter, r *http.Request) {
 
 	RespondWithJSON(w, http.StatusOK, response)
 }
+
+func (s *HTTPServer) HandleDeleteTemplate(w http.ResponseWriter, r *http.Request) {
+	templateId := r.PathValue("templateId")
+	if templateId == "" {
+		RespondWithError(w, http.StatusBadRequest, "templateId is required")
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	userId := auth.UserIDFromContext(ctx)
+	if userId == "" {
+		RespondWithError(w, http.StatusBadRequest, "JWT missing user_id")
+		return
+	}
+
+	err := s.workoutClient.DeleteTemplate(ctx, templateId, userId)
+	if err != nil {
+		log.Printf("[ERROR] DeleteTemplate gRPC call failed: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	RespondWithJSON[any](w, http.StatusOK, nil)
+}

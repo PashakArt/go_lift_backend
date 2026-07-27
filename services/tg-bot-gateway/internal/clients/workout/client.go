@@ -205,3 +205,15 @@ func (c *Client) GetTemplate(ctx context.Context, templateId, userId string) (*w
 
 	return res, nil
 }
+
+func (c *Client) DeleteTemplate(ctx context.Context, templateId, userId string) error {
+	_, err := c.client.DeleteTemplate(ctx, &workoutv1.DeleteTemplateRequest{
+		TemplateId: templateId,
+		UserId:     userId,
+	})
+	if err != nil {
+		return fmt.Errorf("gRPC delete template failed: %w", err)
+	}
+
+	return nil
+}

@@ -56,6 +56,7 @@ func (s *HTTPServer) Start(port string) error {
 	mux.Handle("POST /api/v1/templates", s.AuthMiddleware(http.HandlerFunc(s.HandleCreateTemplate)))
 	mux.Handle("GET /api/v1/templates", s.AuthMiddleware(http.HandlerFunc(s.HandleGetTemplates)))
 	mux.Handle("GET /api/v1/templates/detail/{templateId}", s.AuthMiddleware(http.HandlerFunc(s.HandleGetTemplate)))
+	mux.Handle("DELETE /api/v1/templates/{templateId}", s.AuthMiddleware(http.HandlerFunc(s.HandleDeleteTemplate)))
 
 	handler := CorsMiddleware(mux)
 
