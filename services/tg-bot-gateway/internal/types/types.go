@@ -124,7 +124,7 @@ type TemplateDetailResponse struct {
 type TemplateDetailItem struct {
 	ExerciseID string      `json:"exercise_id"`
 	Name       string      `json:"name"`
-	Type       string      `json:"type"` // "strength", "cardio", "time" и т.д.
+	Type       string      `json:"type"`
 	OrderIndex int32       `json:"order_index"`
 	TargetSets []TargetSet `json:"target_sets"`
 }

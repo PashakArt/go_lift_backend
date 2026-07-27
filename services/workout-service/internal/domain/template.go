@@ -18,6 +18,9 @@ type TemplateItem struct {
 	ExerciseID uuid.UUID   `json:"exercise_id"`
 	OrderIndex int32       `json:"order_index"`
 	TargetSets []TargetSet `json:"target_sets"`
+
+	ExerciseName string       `json:"-"`
+	ExerciseType ExerciseType `json:"-"`
 }
 
 type WorkoutTemplate struct {

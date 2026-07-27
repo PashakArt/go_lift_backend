@@ -384,6 +384,8 @@ func (h *WorkoutHandler) GetTemplate(
 			ExerciseId: item.ExerciseID.String(),
 			OrderIndex: item.OrderIndex,
 			TargetSets: targetSets,
+			Name:       item.ExerciseName,
+			Type:       MapDomainTypeToProto(item.ExerciseType),
 		})
 	}
 

@@ -484,6 +484,8 @@ type TemplateItem struct {
 	ExerciseId    string                 `protobuf:"bytes,1,opt,name=exercise_id,json=exerciseId,proto3" json:"exercise_id,omitempty"`
 	OrderIndex    int32                  `protobuf:"varint,2,opt,name=order_index,json=orderIndex,proto3" json:"order_index,omitempty"`
 	TargetSets    []*TargetSet           `protobuf:"bytes,3,rep,name=target_sets,json=targetSets,proto3" json:"target_sets,omitempty"`
+	Name          string                 `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
+	Type          ExerciseType           `protobuf:"varint,5,opt,name=type,proto3,enum=workout.v1.ExerciseType" json:"type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -537,6 +539,20 @@ func (x *TemplateItem) GetTargetSets() []*TargetSet {
 		return x.TargetSets
 	}
 	return nil
+}
+
+func (x *TemplateItem) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *TemplateItem) GetType() ExerciseType {
+	if x != nil {
+		return x.Type
+	}
+	return ExerciseType_EXERCISE_TYPE_UNSPECIFIED
 }
 
 type CreateTemplateRequest struct {
@@ -2338,14 +2354,16 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\a_weightB\a\n" +
 	"\x05_repsB\x0f\n" +
 	"\r_duration_secB\r\n" +
-	"\v_distance_m\"\x88\x01\n" +
+	"\v_distance_m\"\xca\x01\n" +
 	"\fTemplateItem\x12\x1f\n" +
 	"\vexercise_id\x18\x01 \x01(\tR\n" +
 	"exerciseId\x12\x1f\n" +
 	"\vorder_index\x18\x02 \x01(\x05R\n" +
 	"orderIndex\x126\n" +
 	"\vtarget_sets\x18\x03 \x03(\v2\x15.workout.v1.TargetSetR\n" +
-	"targetSets\"t\n" +
+	"targetSets\x12\x12\n" +
+	"\x04name\x18\x04 \x01(\tR\x04name\x12,\n" +
+	"\x04type\x18\x05 \x01(\x0e2\x18.workout.v1.ExerciseTypeR\x04type\"t\n" +
 	"\x15CreateTemplateRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12.\n" +
@@ -2581,52 +2599,53 @@ var file_api_proto_workout_v1_workout_proto_depIdxs = []int32{
 	39, // 2: workout.v1.TemplateSummary.created_at:type_name -> google.protobuf.Timestamp
 	5,  // 3: workout.v1.GetTemplatesResponse.templates:type_name -> workout.v1.TemplateSummary
 	7,  // 4: workout.v1.TemplateItem.target_sets:type_name -> workout.v1.TargetSet
-	8,  // 5: workout.v1.CreateTemplateRequest.items:type_name -> workout.v1.TemplateItem
-	13, // 6: workout.v1.GetWorkoutsForDayResponse.sessions:type_name -> workout.v1.WorkoutSessionDTO
-	14, // 7: workout.v1.WorkoutSessionDTO.exercises:type_name -> workout.v1.ExerciseDTO
-	18, // 8: workout.v1.ExerciseDTO.sets:type_name -> workout.v1.CompletedSet
-	18, // 9: workout.v1.GetCompletedExercisesResponse.sets:type_name -> workout.v1.CompletedSet
-	21, // 10: workout.v1.TenantBranding.theme:type_name -> workout.v1.TenantTheme
-	22, // 11: workout.v1.TenantBranding.assets:type_name -> workout.v1.TenantAssets
-	26, // 12: workout.v1.InitResponse.user:type_name -> workout.v1.UserInfo
-	25, // 13: workout.v1.InitResponse.active_session:type_name -> workout.v1.ActiveSessionInfo
-	23, // 14: workout.v1.InitResponse.tenant_branding:type_name -> workout.v1.TenantBranding
-	0,  // 15: workout.v1.ExerciseInfo.type:type_name -> workout.v1.ExerciseType
-	39, // 16: workout.v1.ExerciseInfo.created_at:type_name -> google.protobuf.Timestamp
-	28, // 17: workout.v1.GetExercisesResponse.exercises:type_name -> workout.v1.ExerciseInfo
-	1,  // 18: workout.v1.StartWorkoutSessionRequest.type:type_name -> workout.v1.SessionType
-	1,  // 19: workout.v1.StartWorkoutSessionResponse.type:type_name -> workout.v1.SessionType
-	39, // 20: workout.v1.StartWorkoutSessionResponse.started_at:type_name -> google.protobuf.Timestamp
-	36, // 21: workout.v1.GetMuscleGroupsResponse.muscle_groups:type_name -> workout.v1.MuscleGroup
-	20, // 22: workout.v1.WorkoutService.Init:input_type -> workout.v1.InitRequest
-	34, // 23: workout.v1.WorkoutService.GetMuscleGroups:input_type -> workout.v1.GetMuscleGroupsRequest
-	27, // 24: workout.v1.WorkoutService.GetExercises:input_type -> workout.v1.GetExercisesRequest
-	30, // 25: workout.v1.WorkoutService.StartWorkoutSession:input_type -> workout.v1.StartWorkoutSessionRequest
-	31, // 26: workout.v1.WorkoutService.FinishWorkoutSession:input_type -> workout.v1.FinishWorkoutSessionRequest
-	37, // 27: workout.v1.WorkoutService.LogWorkoutSet:input_type -> workout.v1.LogSetRequest
-	17, // 28: workout.v1.WorkoutService.GetCompletedExercises:input_type -> workout.v1.GetCompletedExercisesRequest
-	15, // 29: workout.v1.WorkoutService.GetTrainingDays:input_type -> workout.v1.GetTrainingDaysRequest
-	11, // 30: workout.v1.WorkoutService.GetWorkoutsForDay:input_type -> workout.v1.GetWorkoutsForDayRequest
-	9,  // 31: workout.v1.WorkoutService.CreateTemplate:input_type -> workout.v1.CreateTemplateRequest
-	4,  // 32: workout.v1.WorkoutService.GetTemplates:input_type -> workout.v1.GetTemplatesRequest
-	2,  // 33: workout.v1.WorkoutService.GetTemplate:input_type -> workout.v1.GetTemplateRequest
-	24, // 34: workout.v1.WorkoutService.Init:output_type -> workout.v1.InitResponse
-	35, // 35: workout.v1.WorkoutService.GetMuscleGroups:output_type -> workout.v1.GetMuscleGroupsResponse
-	29, // 36: workout.v1.WorkoutService.GetExercises:output_type -> workout.v1.GetExercisesResponse
-	33, // 37: workout.v1.WorkoutService.StartWorkoutSession:output_type -> workout.v1.StartWorkoutSessionResponse
-	32, // 38: workout.v1.WorkoutService.FinishWorkoutSession:output_type -> workout.v1.FinishWorkoutSessionResponse
-	38, // 39: workout.v1.WorkoutService.LogWorkoutSet:output_type -> workout.v1.LogSetResponse
-	19, // 40: workout.v1.WorkoutService.GetCompletedExercises:output_type -> workout.v1.GetCompletedExercisesResponse
-	16, // 41: workout.v1.WorkoutService.GetTrainingDays:output_type -> workout.v1.GetTrainingDaysResponse
-	12, // 42: workout.v1.WorkoutService.GetWorkoutsForDay:output_type -> workout.v1.GetWorkoutsForDayResponse
-	10, // 43: workout.v1.WorkoutService.CreateTemplate:output_type -> workout.v1.CreateTemplateResponse
-	6,  // 44: workout.v1.WorkoutService.GetTemplates:output_type -> workout.v1.GetTemplatesResponse
-	3,  // 45: workout.v1.WorkoutService.GetTemplate:output_type -> workout.v1.GetTemplateResponse
-	34, // [34:46] is the sub-list for method output_type
-	22, // [22:34] is the sub-list for method input_type
-	22, // [22:22] is the sub-list for extension type_name
-	22, // [22:22] is the sub-list for extension extendee
-	0,  // [0:22] is the sub-list for field type_name
+	0,  // 5: workout.v1.TemplateItem.type:type_name -> workout.v1.ExerciseType
+	8,  // 6: workout.v1.CreateTemplateRequest.items:type_name -> workout.v1.TemplateItem
+	13, // 7: workout.v1.GetWorkoutsForDayResponse.sessions:type_name -> workout.v1.WorkoutSessionDTO
+	14, // 8: workout.v1.WorkoutSessionDTO.exercises:type_name -> workout.v1.ExerciseDTO
+	18, // 9: workout.v1.ExerciseDTO.sets:type_name -> workout.v1.CompletedSet
+	18, // 10: workout.v1.GetCompletedExercisesResponse.sets:type_name -> workout.v1.CompletedSet
+	21, // 11: workout.v1.TenantBranding.theme:type_name -> workout.v1.TenantTheme
+	22, // 12: workout.v1.TenantBranding.assets:type_name -> workout.v1.TenantAssets
+	26, // 13: workout.v1.InitResponse.user:type_name -> workout.v1.UserInfo
+	25, // 14: workout.v1.InitResponse.active_session:type_name -> workout.v1.ActiveSessionInfo
+	23, // 15: workout.v1.InitResponse.tenant_branding:type_name -> workout.v1.TenantBranding
+	0,  // 16: workout.v1.ExerciseInfo.type:type_name -> workout.v1.ExerciseType
+	39, // 17: workout.v1.ExerciseInfo.created_at:type_name -> google.protobuf.Timestamp
+	28, // 18: workout.v1.GetExercisesResponse.exercises:type_name -> workout.v1.ExerciseInfo
+	1,  // 19: workout.v1.StartWorkoutSessionRequest.type:type_name -> workout.v1.SessionType
+	1,  // 20: workout.v1.StartWorkoutSessionResponse.type:type_name -> workout.v1.SessionType
+	39, // 21: workout.v1.StartWorkoutSessionResponse.started_at:type_name -> google.protobuf.Timestamp
+	36, // 22: workout.v1.GetMuscleGroupsResponse.muscle_groups:type_name -> workout.v1.MuscleGroup
+	20, // 23: workout.v1.WorkoutService.Init:input_type -> workout.v1.InitRequest
+	34, // 24: workout.v1.WorkoutService.GetMuscleGroups:input_type -> workout.v1.GetMuscleGroupsRequest
+	27, // 25: workout.v1.WorkoutService.GetExercises:input_type -> workout.v1.GetExercisesRequest
+	30, // 26: workout.v1.WorkoutService.StartWorkoutSession:input_type -> workout.v1.StartWorkoutSessionRequest
+	31, // 27: workout.v1.WorkoutService.FinishWorkoutSession:input_type -> workout.v1.FinishWorkoutSessionRequest
+	37, // 28: workout.v1.WorkoutService.LogWorkoutSet:input_type -> workout.v1.LogSetRequest
+	17, // 29: workout.v1.WorkoutService.GetCompletedExercises:input_type -> workout.v1.GetCompletedExercisesRequest
+	15, // 30: workout.v1.WorkoutService.GetTrainingDays:input_type -> workout.v1.GetTrainingDaysRequest
+	11, // 31: workout.v1.WorkoutService.GetWorkoutsForDay:input_type -> workout.v1.GetWorkoutsForDayRequest
+	9,  // 32: workout.v1.WorkoutService.CreateTemplate:input_type -> workout.v1.CreateTemplateRequest
+	4,  // 33: workout.v1.WorkoutService.GetTemplates:input_type -> workout.v1.GetTemplatesRequest
+	2,  // 34: workout.v1.WorkoutService.GetTemplate:input_type -> workout.v1.GetTemplateRequest
+	24, // 35: workout.v1.WorkoutService.Init:output_type -> workout.v1.InitResponse
+	35, // 36: workout.v1.WorkoutService.GetMuscleGroups:output_type -> workout.v1.GetMuscleGroupsResponse
+	29, // 37: workout.v1.WorkoutService.GetExercises:output_type -> workout.v1.GetExercisesResponse
+	33, // 38: workout.v1.WorkoutService.StartWorkoutSession:output_type -> workout.v1.StartWorkoutSessionResponse
+	32, // 39: workout.v1.WorkoutService.FinishWorkoutSession:output_type -> workout.v1.FinishWorkoutSessionResponse
+	38, // 40: workout.v1.WorkoutService.LogWorkoutSet:output_type -> workout.v1.LogSetResponse
+	19, // 41: workout.v1.WorkoutService.GetCompletedExercises:output_type -> workout.v1.GetCompletedExercisesResponse
+	16, // 42: workout.v1.WorkoutService.GetTrainingDays:output_type -> workout.v1.GetTrainingDaysResponse
+	12, // 43: workout.v1.WorkoutService.GetWorkoutsForDay:output_type -> workout.v1.GetWorkoutsForDayResponse
+	10, // 44: workout.v1.WorkoutService.CreateTemplate:output_type -> workout.v1.CreateTemplateResponse
+	6,  // 45: workout.v1.WorkoutService.GetTemplates:output_type -> workout.v1.GetTemplatesResponse
+	3,  // 46: workout.v1.WorkoutService.GetTemplate:output_type -> workout.v1.GetTemplateResponse
+	35, // [35:47] is the sub-list for method output_type
+	23, // [23:35] is the sub-list for method input_type
+	23, // [23:23] is the sub-list for extension type_name
+	23, // [23:23] is the sub-list for extension extendee
+	0,  // [0:23] is the sub-list for field type_name
 }
 
 func init() { file_api_proto_workout_v1_workout_proto_init() }

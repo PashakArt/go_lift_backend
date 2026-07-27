@@ -467,6 +467,8 @@ func (s *HTTPServer) HandleGetTemplate(w http.ResponseWriter, r *http.Request) {
 			ExerciseID: item.GetExerciseId(),
 			OrderIndex: item.GetOrderIndex(),
 			TargetSets: targetSets,
+			Name:       item.Name,
+			Type:       item.Type.String(),
 		})
 	}
 

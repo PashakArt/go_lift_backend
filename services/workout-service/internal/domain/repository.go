@@ -16,6 +16,7 @@ type UserRepository interface {
 type ExerciseRepository interface {
 	List(ctx context.Context, muscleGroupId uuid.UUID) ([]*Exercise, error)
 	UserFavoriteList(ctx context.Context, muscleGroupId, userId uuid.UUID) ([]*Exercise, error)
+	GetByIDs(ctx context.Context, ids []uuid.UUID) ([]*Exercise, error)
 }
 
 // WorkoutSessionRepository описывает контракт для управления тренировочными сессиями

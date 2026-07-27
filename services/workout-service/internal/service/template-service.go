@@ -17,11 +17,16 @@ type TemplateService interface {
 
 type templateService struct {
 	templateRepo domain.TemplateRepository
+	exerciseRepo domain.ExerciseRepository
 }
 
-func NewTemplateService(templateRepo domain.TemplateRepository) TemplateService {
+func NewTemplateService(
+	templateRepo domain.TemplateRepository,
+	exerciseRepo domain.ExerciseRepository,
+) TemplateService {
 	return &templateService{
 		templateRepo: templateRepo,
+		exerciseRepo: exerciseRepo,
 	}
 }
 
@@ -31,11 +36,19 @@ func (s *templateService) CreateTemplate(ctx context.Context, req *workoutv1.Cre
 		return "", fmt.Errorf("invalid user_id: %w", err)
 	}
 
+	exIDMap := make(map[uuid.UUID]struct{})
+	var uniqueExIDs []uuid.UUID
+
 	items := make([]domain.TemplateItem, 0, len(req.GetItems()))
 	for _, itemReq := range req.GetItems() {
 		exerciseID, err := uuid.Parse(itemReq.GetExerciseId())
 		if err != nil {
-			return "", fmt.Errorf("invalid exercise_id: %w", err)
+			return "", fmt.Errorf("invalid exercise_id %s: %w", itemReq.GetExerciseId(), err)
+		}
+
+		if _, exists := exIDMap[exerciseID]; !exists {
+			exIDMap[exerciseID] = struct{}{}
+			uniqueExIDs = append(uniqueExIDs, exerciseID)
 		}
 
 		targetSets := make([]domain.TargetSet, 0, len(itemReq.GetTargetSets()))
@@ -54,6 +67,15 @@ func (s *templateService) CreateTemplate(ctx context.Context, req *workoutv1.Cre
 			OrderIndex: itemReq.GetOrderIndex(),
 			TargetSets: targetSets,
 		})
+	}
+
+	existingExercises, err := s.exerciseRepo.GetByIDs(ctx, uniqueExIDs)
+	if err != nil {
+		return "", fmt.Errorf("failed to validate exercise ids: %w", err)
+	}
+
+	if len(existingExercises) != len(uniqueExIDs) {
+		return "", fmt.Errorf("validation failed: one or more exercise_ids do not exist")
 	}
 
 	template := &domain.WorkoutTemplate{
@@ -98,6 +120,36 @@ func (s *templateService) GetTemplate(ctx context.Context, rawTemplateID, rawUse
 	template, err := s.templateRepo.GetByID(ctx, templateID, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get template by id from repository: %w", err)
+	}
+
+	if len(template.Items) == 0 {
+		return template, nil
+	}
+
+	exIDMap := make(map[uuid.UUID]struct{})
+	var uniqueExIDs []uuid.UUID
+	for _, item := range template.Items {
+		if _, exists := exIDMap[item.ExerciseID]; !exists {
+			exIDMap[item.ExerciseID] = struct{}{}
+			uniqueExIDs = append(uniqueExIDs, item.ExerciseID)
+		}
+	}
+
+	exercises, err := s.exerciseRepo.GetByIDs(ctx, uniqueExIDs)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch exercises for template enrichment: %w", err)
+	}
+
+	exerciseLookup := make(map[uuid.UUID]*domain.Exercise, len(exercises))
+	for _, ex := range exercises {
+		exerciseLookup[ex.ExerciseID] = ex
+	}
+
+	for i := range template.Items {
+		if ex, ok := exerciseLookup[template.Items[i].ExerciseID]; ok {
+			template.Items[i].ExerciseName = ex.Name
+			template.Items[i].ExerciseType = ex.Type
+		}
 	}
 
 	return template, nil

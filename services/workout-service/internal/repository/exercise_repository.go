@@ -16,6 +16,9 @@ var (
 
 	//go:embed queries/list_exercises_with_user.sql
 	listExercisesWithUserIdQuery string
+
+	//go:embed queries/get_exercises_by_ids.sql
+	getExercisesByIDsQuery string
 )
 
 type exerciseRepository struct {
@@ -83,6 +86,40 @@ func (r *exerciseRepository) UserFavoriteList(ctx context.Context, muscleGroupId
 
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("error iterating exercise rows: %w", err)
+	}
+
+	return exercises, nil
+}
+
+func (r *exerciseRepository) GetByIDs(ctx context.Context, ids []uuid.UUID) ([]*domain.Exercise, error) {
+	if len(ids) == 0 {
+		return []*domain.Exercise{}, nil
+	}
+
+	rows, err := r.pool.Query(ctx, getExercisesByIDsQuery, ids)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query exercises by ids: %w", err)
+	}
+	defer rows.Close()
+
+	var exercises []*domain.Exercise
+	for rows.Next() {
+		var ex domain.Exercise
+		err := rows.Scan(
+			&ex.ExerciseID,
+			&ex.Name,
+			&ex.Type,
+			&ex.IsGlobal,
+			&ex.CreatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan exercise row: %w", err)
+		}
+		exercises = append(exercises, &ex)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
 	}
 
 	return exercises, nil
