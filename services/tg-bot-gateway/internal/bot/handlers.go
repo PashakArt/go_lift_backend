@@ -345,8 +345,10 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 
 	var sessionId string
 	var hasActiveSession bool
+	var templateId *string
 	if res.ActiveSession != nil {
 		sessionId = res.ActiveSession.SessionId
+		templateId = res.ActiveSession.TemplateId
 		hasActiveSession = true
 	}
 
@@ -364,6 +366,7 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 		Token:            token,
 		IsNewUser:        res.IsNewUser,
 		Branding:         res.TenantBranding,
+		TemplateID:       templateId,
 	})
 }
 

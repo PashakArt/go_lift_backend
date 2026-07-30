@@ -58,6 +58,7 @@ type InitResponse struct {
 	IsNewUser        bool                      `json:"is_new_user"`
 	SessionId        string                    `json:"session_id"`
 	Branding         *workoutv1.TenantBranding `json:"branding"`
+	TemplateID       *string                   `json:"template_id,omitempty"`
 }
 
 type MuscleGroupsResponse struct {

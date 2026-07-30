@@ -45,9 +45,16 @@ func (h *WorkoutHandler) Init(ctx context.Context, req *workoutv1.InitRequest) (
 
 	var activeSessionInfo *workoutv1.ActiveSessionInfo
 	if response.ActiveSession != nil {
+		var templateIDPtr *string
+		if response.ActiveSession.TemplateID != nil {
+			templateIDStr := response.ActiveSession.TemplateID.String()
+			templateIDPtr = &templateIDStr
+		}
+
 		activeSessionInfo = &workoutv1.ActiveSessionInfo{
-			SessionId: response.ActiveSession.SessionID.String(),
-			StartedAt: response.ActiveSession.StartedAt.Format(time.RFC3339),
+			SessionId:  response.ActiveSession.SessionID.String(),
+			StartedAt:  response.ActiveSession.StartedAt.Format(time.RFC3339),
+			TemplateId: templateIDPtr,
 		}
 	}
 

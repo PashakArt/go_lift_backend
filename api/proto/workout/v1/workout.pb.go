@@ -1687,6 +1687,7 @@ type ActiveSessionInfo struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	StartedAt     string                 `protobuf:"bytes,2,opt,name=started_at,json=startedAt,proto3" json:"started_at,omitempty"`
+	TemplateId    *string                `protobuf:"bytes,3,opt,name=template_id,json=templateId,proto3,oneof" json:"template_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1731,6 +1732,13 @@ func (x *ActiveSessionInfo) GetSessionId() string {
 func (x *ActiveSessionInfo) GetStartedAt() string {
 	if x != nil {
 		return x.StartedAt
+	}
+	return ""
+}
+
+func (x *ActiveSessionInfo) GetTemplateId() string {
+	if x != nil && x.TemplateId != nil {
+		return *x.TemplateId
 	}
 	return ""
 }
@@ -2642,12 +2650,15 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\vis_new_user\x18\x02 \x01(\bR\tisNewUser\x12I\n" +
 	"\x0eactive_session\x18\x03 \x01(\v2\x1d.workout.v1.ActiveSessionInfoH\x00R\ractiveSession\x88\x01\x01\x12C\n" +
 	"\x0ftenant_branding\x18\x04 \x01(\v2\x1a.workout.v1.TenantBrandingR\x0etenantBrandingB\x11\n" +
-	"\x0f_active_session\"Q\n" +
+	"\x0f_active_session\"\x87\x01\n" +
 	"\x11ActiveSessionInfo\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1d\n" +
 	"\n" +
-	"started_at\x18\x02 \x01(\tR\tstartedAt\"\x96\x01\n" +
+	"started_at\x18\x02 \x01(\tR\tstartedAt\x12$\n" +
+	"\vtemplate_id\x18\x03 \x01(\tH\x00R\n" +
+	"templateId\x88\x01\x01B\x0e\n" +
+	"\f_template_id\"\x96\x01\n" +
 	"\bUserInfo\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\ttenant_id\x18\x02 \x01(\tR\btenantId\x12\x1f\n" +
@@ -2871,6 +2882,7 @@ func file_api_proto_workout_v1_workout_proto_init() {
 	file_api_proto_workout_v1_workout_proto_msgTypes[9].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[20].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[26].OneofWrappers = []any{}
+	file_api_proto_workout_v1_workout_proto_msgTypes[27].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[29].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[32].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[39].OneofWrappers = []any{}
