@@ -62,10 +62,10 @@ BEGIN
     -- ==========================================
     -- 3. Сведение рук в тренажере (Бабочка / Pec-Deck)
     -- ==========================================
-    SELECT exercise_id INTO pec_deck_fly_id FROM exercises WHERE name = 'Сведение рук в тренажере (Бабочка)' AND tenant_id = def_tenant_id;
+    SELECT exercise_id INTO pec_deck_fly_id FROM exercises WHERE name = 'Сведение рук в тренажере Matrix (Бабочка)' AND tenant_id = def_tenant_id;
     IF pec_deck_fly_id IS NULL THEN
         INSERT INTO exercises (name, type, is_global, tenant_id)
-        VALUES ('Сведение рук в тренажере (Бабочка)', 'dynamic', true, def_tenant_id)
+        VALUES ('Сведение рук в тренажере Matrix (Бабочка)', 'dynamic', true, def_tenant_id)
         RETURNING exercise_id INTO pec_deck_fly_id;
 
         INSERT INTO exercise_muscle_groups (exercise_id, muscle_group_id) VALUES 
