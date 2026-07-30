@@ -29,8 +29,10 @@ services:
       - ./migrations:/migrations
     command:
       - -path=/migrations
-      - -database=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-go_lift}?sslmode=disable
+      - -database=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
       - up
+    networks:
+      - golift_network
     depends_on:
       postgres:
         condition: service_healthy
