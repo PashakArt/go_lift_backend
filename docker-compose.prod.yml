@@ -22,6 +22,19 @@ services:
       timeout: 5s
       retries: 5
 
+  migration:
+    image: migrate/migrate
+    container_name: go_lift_migration
+    volumes:
+      - ./migrations:/migrations
+    command:
+      - -path=/migrations
+      - -database=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-go_lift}?sslmode=disable
+      - up
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   workout-service:
     build:
       context: .
@@ -38,6 +51,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migration:
+        condition: service_completed_successfully
 
   tg-bot-gateway:
     build:

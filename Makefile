@@ -1,6 +1,5 @@
-.PHONY: proto deploy down_prod up_prod
+.PHONY: proto deploy down_prod logs_prod down_db up_db
 
-# Находим все файлы с расширением .proto внутри папки api/proto/
 PROTO_FILES := $(shell find api/proto -name "*.proto")
 
 proto:
@@ -29,10 +28,8 @@ run_dev_workout:
 deploy:
 	docker compose -f docker-compose.prod.yml up -d --build
 
-# Полный останов продакшена
 down_prod:
 	docker compose -f docker-compose.prod.yml down
 
-# Просмотр логов бэкенда на проде в реальном времени
 logs_prod:
 	docker compose -f docker-compose.prod.yml logs -f
