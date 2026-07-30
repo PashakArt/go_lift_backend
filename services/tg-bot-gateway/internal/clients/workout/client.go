@@ -85,10 +85,11 @@ func (c *Client) GetWorkoutsForDay(ctx context.Context, userId, date string) (*w
 	return res, nil
 }
 
-func (c *Client) StartTraining(ctx context.Context, tenantId, userId string) (*workoutv1.StartWorkoutSessionResponse, error) {
+func (c *Client) StartTraining(ctx context.Context, tenantId, templateId, userId string) (*workoutv1.StartWorkoutSessionResponse, error) {
 	res, err := c.client.StartWorkoutSession(ctx, &workoutv1.StartWorkoutSessionRequest{
-		UserId:   userId,
-		TenantId: tenantId,
+		UserId:     userId,
+		TenantId:   tenantId,
+		TemplateId: &templateId,
 		// TODO расширить до кроссфит
 		Type: 1,
 	})

@@ -31,7 +31,16 @@ func (s *HTTPServer) HandleStartTraining(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	res, err := s.workoutClient.StartTraining(ctx, tenantId, userId)
+	var req types.StartTrainingRequest
+	if r.ContentLength > 0 {
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			RespondWithError(w, http.StatusBadRequest, "Invalid request body")
+			return
+		}
+		defer r.Body.Close()
+	}
+
+	res, err := s.workoutClient.StartTraining(ctx, tenantId, req.TemplateID, userId)
 	if err != nil {
 		log.Printf("gRPC StartTraining failed: %v", err)
 		RespondWithError(w, http.StatusInternalServerError, "Internal error")

@@ -133,3 +133,7 @@ type UpdateTemplateRequest struct {
 	Name  string               `json:"name" validate:"required,min=1,max=100"`
 	Items []TemplateDetailItem `json:"items" validate:"required,dive"`
 }
+
+type StartTrainingRequest struct {
+	TemplateID string `json:"template_id,omitempty"`
+}
