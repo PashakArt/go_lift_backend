@@ -17,6 +17,7 @@ type TrainingService interface {
 	GetCompletedExercises(ctx context.Context, userId, exerciseId string) ([]domain.WorkoutSet, error)
 	GetTrainingDays(ctx context.Context, userId string, year, month int) ([]string, error)
 	GetWorkoutsForDay(ctx context.Context, userId, date string) (*types.WorkoutForDay, error)
+	GetSessionExercises(ctx context.Context, sessionID string) ([]types.WorkoutExercise, error)
 }
 
 type trainingService struct {
@@ -183,6 +184,24 @@ func (s *trainingService) GetWorkoutsForDay(ctx context.Context, userId, date st
 	return mapDayRowsToWorkoutForDay(date, rows), nil
 }
 
+func (s *trainingService) GetSessionExercises(ctx context.Context, sessionIDStr string) ([]types.WorkoutExercise, error) {
+	sessionID, err := uuid.Parse(sessionIDStr)
+	if err != nil {
+		return nil, fmt.Errorf("invalid session id format: %w", err)
+	}
+
+	rows, err := s.workoutSetRepo.GetSessionExercises(ctx, sessionID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get session exercises: %w", err)
+	}
+
+	if len(rows) == 0 {
+		return []types.WorkoutExercise{}, nil
+	}
+
+	return mapSessionRowsToWorkoutExercises(rows), nil
+}
+
 func mapDayRowsToWorkoutForDay(date string, rows []domain.WorkoutDaySetRow) *types.WorkoutForDay {
 	type sessionGroup struct {
 		session types.WorkoutSession
@@ -276,4 +295,58 @@ func mapDayRowsToWorkoutForDay(date string, rows []domain.WorkoutDaySetRow) *typ
 		Date:     date,
 		Sessions: resultSessions,
 	}
+}
+
+func mapSessionRowsToWorkoutExercises(rows []domain.SessionExerciseRow) []types.WorkoutExercise {
+	exMap := make(map[uuid.UUID]int) // exerciseID -> индекс в slice exercises
+	exercises := []types.WorkoutExercise{}
+
+	for _, row := range rows {
+		eIdx, eExists := exMap[row.ExerciseID]
+		if !eExists {
+			exercises = append(exercises, types.WorkoutExercise{
+				ExerciseID: row.ExerciseID.String(),
+				Name:       row.ExerciseName,
+				Type:       string(row.ExerciseType),
+				Sets:       []types.CompletedExerciseResponse{},
+			})
+			eIdx = len(exercises) - 1
+			exMap[row.ExerciseID] = eIdx
+		}
+
+		var weight *float32
+		if row.Weight != nil {
+			w := float32(*row.Weight)
+			weight = &w
+		}
+
+		var reps *int32
+		if row.Reps != nil {
+			r := int32(*row.Reps)
+			reps = &r
+		}
+
+		var durationSec *int32
+		if row.DurationSeconds != nil {
+			d := int32(*row.DurationSeconds)
+			durationSec = &d
+		}
+
+		var distanceM *int32
+		if row.DistanceMeters != nil {
+			d := int32(*row.DistanceMeters)
+			distanceM = &d
+		}
+
+		exercises[eIdx].Sets = append(exercises[eIdx].Sets, types.CompletedExerciseResponse{
+			SetId:       row.SetID.String(),
+			SetNumber:   row.SetNumber,
+			Weight:      weight,
+			Reps:        reps,
+			DurationSec: durationSec,
+			DistanceM:   distanceM,
+		})
+	}
+
+	return exercises
 }

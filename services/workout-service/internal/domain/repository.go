@@ -32,6 +32,7 @@ type WorkoutSessionRepository interface {
 type WorkoutSetRepository interface {
 	LogWorkoutSet(ctx context.Context, set *WorkoutSet) (*WorkoutSet, error)
 	GetCompletedExercises(ctx context.Context, userId, exerciseId string) ([]WorkoutSet, error)
+	GetSessionExercises(ctx context.Context, sessionID uuid.UUID) ([]SessionExerciseRow, error)
 }
 
 type MuscleGroupRepository interface {

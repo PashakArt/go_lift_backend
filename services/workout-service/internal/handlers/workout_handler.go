@@ -304,6 +304,56 @@ func (h *WorkoutHandler) GetWorkoutsForDay(ctx context.Context, req *workoutv1.G
 	}, nil
 }
 
+func (h *WorkoutHandler) GetSessionExercises(ctx context.Context, req *workoutv1.GetSessionExercisesRequest) (*workoutv1.GetSessionExercisesResponse, error) {
+	if req.GetSessionId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "session_id is required")
+	}
+
+	exercises, err := h.trainingService.GetSessionExercises(ctx, req.GetSessionId())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get session exercises: %v", err)
+	}
+
+	pbExercises := make([]*workoutv1.ExerciseDTO, 0, len(exercises))
+	for _, ex := range exercises {
+		pbSets := make([]*workoutv1.CompletedSet, 0, len(ex.Sets))
+		for _, st := range ex.Sets {
+			pbSet := &workoutv1.CompletedSet{
+				SetId:     st.SetId,
+				SetNumber: int32(st.SetNumber),
+			}
+			if st.Weight != nil {
+				w := float32(*st.Weight)
+				pbSet.Weight = &w
+			}
+			if st.Reps != nil {
+				r := *st.Reps
+				pbSet.Reps = &r
+			}
+			if st.DurationSec != nil {
+				d := *st.DurationSec
+				pbSet.DurationSec = &d
+			}
+			if st.DistanceM != nil {
+				d := *st.DistanceM
+				pbSet.DistanceM = &d
+			}
+			pbSets = append(pbSets, pbSet)
+		}
+
+		pbExercises = append(pbExercises, &workoutv1.ExerciseDTO{
+			ExerciseId: ex.ExerciseID,
+			Name:       ex.Name,
+			Type:       ex.Type,
+			Sets:       pbSets,
+		})
+	}
+
+	return &workoutv1.GetSessionExercisesResponse{
+		Exercises: pbExercises,
+	}, nil
+}
+
 func (h *WorkoutHandler) CreateTemplate(
 	ctx context.Context,
 	req *workoutv1.CreateTemplateRequest,

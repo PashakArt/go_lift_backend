@@ -35,3 +35,11 @@ type WorkoutDaySetRow struct {
 
 	WorkoutSet `json:"-"`
 }
+
+type SessionExerciseRow struct {
+	ExerciseID   uuid.UUID    `json:"exercise_id"`
+	ExerciseName string       `json:"exercise_name"`
+	ExerciseType ExerciseType `json:"exercise_type"`
+
+	WorkoutSet `json:"-"`
+}

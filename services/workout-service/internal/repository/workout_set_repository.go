@@ -16,6 +16,9 @@ var (
 
 	//go:embed queries/get_completed_exercises.sql
 	getCompletedExercisesQuery string
+
+	//go:embed queries/get_session_exercises.sql
+	getSessionExercisesQuery string
 )
 
 type workoutSetRepository struct {
@@ -90,4 +93,38 @@ func (r *workoutSetRepository) GetCompletedExercises(ctx context.Context, userId
 	}
 
 	return exercises, nil
+}
+
+func (r *workoutSetRepository) GetSessionExercises(ctx context.Context, sessionID uuid.UUID) ([]domain.SessionExerciseRow, error) {
+	rows, err := r.pool.Query(ctx, getSessionExercisesQuery, sessionID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute GetSessionExercises query: %w", err)
+	}
+	defer rows.Close()
+
+	var result []domain.SessionExerciseRow
+	for rows.Next() {
+		var row domain.SessionExerciseRow
+		err = rows.Scan(
+			&row.ExerciseID,
+			&row.ExerciseName,
+			&row.ExerciseType,
+			&row.SetID,
+			&row.SetNumber,
+			&row.Weight,
+			&row.Reps,
+			&row.DurationSeconds,
+			&row.DistanceMeters,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan SessionExerciseRow: %w", err)
+		}
+		result = append(result, row)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return result, nil
 }

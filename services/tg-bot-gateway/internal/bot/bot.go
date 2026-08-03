@@ -52,6 +52,10 @@ func (s *HTTPServer) Start(port string) error {
 
 	mux.Handle("GET /api/v1/workouts/calendar", s.AuthMiddleware(http.HandlerFunc(s.HandleGetTrainingDays)))
 	mux.Handle("GET /api/v1/workouts/day", s.AuthMiddleware(http.HandlerFunc(s.HandleGetWorkoutsForDay)))
+	mux.Handle(
+		"GET /api/v1/sessions/{sessionId}/exercises",
+		s.AuthMiddleware(http.HandlerFunc(s.HandleGetSessionExercises)),
+	)
 
 	mux.Handle("POST /api/v1/templates", s.AuthMiddleware(http.HandlerFunc(s.HandleCreateTemplate)))
 	mux.Handle("GET /api/v1/templates", s.AuthMiddleware(http.HandlerFunc(s.HandleGetTemplates)))

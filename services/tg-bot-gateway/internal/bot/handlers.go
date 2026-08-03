@@ -219,6 +219,27 @@ func (s *HTTPServer) HandleGetCompletedExercises(w http.ResponseWriter, r *http.
 	RespondWithJSON(w, http.StatusOK, completedExercises)
 }
 
+func (s *HTTPServer) HandleGetSessionExercises(w http.ResponseWriter, r *http.Request) {
+	sessionId := r.PathValue("sessionId")
+	if sessionId == "" {
+		RespondWithError(w, http.StatusBadRequest, "sessionId not pass")
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	grpcRes, err := s.workoutClient.GetSessionExercises(ctx, sessionId)
+	if err != nil {
+		log.Printf("gRPC GetSessionExercises failed: %v", err)
+		RespondWithError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	response := MapGetSessionExercisesToHTTP(grpcRes)
+	RespondWithJSON(w, http.StatusOK, response)
+}
+
 func (s *HTTPServer) HandleGetMuscleGroups(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()

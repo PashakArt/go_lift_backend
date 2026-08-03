@@ -34,6 +34,9 @@ service WorkoutService {
   // Получить выполненные упражнения за день
   rpc GetWorkoutsForDay(GetWorkoutsForDayRequest) returns (GetWorkoutsForDayResponse);
 
+  // Получить выполненные упражнения конкретной сессии по ID
+  rpc GetSessionExercises(GetSessionExercisesRequest) returns (GetSessionExercisesResponse);
+
   // Создание шаблона тренировки
   rpc CreateTemplate(CreateTemplateRequest) returns (CreateTemplateResponse);
 
@@ -145,6 +148,14 @@ message ExerciseDTO {
   string name = 2;
   string type = 3;
   repeated CompletedSet sets = 4;
+}
+
+message GetSessionExercisesRequest {
+  string session_id = 1;
+}
+
+message GetSessionExercisesResponse {
+  repeated ExerciseDTO exercises = 1;
 }
 
 

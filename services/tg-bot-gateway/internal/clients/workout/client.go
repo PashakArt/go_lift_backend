@@ -85,6 +85,18 @@ func (c *Client) GetWorkoutsForDay(ctx context.Context, userId, date string) (*w
 	return res, nil
 }
 
+func (c *Client) GetSessionExercises(ctx context.Context, sessionId string) (*workoutv1.GetSessionExercisesResponse, error) {
+	res, err := c.client.GetSessionExercises(ctx, &workoutv1.GetSessionExercisesRequest{
+		SessionId: sessionId,
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("gRPC get session exercises failed: %w", err)
+	}
+
+	return res, nil
+}
+
 func (c *Client) StartTraining(ctx context.Context, tenantId, templateId, userId string) (*workoutv1.StartWorkoutSessionResponse, error) {
 	res, err := c.client.StartWorkoutSession(ctx, &workoutv1.StartWorkoutSessionRequest{
 		UserId:     userId,

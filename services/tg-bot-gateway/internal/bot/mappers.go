@@ -79,3 +79,55 @@ func MapGetWorkoutsForDayToHTTP(res *workoutv1.GetWorkoutsForDayResponse) types.
 		Sessions: sessions,
 	}
 }
+
+func MapGetSessionExercisesToHTTP(res *workoutv1.GetSessionExercisesResponse) []types.WorkoutExercise {
+	exercises := make([]types.WorkoutExercise, 0, len(res.GetExercises()))
+
+	for _, e := range res.GetExercises() {
+		sets := make([]types.CompletedExerciseResponse, 0, len(e.GetSets()))
+
+		for _, st := range e.GetSets() {
+			var weight *float32
+			if st.Weight != nil {
+				w := st.GetWeight()
+				weight = &w
+			}
+
+			var reps *int32
+			if st.Reps != nil {
+				r := st.GetReps()
+				reps = &r
+			}
+
+			var durationSec *int32
+			if st.DurationSec != nil {
+				d := st.GetDurationSec()
+				durationSec = &d
+			}
+
+			var distanceM *int32
+			if st.DistanceM != nil {
+				d := st.GetDistanceM()
+				distanceM = &d
+			}
+
+			sets = append(sets, types.CompletedExerciseResponse{
+				SetId:           st.GetSetId(),
+				SetNumber:       int(st.GetSetNumber()),
+				Weight:          weight,
+				Reps:            reps,
+				DurationSeconds: durationSec,
+				DistanceM:       distanceM,
+			})
+		}
+
+		exercises = append(exercises, types.WorkoutExercise{
+			ExerciseID: e.GetExerciseId(),
+			Name:       e.GetName(),
+			Type:       e.GetType(),
+			Sets:       sets,
+		})
+	}
+
+	return exercises
+}

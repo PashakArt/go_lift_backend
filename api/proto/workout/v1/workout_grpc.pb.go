@@ -28,6 +28,7 @@ const (
 	WorkoutService_GetCompletedExercises_FullMethodName = "/workout.v1.WorkoutService/GetCompletedExercises"
 	WorkoutService_GetTrainingDays_FullMethodName       = "/workout.v1.WorkoutService/GetTrainingDays"
 	WorkoutService_GetWorkoutsForDay_FullMethodName     = "/workout.v1.WorkoutService/GetWorkoutsForDay"
+	WorkoutService_GetSessionExercises_FullMethodName   = "/workout.v1.WorkoutService/GetSessionExercises"
 	WorkoutService_CreateTemplate_FullMethodName        = "/workout.v1.WorkoutService/CreateTemplate"
 	WorkoutService_GetTemplates_FullMethodName          = "/workout.v1.WorkoutService/GetTemplates"
 	WorkoutService_GetTemplate_FullMethodName           = "/workout.v1.WorkoutService/GetTemplate"
@@ -57,6 +58,8 @@ type WorkoutServiceClient interface {
 	GetTrainingDays(ctx context.Context, in *GetTrainingDaysRequest, opts ...grpc.CallOption) (*GetTrainingDaysResponse, error)
 	// Получить выполненные упражнения за день
 	GetWorkoutsForDay(ctx context.Context, in *GetWorkoutsForDayRequest, opts ...grpc.CallOption) (*GetWorkoutsForDayResponse, error)
+	// Получить выполненные упражнения конкретной сессии по ID
+	GetSessionExercises(ctx context.Context, in *GetSessionExercisesRequest, opts ...grpc.CallOption) (*GetSessionExercisesResponse, error)
 	// Создание шаблона тренировки
 	CreateTemplate(ctx context.Context, in *CreateTemplateRequest, opts ...grpc.CallOption) (*CreateTemplateResponse, error)
 	// Получить список шаблонов пользователя
@@ -167,6 +170,16 @@ func (c *workoutServiceClient) GetWorkoutsForDay(ctx context.Context, in *GetWor
 	return out, nil
 }
 
+func (c *workoutServiceClient) GetSessionExercises(ctx context.Context, in *GetSessionExercisesRequest, opts ...grpc.CallOption) (*GetSessionExercisesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetSessionExercisesResponse)
+	err := c.cc.Invoke(ctx, WorkoutService_GetSessionExercises_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *workoutServiceClient) CreateTemplate(ctx context.Context, in *CreateTemplateRequest, opts ...grpc.CallOption) (*CreateTemplateResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateTemplateResponse)
@@ -239,6 +252,8 @@ type WorkoutServiceServer interface {
 	GetTrainingDays(context.Context, *GetTrainingDaysRequest) (*GetTrainingDaysResponse, error)
 	// Получить выполненные упражнения за день
 	GetWorkoutsForDay(context.Context, *GetWorkoutsForDayRequest) (*GetWorkoutsForDayResponse, error)
+	// Получить выполненные упражнения конкретной сессии по ID
+	GetSessionExercises(context.Context, *GetSessionExercisesRequest) (*GetSessionExercisesResponse, error)
 	// Создание шаблона тренировки
 	CreateTemplate(context.Context, *CreateTemplateRequest) (*CreateTemplateResponse, error)
 	// Получить список шаблонов пользователя
@@ -285,6 +300,9 @@ func (UnimplementedWorkoutServiceServer) GetTrainingDays(context.Context, *GetTr
 }
 func (UnimplementedWorkoutServiceServer) GetWorkoutsForDay(context.Context, *GetWorkoutsForDayRequest) (*GetWorkoutsForDayResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetWorkoutsForDay not implemented")
+}
+func (UnimplementedWorkoutServiceServer) GetSessionExercises(context.Context, *GetSessionExercisesRequest) (*GetSessionExercisesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetSessionExercises not implemented")
 }
 func (UnimplementedWorkoutServiceServer) CreateTemplate(context.Context, *CreateTemplateRequest) (*CreateTemplateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateTemplate not implemented")
@@ -484,6 +502,24 @@ func _WorkoutService_GetWorkoutsForDay_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkoutService_GetSessionExercises_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSessionExercisesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkoutServiceServer).GetSessionExercises(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkoutService_GetSessionExercises_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkoutServiceServer).GetSessionExercises(ctx, req.(*GetSessionExercisesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _WorkoutService_CreateTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateTemplateRequest)
 	if err := dec(in); err != nil {
@@ -616,6 +652,10 @@ var WorkoutService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetWorkoutsForDay",
 			Handler:    _WorkoutService_GetWorkoutsForDay_Handler,
+		},
+		{
+			MethodName: "GetSessionExercises",
+			Handler:    _WorkoutService_GetSessionExercises_Handler,
 		},
 		{
 			MethodName: "CreateTemplate",
