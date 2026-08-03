@@ -23,7 +23,7 @@ type WorkoutSession struct {
 	Type       SessionType `json:"type"`
 	StartedAt  time.Time   `json:"started_at"`
 	EndedAt    *time.Time  `json:"ended_at,omitempty"`
-	IsACtive   bool        `json:"is_active"`
+	IsActive   bool        `json:"is_active"`
 }
 
 type WorkoutDaySetRow struct {

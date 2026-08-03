@@ -80,7 +80,7 @@ func (r *workoutSessionRepository) GetActiveByUserID(ctx context.Context, userId
 		&session.Type,
 		&session.StartedAt,
 		&session.EndedAt,
-		&session.IsACtive,
+		&session.IsActive,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

@@ -22,7 +22,7 @@ func NewRepositories(pool *pgxpool.Pool) *Repositories {
 		Session:     NewWorkoutSessionRepository(pool),
 		MuscleGroup: NewMuscleGroupRepository(pool),
 		Tenant:      NewTenantRepository(pool),
-		WorkoutSet:  NewWWorkoutSetRepository(pool),
+		WorkoutSet:  NewWorkoutSetRepository(pool),
 		Template:    NewTemplateRepository(pool),
 	}
 }

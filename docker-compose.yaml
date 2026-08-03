@@ -12,7 +12,6 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./scripts:/docker-entrypoint-initdb.d/
     networks:
       - golift_network
     healthcheck:
@@ -20,6 +19,21 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  migration:
+    image: migrate/migrate
+    container_name: golift_migration
+    volumes:
+      - ./migrations:/migrations
+    command:
+      - -path=/migrations
+      - -database=postgres://postgres:postgres@postgres:5432/golift?sslmode=disable
+      - up
+    networks:
+      - golift_network
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 networks:
   golift_network:

@@ -25,7 +25,7 @@ type workoutSetRepository struct {
 	pool *pgxpool.Pool
 }
 
-func NewWWorkoutSetRepository(pool *pgxpool.Pool) domain.WorkoutSetRepository {
+func NewWorkoutSetRepository(pool *pgxpool.Pool) domain.WorkoutSetRepository {
 	return &workoutSetRepository{pool: pool}
 }
 
