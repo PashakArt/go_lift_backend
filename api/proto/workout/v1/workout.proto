@@ -190,6 +190,9 @@ message GetCompletedExercisesResponse {
 message InitRequest {
   string tenant_id   = 1;
   string telegram_id = 2;
+  optional string username = 3;
+  optional string first_name = 4;
+  optional string last_name = 5;
 }
 
 message TenantTheme {

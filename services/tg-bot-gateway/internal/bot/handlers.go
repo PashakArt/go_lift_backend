@@ -310,7 +310,12 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	var tgIDStr string
+	var (
+		tgIDStr   string
+		username  string
+		firstName string
+		lastName  string
+	)
 
 	// 🛠 CHECKS FOR LOCAL DEV MOCK DATA
 	// Если мы в dev-режиме и пришли тестовые данные, пропускаем валидацию HMAC
@@ -319,6 +324,9 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 		log.Println("⚠️ [DEV MODE] Skipping Telegram InitData HMAC validation for mock data")
 
 		tgIDStr = "77777"
+		username = "dev_user"
+		firstName = "Dev"
+		lastName = "Tester"
 	} else {
 		// PRODUCTION LOGIC
 		params, err := s.ValidateAndParseInitData(req.InitData)
@@ -328,10 +336,7 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var tgUser struct {
-			ID int64 `json:"id"`
-		}
-
+		var tgUser types.TelegramUser
 		err = json.Unmarshal([]byte(params.Get("user")), &tgUser)
 		if err != nil {
 			log.Printf("Failed to unmarshal telegram user data: %v\n", err)
@@ -340,6 +345,9 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 		}
 
 		tgIDStr = fmt.Sprintf("%d", tgUser.ID)
+		username = tgUser.Username
+		firstName = tgUser.FirstName
+		lastName = tgUser.LastName
 	}
 
 	tenantID := req.TenantId
@@ -350,7 +358,7 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
 	defer cancel()
 
-	res, err := s.workoutClient.Init(ctx, tenantID, tgIDStr)
+	res, err := s.workoutClient.Init(ctx, tenantID, tgIDStr, username, firstName, lastName)
 	if err != nil {
 		log.Printf("gRPC init failed: %v", err)
 		RespondWithError(w, http.StatusInternalServerError, "Internal Error")

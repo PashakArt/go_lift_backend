@@ -38,7 +38,7 @@ func NewWorkoutHandler(
 }
 
 func (h *WorkoutHandler) Init(ctx context.Context, req *workoutv1.InitRequest) (*workoutv1.InitResponse, error) {
-	response, err := h.authService.Init(ctx, req.TenantId, req.TelegramId)
+	response, err := h.authService.Init(ctx, req.TenantId, req.TelegramId, *req.Username, *req.FirstName, *req.LastName)
 	if err != nil {
 		return nil, err
 	}

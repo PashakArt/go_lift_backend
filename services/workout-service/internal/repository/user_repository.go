@@ -41,6 +41,9 @@ func (r *userRepository) Create(ctx context.Context, user *domain.User) error {
 		user.TelegramID,
 		user.Phone,
 		user.CreatedAt,
+		user.TgUsername,
+		user.TgFirstName,
+		user.TgLastName,
 	).Scan(&user.UserID, &user.CreatedAt)
 
 	if err != nil {

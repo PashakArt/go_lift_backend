@@ -61,6 +61,13 @@ type InitResponse struct {
 	TemplateID       *string                   `json:"template_id,omitempty"`
 }
 
+type TelegramUser struct {
+	ID        int64  `json:"id"`
+	Username  string `json:"username"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+}
+
 type MuscleGroupsResponse struct {
 	MuscleGroupId string `json:"muscle_group_id"`
 	Code          string `json:"code"`

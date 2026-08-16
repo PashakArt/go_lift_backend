@@ -25,10 +25,13 @@ func NewClient(addr string) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) Init(ctx context.Context, tenantId, tgId string) (*workoutv1.InitResponse, error) {
+func (c *Client) Init(ctx context.Context, tenantId, tgId, username, firstName, lastName string) (*workoutv1.InitResponse, error) {
 	req := &workoutv1.InitRequest{
 		TenantId:   tenantId,
 		TelegramId: tgId,
+		Username:   &username,
+		FirstName:  &firstName,
+		LastName:   &lastName,
 	}
 
 	res, err := c.client.Init(ctx, req)

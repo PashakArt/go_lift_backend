@@ -1475,6 +1475,9 @@ type InitRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	TenantId      string                 `protobuf:"bytes,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
 	TelegramId    string                 `protobuf:"bytes,2,opt,name=telegram_id,json=telegramId,proto3" json:"telegram_id,omitempty"`
+	Username      *string                `protobuf:"bytes,3,opt,name=username,proto3,oneof" json:"username,omitempty"`
+	FirstName     *string                `protobuf:"bytes,4,opt,name=first_name,json=firstName,proto3,oneof" json:"first_name,omitempty"`
+	LastName      *string                `protobuf:"bytes,5,opt,name=last_name,json=lastName,proto3,oneof" json:"last_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1519,6 +1522,27 @@ func (x *InitRequest) GetTenantId() string {
 func (x *InitRequest) GetTelegramId() string {
 	if x != nil {
 		return x.TelegramId
+	}
+	return ""
+}
+
+func (x *InitRequest) GetUsername() string {
+	if x != nil && x.Username != nil {
+		return *x.Username
+	}
+	return ""
+}
+
+func (x *InitRequest) GetFirstName() string {
+	if x != nil && x.FirstName != nil {
+		return *x.FirstName
+	}
+	return ""
+}
+
+func (x *InitRequest) GetLastName() string {
+	if x != nil && x.LastName != nil {
+		return *x.LastName
 	}
 	return ""
 }
@@ -2720,11 +2744,19 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\r_duration_secB\r\n" +
 	"\v_distance_m\"M\n" +
 	"\x1dGetCompletedExercisesResponse\x12,\n" +
-	"\x04sets\x18\x01 \x03(\v2\x18.workout.v1.CompletedSetR\x04sets\"K\n" +
+	"\x04sets\x18\x01 \x03(\v2\x18.workout.v1.CompletedSetR\x04sets\"\xdc\x01\n" +
 	"\vInitRequest\x12\x1b\n" +
 	"\ttenant_id\x18\x01 \x01(\tR\btenantId\x12\x1f\n" +
 	"\vtelegram_id\x18\x02 \x01(\tR\n" +
-	"telegramId\"\xd8\x01\n" +
+	"telegramId\x12\x1f\n" +
+	"\busername\x18\x03 \x01(\tH\x00R\busername\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"first_name\x18\x04 \x01(\tH\x01R\tfirstName\x88\x01\x01\x12 \n" +
+	"\tlast_name\x18\x05 \x01(\tH\x02R\blastName\x88\x01\x01B\v\n" +
+	"\t_usernameB\r\n" +
+	"\v_first_nameB\f\n" +
+	"\n" +
+	"_last_name\"\xd8\x01\n" +
 	"\vTenantTheme\x12\x12\n" +
 	"\x04mode\x18\x01 \x01(\tR\x04mode\x12\x1d\n" +
 	"\n" +
@@ -2981,6 +3013,7 @@ func file_api_proto_workout_v1_workout_proto_init() {
 	}
 	file_api_proto_workout_v1_workout_proto_msgTypes[9].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[22].OneofWrappers = []any{}
+	file_api_proto_workout_v1_workout_proto_msgTypes[24].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[28].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[29].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[31].OneofWrappers = []any{}

@@ -17,7 +17,7 @@ type InitResponse struct {
 }
 
 type InitService interface {
-	Init(ctx context.Context, tenantId, tgId string) (*InitResponse, error)
+	Init(ctx context.Context, tenantId, tgId, username, firstName, lastName string) (*InitResponse, error)
 }
 
 type initService struct {
@@ -38,7 +38,7 @@ func NewInitService(
 	}
 }
 
-func (s *initService) Init(ctx context.Context, tenantId, tgId string) (*InitResponse, error) {
+func (s *initService) Init(ctx context.Context, tenantId, tgId, username, firstName, lastName string) (*InitResponse, error) {
 	parsedTenantId, err := uuid.Parse(tenantId)
 	if err != nil {
 		return nil, fmt.Errorf("invalid tenant id format in service: %w", err)
@@ -56,10 +56,13 @@ func (s *initService) Init(ctx context.Context, tenantId, tgId string) (*InitRes
 
 	if existingUser == nil {
 		newUser := &domain.User{
-			UserID:     uuid.New(),
-			TelegramID: tgId,
-			TenantID:   tenant.TenantID,
-			CreatedAt:  time.Now(),
+			UserID:      uuid.New(),
+			TelegramID:  tgId,
+			TenantID:    tenant.TenantID,
+			CreatedAt:   time.Now(),
+			TgUsername:  username,
+			TgFirstName: firstName,
+			TgLastName:  lastName,
 		}
 
 		err = s.userRepo.Create(ctx, newUser)
