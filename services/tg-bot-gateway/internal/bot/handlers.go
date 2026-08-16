@@ -396,6 +396,8 @@ func (s *HTTPServer) HandleInit(w http.ResponseWriter, r *http.Request) {
 		IsNewUser:        res.IsNewUser,
 		Branding:         res.TenantBranding,
 		TemplateID:       templateId,
+		TgUsername:       res.User.TgUsername,
+		TgFirstName:      res.User.TgFirstName,
 	})
 }
 

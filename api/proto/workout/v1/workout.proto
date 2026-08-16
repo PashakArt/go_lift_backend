@@ -233,6 +233,8 @@ message UserInfo {
   string telegram_id = 3;
   string phone       = 4;
   string created_at  = 5;
+  optional string tg_username = 6;
+  optional string tg_first_name = 7;
 }
 
 enum ExerciseType {

@@ -68,11 +68,13 @@ func (h *WorkoutHandler) Init(ctx context.Context, req *workoutv1.InitRequest) (
 
 	return &workoutv1.InitResponse{
 		User: &workoutv1.UserInfo{
-			UserId:     response.User.UserID.String(),
-			TenantId:   response.User.TenantID.String(),
-			TelegramId: response.User.TelegramID,
-			Phone:      response.User.Phone,
-			CreatedAt:  response.User.CreatedAt.Format(time.RFC3339),
+			UserId:      response.User.UserID.String(),
+			TenantId:    response.User.TenantID.String(),
+			TelegramId:  response.User.TelegramID,
+			Phone:       response.User.Phone,
+			CreatedAt:   response.User.CreatedAt.Format(time.RFC3339),
+			TgUsername:  &response.User.TgUsername,
+			TgFirstName: &response.User.TgFirstName,
 		},
 		ActiveSession:  activeSessionInfo,
 		IsNewUser:      response.IsNewUser,

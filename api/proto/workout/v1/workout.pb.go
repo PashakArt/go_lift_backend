@@ -1862,6 +1862,8 @@ type UserInfo struct {
 	TelegramId    string                 `protobuf:"bytes,3,opt,name=telegram_id,json=telegramId,proto3" json:"telegram_id,omitempty"`
 	Phone         string                 `protobuf:"bytes,4,opt,name=phone,proto3" json:"phone,omitempty"`
 	CreatedAt     string                 `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	TgUsername    *string                `protobuf:"bytes,6,opt,name=tg_username,json=tgUsername,proto3,oneof" json:"tg_username,omitempty"`
+	TgFirstName   *string                `protobuf:"bytes,7,opt,name=tg_first_name,json=tgFirstName,proto3,oneof" json:"tg_first_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1927,6 +1929,20 @@ func (x *UserInfo) GetPhone() string {
 func (x *UserInfo) GetCreatedAt() string {
 	if x != nil {
 		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *UserInfo) GetTgUsername() string {
+	if x != nil && x.TgUsername != nil {
+		return *x.TgUsername
+	}
+	return ""
+}
+
+func (x *UserInfo) GetTgFirstName() string {
+	if x != nil && x.TgFirstName != nil {
+		return *x.TgFirstName
 	}
 	return ""
 }
@@ -2783,7 +2799,7 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"started_at\x18\x02 \x01(\tR\tstartedAt\x12$\n" +
 	"\vtemplate_id\x18\x03 \x01(\tH\x00R\n" +
 	"templateId\x88\x01\x01B\x0e\n" +
-	"\f_template_id\"\x96\x01\n" +
+	"\f_template_id\"\x87\x02\n" +
 	"\bUserInfo\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\ttenant_id\x18\x02 \x01(\tR\btenantId\x12\x1f\n" +
@@ -2791,7 +2807,12 @@ const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"telegramId\x12\x14\n" +
 	"\x05phone\x18\x04 \x01(\tR\x05phone\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x05 \x01(\tR\tcreatedAt\"g\n" +
+	"created_at\x18\x05 \x01(\tR\tcreatedAt\x12$\n" +
+	"\vtg_username\x18\x06 \x01(\tH\x00R\n" +
+	"tgUsername\x88\x01\x01\x12'\n" +
+	"\rtg_first_name\x18\a \x01(\tH\x01R\vtgFirstName\x88\x01\x01B\x0e\n" +
+	"\f_tg_usernameB\x10\n" +
+	"\x0e_tg_first_name\"g\n" +
 	"\x13GetExercisesRequest\x12&\n" +
 	"\x0fmuscle_group_id\x18\x01 \x01(\tR\rmuscleGroupId\x12\x1c\n" +
 	"\auser_id\x18\x02 \x01(\tH\x00R\x06userId\x88\x01\x01B\n" +
@@ -3016,6 +3037,7 @@ func file_api_proto_workout_v1_workout_proto_init() {
 	file_api_proto_workout_v1_workout_proto_msgTypes[24].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[28].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[29].OneofWrappers = []any{}
+	file_api_proto_workout_v1_workout_proto_msgTypes[30].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[31].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[34].OneofWrappers = []any{}
 	file_api_proto_workout_v1_workout_proto_msgTypes[41].OneofWrappers = []any{}

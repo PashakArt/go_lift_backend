@@ -59,6 +59,8 @@ type InitResponse struct {
 	SessionId        string                    `json:"session_id"`
 	Branding         *workoutv1.TenantBranding `json:"branding"`
 	TemplateID       *string                   `json:"template_id,omitempty"`
+	TgUsername       *string                   `json:"tg_username"`
+	TgFirstName      *string                   `json:"tg_first_name"`
 }
 
 type TelegramUser struct {
