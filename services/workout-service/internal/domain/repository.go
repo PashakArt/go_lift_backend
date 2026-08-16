@@ -8,7 +8,7 @@ import (
 
 // UserRepository описывает контракт для работы с пользователями
 type UserRepository interface {
-	Create(ctx context.Context, user *User) error
+	Upsert(ctx context.Context, user *User) (bool, error)
 	GetByTenantAndTelegramID(ctx context.Context, tenantID uuid.UUID, tgID string) (*User, error)
 }
 

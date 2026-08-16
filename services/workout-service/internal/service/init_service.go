@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/domain"
 	"github.com/google/uuid"
@@ -46,46 +45,33 @@ func (s *initService) Init(ctx context.Context, tenantId, tgId, username, firstN
 
 	tenant, err := s.tenantRepo.GetById(ctx, parsedTenantId)
 	if err != nil {
-		return nil, fmt.Errorf("failed to checking tenantId: %w", err)
+		return nil, fmt.Errorf("failed to check tenantId: %w", err)
 	}
 
-	existingUser, err := s.userRepo.GetByTenantAndTelegramID(ctx, parsedTenantId, tgId)
+	user := &domain.User{
+		TenantID:    tenant.TenantID,
+		TelegramID:  tgId,
+		TgUsername:  username,
+		TgFirstName: firstName,
+		TgLastName:  lastName,
+	}
+
+	isNewUser, err := s.userRepo.Upsert(ctx, user)
 	if err != nil {
-		return nil, fmt.Errorf("auth check failed: %w", err)
+		return nil, fmt.Errorf("failed to sync user profile: %w", err)
 	}
 
-	if existingUser == nil {
-		newUser := &domain.User{
-			UserID:      uuid.New(),
-			TelegramID:  tgId,
-			TenantID:    tenant.TenantID,
-			CreatedAt:   time.Now(),
-			TgUsername:  username,
-			TgFirstName: firstName,
-			TgLastName:  lastName,
-		}
-
-		err = s.userRepo.Create(ctx, newUser)
+	var activeSession *domain.WorkoutSession
+	if !isNewUser {
+		activeSession, err = s.sessionRepo.GetActiveByUserID(ctx, user.UserID.String())
 		if err != nil {
-			return nil, fmt.Errorf("failed to register new user: %w", err)
+			return nil, fmt.Errorf("failed to get active session by user_id: %w", err)
 		}
-
-		return &InitResponse{
-			User:           newUser,
-			IsNewUser:      true,
-			ActiveSession:  nil,
-			TenantBranding: tenant.BrandingJSON,
-		}, nil
-	}
-
-	activeSession, err := s.sessionRepo.GetActiveByUserID(ctx, existingUser.UserID.String())
-	if err != nil {
-		return nil, fmt.Errorf("failed to get active session by user_id: %w", err)
 	}
 
 	return &InitResponse{
-		User:           existingUser,
-		IsNewUser:      false,
+		User:           user,
+		IsNewUser:      isNewUser,
 		ActiveSession:  activeSession,
 		TenantBranding: tenant.BrandingJSON,
 	}, nil

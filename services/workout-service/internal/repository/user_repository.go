@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/domain"
 	"github.com/google/uuid"
@@ -13,8 +14,8 @@ import (
 )
 
 var (
-	//go:embed queries/create_user.sql
-	createUserQuery string
+	//go:embed queries/upsert_user.sql
+	upsertUserQuery string
 
 	//go:embed queries/get_user_by_tg_id.sql
 	getUserByTgId string
@@ -28,14 +29,18 @@ func NewUserRepository(pool *pgxpool.Pool) domain.UserRepository {
 	return &userRepository{pool}
 }
 
-func (r *userRepository) Create(ctx context.Context, user *domain.User) error {
+func (r *userRepository) Upsert(ctx context.Context, user *domain.User) (bool, error) {
 	if user.UserID == uuid.Nil {
 		user.UserID = uuid.New()
 	}
+	if user.CreatedAt.IsZero() {
+		user.CreatedAt = time.Now()
+	}
 
+	var isInserted bool
 	err := r.pool.QueryRow(
 		ctx,
-		createUserQuery,
+		upsertUserQuery,
 		user.UserID,
 		user.TenantID,
 		user.TelegramID,
@@ -44,13 +49,13 @@ func (r *userRepository) Create(ctx context.Context, user *domain.User) error {
 		user.TgUsername,
 		user.TgFirstName,
 		user.TgLastName,
-	).Scan(&user.UserID, &user.CreatedAt)
+	).Scan(&user.UserID, &user.CreatedAt, &isInserted)
 
 	if err != nil {
-		return fmt.Errorf("failed to execute create user query: %w", err)
+		return false, fmt.Errorf("failed to upsert user: %w", err)
 	}
 
-	return nil
+	return isInserted, nil
 }
 
 func (r *userRepository) GetByTenantAndTelegramID(ctx context.Context, tenantId uuid.UUID, tgId string) (*domain.User, error) {
