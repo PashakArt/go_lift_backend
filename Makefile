@@ -26,7 +26,7 @@ run_dev_workout:
 
 # --- PROD TARGETS ---
 deploy:
-	docker compose -f docker-compose.prod.yml up -d --build
+	docker compose -f docker-compose.prod.yml up -d --build --force-recreate
 
 down_prod:
 	docker compose -f docker-compose.prod.yml down

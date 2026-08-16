@@ -25,6 +25,7 @@ services:
   migration:
     image: migrate/migrate
     container_name: go_lift_migration
+    restart: "no"
     volumes:
       - ./migrations:/migrations
     command:
