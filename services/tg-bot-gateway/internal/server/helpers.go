@@ -1,4 +1,4 @@
-package bot
+package server
 
 import (
 	"crypto/hmac"

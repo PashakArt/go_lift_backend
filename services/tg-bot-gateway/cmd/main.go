@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/auth"
-	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/bot"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/clients/workout"
+	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/server"
 	"github.com/joho/godotenv"
 )
 
@@ -54,7 +54,7 @@ func main() {
 	}
 	jwtManager := auth.NewJwtManager(jwtSecretKey, 24*time.Hour)
 
-	server := bot.NewHTTPServer(botToken, workoutClient, jwtManager)
+	server := server.NewHTTPServer(botToken, workoutClient, jwtManager)
 
 	go func() {
 		if err := server.Start(httpPort); err != nil {
