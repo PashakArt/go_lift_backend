@@ -39,6 +39,7 @@ func main() {
 		services.Session,
 		services.MuscleGroup,
 		services.Template,
+		services.Report,
 	)
 
 	grpcPort := os.Getenv("WORKOUT_GRPC_PORT")

@@ -28,6 +28,9 @@ var (
 
 	//go:embed queries/get_workouts_for_day.sql
 	getWorkoutsForDayQuery string
+
+	//go:embed queries/get_user_export_data.sql
+	getUserExportData string
 )
 
 type workoutSessionRepository struct {
@@ -160,6 +163,36 @@ func (r *workoutSessionRepository) GetWorkoutsForDay(ctx context.Context, userId
 
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return result, nil
+}
+
+func (r *workoutSessionRepository) GetUserExportData(ctx context.Context, userID uuid.UUID) ([]domain.ExportReportRow, error) {
+	rows, err := r.pool.Query(ctx, getUserExportData, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []domain.ExportReportRow
+	for rows.Next() {
+		var row domain.ExportReportRow
+		if err := rows.Scan(
+			&row.SessionId,
+			&row.StartedAt,
+			&row.EndedAt,
+			&row.SessionType,
+			&row.ExerciseName,
+			&row.SetNumber,
+			&row.Weight,
+			&row.Reps,
+			&row.DurationSec,
+			&row.DistanceM,
+		); err != nil {
+			return nil, err
+		}
+		result = append(result, row)
 	}
 
 	return result, nil

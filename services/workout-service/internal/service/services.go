@@ -1,6 +1,9 @@
 package service
 
-import "github.com/PashakArt/go_lift_backend/services/workout-service/internal/repository"
+import (
+	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/exporter"
+	"github.com/PashakArt/go_lift_backend/services/workout-service/internal/repository"
+)
 
 type Services struct {
 	Auth        InitService
@@ -8,6 +11,7 @@ type Services struct {
 	Session     TrainingService
 	MuscleGroup MuscleGroupService
 	Template    TemplateService
+	Report      ReportService
 }
 
 func NewServices(repos *repository.Repositories) *Services {
@@ -17,5 +21,6 @@ func NewServices(repos *repository.Repositories) *Services {
 		Session:     NewTrainingService(repos.Session, repos.WorkoutSet),
 		MuscleGroup: NewMuscleGroupService(repos.MuscleGroup),
 		Template:    NewTemplateService(repos.Template, repos.Exercise),
+		Report:      NewReportService(repos.Session, exporter.NewExcelExporter()),
 	}
 }

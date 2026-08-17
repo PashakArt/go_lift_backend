@@ -43,3 +43,16 @@ type SessionExerciseRow struct {
 
 	WorkoutSet `json:"-"`
 }
+
+type ExportReportRow struct {
+	SessionId    uuid.UUID
+	StartedAt    time.Time
+	EndedAt      *time.Time
+	SessionType  SessionType
+	ExerciseName string
+	SetNumber    int
+	Weight       *float64
+	Reps         *int
+	DurationSec  *int
+	DistanceM    *int
+}

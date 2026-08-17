@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	workoutv1 "github.com/PashakArt/go_lift_backend/api/proto/workout/v1"
@@ -19,6 +20,7 @@ type WorkoutHandler struct {
 	trainingService    service.TrainingService
 	muscleGroupService service.MuscleGroupService
 	templateService    service.TemplateService
+	reportService      service.ReportService
 }
 
 func NewWorkoutHandler(
@@ -27,6 +29,7 @@ func NewWorkoutHandler(
 	sessionService service.TrainingService,
 	muscleGroupService service.MuscleGroupService,
 	templateService service.TemplateService,
+	reportService service.ReportService,
 ) *WorkoutHandler {
 	return &WorkoutHandler{
 		authService:        authService,
@@ -34,6 +37,7 @@ func NewWorkoutHandler(
 		trainingService:    sessionService,
 		muscleGroupService: muscleGroupService,
 		templateService:    templateService,
+		reportService:      reportService,
 	}
 }
 
@@ -502,4 +506,21 @@ func (h *WorkoutHandler) UpdateTemplate(
 	}
 
 	return &workoutv1.UpdateTemplateResponse{}, nil
+}
+
+func (h *WorkoutHandler) ExportWorkoutsReport(
+	ctx context.Context,
+	req *workoutv1.ExportWorkoutsReportRequest,
+) (*workoutv1.ExportWorkoutsReportResponse, error) {
+	fileBytes, err := h.reportService.ExportWorkoutReport(ctx, req.GetUserId())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to generate workout report: %v", err)
+	}
+
+	filename := fmt.Sprintf("workouts_report_%s.xlsx", time.Now().Format("2006-01-02"))
+
+	return &workoutv1.ExportWorkoutsReportResponse{
+		Filename: filename,
+		Content:  fileBytes,
+	}, nil
 }

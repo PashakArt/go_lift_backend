@@ -26,6 +26,7 @@ type WorkoutSessionRepository interface {
 	GetActiveByUserID(ctx context.Context, userId string) (*WorkoutSession, error)
 	Finish(ctx context.Context, userId uuid.UUID) error
 	GetTrainingDays(ctx context.Context, userId string, year, month int) ([]string, error)
+	GetUserExportData(ctx context.Context, userID uuid.UUID) ([]ExportReportRow, error)
 }
 
 // WorkoutSetRepository описывает контракт для работы с подходами внутри сессии
