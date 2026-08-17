@@ -34,6 +34,7 @@ const (
 	WorkoutService_GetTemplate_FullMethodName           = "/workout.v1.WorkoutService/GetTemplate"
 	WorkoutService_DeleteTemplate_FullMethodName        = "/workout.v1.WorkoutService/DeleteTemplate"
 	WorkoutService_UpdateTemplate_FullMethodName        = "/workout.v1.WorkoutService/UpdateTemplate"
+	WorkoutService_ExportWorkoutsReport_FullMethodName  = "/workout.v1.WorkoutService/ExportWorkoutsReport"
 )
 
 // WorkoutServiceClient is the client API for WorkoutService service.
@@ -70,6 +71,7 @@ type WorkoutServiceClient interface {
 	DeleteTemplate(ctx context.Context, in *DeleteTemplateRequest, opts ...grpc.CallOption) (*DeleteTemplateResponse, error)
 	// Обновление шаблона
 	UpdateTemplate(ctx context.Context, in *UpdateTemplateRequest, opts ...grpc.CallOption) (*UpdateTemplateResponse, error)
+	ExportWorkoutsReport(ctx context.Context, in *ExportWorkoutsReportRequest, opts ...grpc.CallOption) (*ExportWorkoutsReportResponse, error)
 }
 
 type workoutServiceClient struct {
@@ -230,6 +232,16 @@ func (c *workoutServiceClient) UpdateTemplate(ctx context.Context, in *UpdateTem
 	return out, nil
 }
 
+func (c *workoutServiceClient) ExportWorkoutsReport(ctx context.Context, in *ExportWorkoutsReportRequest, opts ...grpc.CallOption) (*ExportWorkoutsReportResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ExportWorkoutsReportResponse)
+	err := c.cc.Invoke(ctx, WorkoutService_ExportWorkoutsReport_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // WorkoutServiceServer is the server API for WorkoutService service.
 // All implementations must embed UnimplementedWorkoutServiceServer
 // for forward compatibility.
@@ -264,6 +276,7 @@ type WorkoutServiceServer interface {
 	DeleteTemplate(context.Context, *DeleteTemplateRequest) (*DeleteTemplateResponse, error)
 	// Обновление шаблона
 	UpdateTemplate(context.Context, *UpdateTemplateRequest) (*UpdateTemplateResponse, error)
+	ExportWorkoutsReport(context.Context, *ExportWorkoutsReportRequest) (*ExportWorkoutsReportResponse, error)
 	mustEmbedUnimplementedWorkoutServiceServer()
 }
 
@@ -318,6 +331,9 @@ func (UnimplementedWorkoutServiceServer) DeleteTemplate(context.Context, *Delete
 }
 func (UnimplementedWorkoutServiceServer) UpdateTemplate(context.Context, *UpdateTemplateRequest) (*UpdateTemplateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateTemplate not implemented")
+}
+func (UnimplementedWorkoutServiceServer) ExportWorkoutsReport(context.Context, *ExportWorkoutsReportRequest) (*ExportWorkoutsReportResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ExportWorkoutsReport not implemented")
 }
 func (UnimplementedWorkoutServiceServer) mustEmbedUnimplementedWorkoutServiceServer() {}
 func (UnimplementedWorkoutServiceServer) testEmbeddedByValue()                        {}
@@ -610,6 +626,24 @@ func _WorkoutService_UpdateTemplate_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _WorkoutService_ExportWorkoutsReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportWorkoutsReportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WorkoutServiceServer).ExportWorkoutsReport(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WorkoutService_ExportWorkoutsReport_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WorkoutServiceServer).ExportWorkoutsReport(ctx, req.(*ExportWorkoutsReportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // WorkoutService_ServiceDesc is the grpc.ServiceDesc for WorkoutService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -676,6 +710,10 @@ var WorkoutService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateTemplate",
 			Handler:    _WorkoutService_UpdateTemplate_Handler,
+		},
+		{
+			MethodName: "ExportWorkoutsReport",
+			Handler:    _WorkoutService_ExportWorkoutsReport_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -51,6 +51,19 @@ service WorkoutService {
 
   // Обновление шаблона
   rpc UpdateTemplate(UpdateTemplateRequest) returns (UpdateTemplateResponse);
+
+  rpc ExportWorkoutsReport(ExportWorkoutsReportRequest) returns (ExportWorkoutsReportResponse);
+}
+
+message ExportWorkoutsReportRequest {
+  string user_id = 1;
+  optional string from_date = 2; // e.g. "2026-01-01"
+  optional string to_date = 3;   // e.g. "2026-08-17"
+}
+
+message ExportWorkoutsReportResponse {
+  bytes content = 1;
+  string filename = 2;
 }
 
 message UpdateTemplateRequest {

@@ -269,3 +269,22 @@ func (c *Client) UpdateTemplate(ctx context.Context, templateId, userId string, 
 
 	return nil
 }
+
+func (c *Client) ExportWorkoutsReport(
+	ctx context.Context,
+	userId string,
+	fromDate, toDate *string,
+) (*workoutv1.ExportWorkoutsReportResponse, error) {
+	req := &workoutv1.ExportWorkoutsReportRequest{
+		UserId:   userId,
+		FromDate: fromDate,
+		ToDate:   toDate,
+	}
+
+	res, err := c.client.ExportWorkoutsReport(ctx, req)
+	if err != nil {
+		return nil, fmt.Errorf("gRPC export workouts report failed: %w", err)
+	}
+
+	return res, nil
+}

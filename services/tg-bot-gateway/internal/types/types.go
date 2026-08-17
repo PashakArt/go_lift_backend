@@ -147,3 +147,8 @@ type UpdateTemplateRequest struct {
 type StartTrainingRequest struct {
 	TemplateID string `json:"template_id,omitempty"`
 }
+
+type ReportQueryParams struct {
+	FromDate string `json:"from" validate:"omitempty,datetime=2006-01-02"`
+	ToDate   string `json:"to"   validate:"omitempty,datetime=2006-01-02"`
+}
