@@ -15,9 +15,15 @@ type setWebhookResponse struct {
 	Description string `json:"description"`
 }
 
-func SetupWebhook(botToken, appDomain, secret string) error {
+func SetupWebhook(botToken, appDomain, secret, customEndpoint string) error {
 	webhookURL := fmt.Sprintf("%s/api/v1/telegram/webhook", appDomain)
-	telegramAPIURL := fmt.Sprintf("https://api.telegram.org/bot%s/setWebhook", botToken)
+
+	var telegramAPIURL string
+	if customEndpoint != "" {
+		telegramAPIURL = fmt.Sprintf(customEndpoint, botToken, "setWebhook")
+	} else {
+		telegramAPIURL = fmt.Sprintf("https://api.telegram.org/bot%s/setWebhook", botToken)
+	}
 
 	data := url.Values{}
 	data.Set("url", webhookURL)

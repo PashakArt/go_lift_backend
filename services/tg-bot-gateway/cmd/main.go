@@ -72,7 +72,7 @@ func main() {
 		}
 
 		if appDomain != "" {
-			if err := telegram.SetupWebhook(botToken, appDomain, webhookSecret); err != nil {
+			if err := telegram.SetupWebhook(botToken, appDomain, webhookSecret, customEndpoint); err != nil {
 				log.Printf("[ERROR] Failed to setup webhook: %v", err)
 			}
 		} else {
