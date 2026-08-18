@@ -272,13 +272,13 @@ func (c *Client) UpdateTemplate(ctx context.Context, templateId, userId string, 
 
 func (c *Client) ExportWorkoutsReport(
 	ctx context.Context,
-	userId string,
+	tgId string,
 	fromDate, toDate *string,
 ) (*workoutv1.ExportWorkoutsReportResponse, error) {
 	req := &workoutv1.ExportWorkoutsReportRequest{
-		UserId:   userId,
-		FromDate: fromDate,
-		ToDate:   toDate,
+		TelegramId: tgId,
+		FromDate:   fromDate,
+		ToDate:     toDate,
 	}
 
 	res, err := c.client.ExportWorkoutsReport(ctx, req)

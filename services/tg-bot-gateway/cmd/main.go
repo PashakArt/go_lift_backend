@@ -11,6 +11,8 @@ import (
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/auth"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/clients/workout"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/server"
+	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/telegram"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -24,22 +26,23 @@ func main() {
 
 	log.Println("Starting tg-bot-gateway...")
 
-	botToken := os.Getenv("TELEGRAM_BOT_TOKEN")
-
-	if botToken == "" {
-		// TODO Пока оставим предупреждение. Для локальных тестов без валидации хэша
-		// можно будет передавать заглушку, но для честной проверки токен нужен.
-		log.Println("[WARNING] TELEGRAM_BOT_TOKEN is not set")
+	env := os.Getenv("ENV")
+	if env == "" {
+		env = "local"
 	}
+
+	botToken := os.Getenv("TELEGRAM_BOT_TOKEN")
+	appDomain := os.Getenv("APP_DOMAIN")
+	webhookSecret := os.Getenv("TELEGRAM_WEBHOOK_SECRET")
 
 	workoutServiceAddr := os.Getenv("WORKOUT_SERVICE_ADDR")
 	if workoutServiceAddr == "" {
-		workoutServiceAddr = "localhost:50051" // Дефолтный локальный порт workout-service
+		workoutServiceAddr = "localhost:50051"
 	}
 
 	httpPort := os.Getenv("HTTP_PORT")
 	if httpPort == "" {
-		httpPort = "8080" // Порт, который будет слушать наш шлюз для фронтенда
+		httpPort = "8080"
 	}
 
 	log.Printf("Connecting to workout-service at %s...\n", workoutServiceAddr)
@@ -48,13 +51,33 @@ func main() {
 		log.Fatalf("Failed to initialize workout gRPC client: %v", err)
 	}
 
+	var botAPI *tgbotapi.BotAPI
+
+	if env == "local" {
+		log.Println("[INFO] Running in LOCAL mode: Telegram API connection and Webhook setup skipped.")
+	} else {
+		botAPI, err = tgbotapi.NewBotAPI(botToken)
+		if err != nil {
+			log.Fatalf("[FATAL] Failed to create Telegram Bot API client: %v", err)
+		}
+
+		if appDomain != "" {
+			if err := telegram.SetupWebhook(botToken, appDomain, webhookSecret); err != nil {
+				log.Printf("[ERROR] Failed to setup webhook: %v", err)
+			}
+		} else {
+			log.Println("[WARNING] APP_DOMAIN is empty, skipping setWebhook call")
+		}
+	}
+
+	tgRouter := telegram.NewRouter(botAPI, workoutClient, webhookSecret)
 	jwtSecretKey := os.Getenv("JWT_SECRET_KEY")
 	if jwtSecretKey == "" {
 		log.Fatalf("[ERROR] JWT_SECRET_KEY env is not set")
 	}
 	jwtManager := auth.NewJwtManager(jwtSecretKey, 24*time.Hour)
 
-	server := server.NewHTTPServer(botToken, workoutClient, jwtManager)
+	server := server.NewHTTPServer(botToken, workoutClient, jwtManager, tgRouter)
 
 	go func() {
 		if err := server.Start(httpPort); err != nil {

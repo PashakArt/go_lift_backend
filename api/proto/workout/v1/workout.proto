@@ -56,7 +56,7 @@ service WorkoutService {
 }
 
 message ExportWorkoutsReportRequest {
-  string user_id = 1;
+  string telegram_id = 1;
   optional string from_date = 2; // e.g. "2026-01-01"
   optional string to_date = 3;   // e.g. "2026-08-17"
 }

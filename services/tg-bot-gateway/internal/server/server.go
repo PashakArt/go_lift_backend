@@ -6,6 +6,7 @@ import (
 
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/auth"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/clients/workout"
+	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/telegram"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -14,27 +15,34 @@ const (
 )
 
 type HTTPServer struct {
-	workoutClient *workout.Client
-	botToken      string
-	jwtManager    *auth.JwtManager
-	validate      *validator.Validate
+	workoutClient  *workout.Client
+	botToken       string
+	jwtManager     *auth.JwtManager
+	validate       *validator.Validate
+	telegramRouter *telegram.Router
 }
 
 func NewHTTPServer(
 	botToken string,
 	workoutClient *workout.Client,
 	jwtManager *auth.JwtManager,
+	telegramRouter *telegram.Router,
 ) *HTTPServer {
 	return &HTTPServer{
-		workoutClient: workoutClient,
-		botToken:      botToken,
-		jwtManager:    jwtManager,
-		validate:      validator.New(),
+		workoutClient:  workoutClient,
+		botToken:       botToken,
+		jwtManager:     jwtManager,
+		validate:       validator.New(),
+		telegramRouter: telegramRouter,
 	}
 }
 
 func (s *HTTPServer) Start(port string) error {
 	mux := http.NewServeMux()
+
+	mux.HandleFunc("/api/v1/telegram/webhook", s.telegramRouter.HandleWebhook)
+
+	mux.HandleFunc("POST /api/v1/telegram/webhook", s.telegramRouter.HandleWebhook)
 
 	mux.HandleFunc("POST /api/v1/init", s.HandleInit)
 
@@ -62,8 +70,6 @@ func (s *HTTPServer) Start(port string) error {
 	mux.Handle("GET /api/v1/templates/detail/{templateId}", s.AuthMiddleware(http.HandlerFunc(s.HandleGetTemplate)))
 	mux.Handle("DELETE /api/v1/templates/{templateId}", s.AuthMiddleware(http.HandlerFunc(s.HandleDeleteTemplate)))
 	mux.Handle("PUT /api/v1/templates/{templateId}", s.AuthMiddleware(http.HandlerFunc(s.HandleUpdateTemplate)))
-
-	mux.Handle("GET /api/v1/report", s.AuthMiddleware(http.HandlerFunc(s.HandleGetReport)))
 
 	handler := CorsMiddleware(mux)
 

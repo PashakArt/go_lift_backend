@@ -10,7 +10,7 @@ import (
 )
 
 type ReportService interface {
-	ExportWorkoutReport(ctx context.Context, userID string) ([]byte, error)
+	ExportWorkoutReport(ctx context.Context, tgId string) ([]byte, error)
 }
 
 type reportService struct {
@@ -28,13 +28,8 @@ func NewReportService(
 	}
 }
 
-func (s *reportService) ExportWorkoutReport(ctx context.Context, userIDStr string) ([]byte, error) {
-	userID, err := uuid.Parse(userIDStr)
-	if err != nil {
-		return nil, fmt.Errorf("invalid user id format: %w", err)
-	}
-
-	reportRows, err := s.sessionRepo.GetUserExportData(ctx, userID)
+func (s *reportService) ExportWorkoutReport(ctx context.Context, tgId string) ([]byte, error) {
+	reportRows, err := s.sessionRepo.GetUserExportData(ctx, tgId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch user export data: %w", err)
 	}

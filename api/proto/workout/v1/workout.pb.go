@@ -129,7 +129,7 @@ func (SessionType) EnumDescriptor() ([]byte, []int) {
 
 type ExportWorkoutsReportRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	TelegramId    string                 `protobuf:"bytes,1,opt,name=telegram_id,json=telegramId,proto3" json:"telegram_id,omitempty"`
 	FromDate      *string                `protobuf:"bytes,2,opt,name=from_date,json=fromDate,proto3,oneof" json:"from_date,omitempty"` // e.g. "2026-01-01"
 	ToDate        *string                `protobuf:"bytes,3,opt,name=to_date,json=toDate,proto3,oneof" json:"to_date,omitempty"`       // e.g. "2026-08-17"
 	unknownFields protoimpl.UnknownFields
@@ -166,9 +166,9 @@ func (*ExportWorkoutsReportRequest) Descriptor() ([]byte, []int) {
 	return file_api_proto_workout_v1_workout_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *ExportWorkoutsReportRequest) GetUserId() string {
+func (x *ExportWorkoutsReportRequest) GetTelegramId() string {
 	if x != nil {
-		return x.UserId
+		return x.TelegramId
 	}
 	return ""
 }
@@ -2761,9 +2761,10 @@ var File_api_proto_workout_v1_workout_proto protoreflect.FileDescriptor
 const file_api_proto_workout_v1_workout_proto_rawDesc = "" +
 	"\n" +
 	"\"api/proto/workout/v1/workout.proto\x12\n" +
-	"workout.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\x01\n" +
-	"\x1bExportWorkoutsReportRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\x12 \n" +
+	"workout.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x98\x01\n" +
+	"\x1bExportWorkoutsReportRequest\x12\x1f\n" +
+	"\vtelegram_id\x18\x01 \x01(\tR\n" +
+	"telegramId\x12 \n" +
 	"\tfrom_date\x18\x02 \x01(\tH\x00R\bfromDate\x88\x01\x01\x12\x1c\n" +
 	"\ato_date\x18\x03 \x01(\tH\x01R\x06toDate\x88\x01\x01B\f\n" +
 	"\n" +

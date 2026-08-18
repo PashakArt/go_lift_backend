@@ -512,7 +512,7 @@ func (h *WorkoutHandler) ExportWorkoutsReport(
 	ctx context.Context,
 	req *workoutv1.ExportWorkoutsReportRequest,
 ) (*workoutv1.ExportWorkoutsReportResponse, error) {
-	fileBytes, err := h.reportService.ExportWorkoutReport(ctx, req.GetUserId())
+	fileBytes, err := h.reportService.ExportWorkoutReport(ctx, req.GetTelegramId())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate workout report: %v", err)
 	}

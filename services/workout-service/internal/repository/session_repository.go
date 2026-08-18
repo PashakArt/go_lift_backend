@@ -168,8 +168,8 @@ func (r *workoutSessionRepository) GetWorkoutsForDay(ctx context.Context, userId
 	return result, nil
 }
 
-func (r *workoutSessionRepository) GetUserExportData(ctx context.Context, userID uuid.UUID) ([]domain.ExportReportRow, error) {
-	rows, err := r.pool.Query(ctx, getUserExportData, userID)
+func (r *workoutSessionRepository) GetUserExportData(ctx context.Context, tgId string) ([]domain.ExportReportRow, error) {
+	rows, err := r.pool.Query(ctx, getUserExportData, tgId)
 	if err != nil {
 		return nil, err
 	}
