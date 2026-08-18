@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -71,8 +72,13 @@ func main() {
 			log.Println("[WARNING] Gateway will work in REST mode only, Telegram commands/webhooks unavailable.")
 		}
 
+		webhookTargetURL := os.Getenv("TELEGRAM_WEBHOOK_URL")
+		if webhookTargetURL == "" {
+			webhookTargetURL = fmt.Sprintf("%s/api/v1/telegram/webhook", appDomain)
+		}
+
 		if appDomain != "" {
-			if err := telegram.SetupWebhook(botToken, appDomain, webhookSecret, customEndpoint); err != nil {
+			if err := telegram.SetupWebhook(botToken, webhookTargetURL, webhookSecret, customEndpoint); err != nil {
 				log.Printf("[ERROR] Failed to setup webhook: %v", err)
 			}
 		} else {
