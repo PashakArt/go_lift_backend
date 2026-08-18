@@ -17,8 +17,10 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load(".env", "../../.env"); err != nil {
-		log.Println("Warning: .env file not found, using system env")
+	if err := godotenv.Load(); err != nil {
+		if err = godotenv.Load("../../.env"); err != nil {
+			log.Println("Warning: .env file not found, using system env")
+		}
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -34,6 +36,7 @@ func main() {
 	botToken := os.Getenv("TELEGRAM_BOT_TOKEN")
 	appDomain := os.Getenv("APP_DOMAIN")
 	webhookSecret := os.Getenv("TELEGRAM_WEBHOOK_SECRET")
+	customEndpoint := os.Getenv("TELEGRAM_API_ENDPOINT")
 
 	workoutServiceAddr := os.Getenv("WORKOUT_SERVICE_ADDR")
 	if workoutServiceAddr == "" {
@@ -56,7 +59,13 @@ func main() {
 	if env == "local" {
 		log.Println("[INFO] Running in LOCAL mode: Telegram API connection and Webhook setup skipped.")
 	} else {
-		botAPI, err = tgbotapi.NewBotAPI(botToken)
+		if customEndpoint != "" {
+			log.Printf("[INFO] Using custom Telegram API Endpoint: %s\n", customEndpoint)
+			botAPI, err = tgbotapi.NewBotAPIWithAPIEndpoint(botToken, customEndpoint)
+		} else {
+			log.Println("[INFO] Using default Telegram API Endpoint")
+			botAPI, err = tgbotapi.NewBotAPI(botToken)
+		}
 		if err != nil {
 			log.Printf("[ERROR] Failed to connect to Telegram API (timeout/blocked): %v", err)
 			log.Println("[WARNING] Gateway will work in REST mode only, Telegram commands/webhooks unavailable.")
