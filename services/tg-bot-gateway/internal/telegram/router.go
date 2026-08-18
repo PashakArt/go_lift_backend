@@ -63,7 +63,11 @@ func (r *Router) processUpdate(update tgbotapi.Update) {
 }
 
 func (r *Router) handleStartCommand(msg *tgbotapi.Message) {
-	text := fmt.Sprintf("Привет, %s! 👋\n\nДобро пожаловать в GoLift. Открывай Mini App через кнопку ниже или используй команду /report для получения Excel-отчета по своим тренировкам.", msg.From.FirstName)
+	text := fmt.Sprintf(
+		"Привет, %s! 👋\n\n"+
+			"Запускай Mini App по кнопке ниже, чтобы начать тренировку, или используй /report для выгрузки Excel-отчета.",
+		msg.From.FirstName,
+	)
 
 	reply := tgbotapi.NewMessage(msg.Chat.ID, text)
 	_, err := r.api.Send(reply)
