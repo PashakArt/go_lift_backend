@@ -5,10 +5,8 @@ services:
     image: postgres:16-alpine
     container_name: golift_postgres_prod
     restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+    env_file:
+      - .env
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
@@ -26,6 +24,8 @@ services:
     image: migrate/migrate
     container_name: go_lift_migration
     restart: "no"
+    env_file:
+      - .env
     volumes:
       - ./migrations:/migrations
     command:
@@ -46,9 +46,10 @@ services:
         SERVICE_PATH: services/workout-service
     container_name: golift_workout_service
     restart: always
+    env_file:
+      - .env
     environment:
       - PORT=${WORKOUT_GRPC_PORT}
-      - DATABASE_URL=${DATABASE_URL}
     networks:
       - golift_network
     depends_on:
@@ -67,11 +68,11 @@ services:
     restart: always
     ports:
       - "${TG_HTTP_PORT}:${TG_HTTP_PORT}"
+    env_file:
+      - .env
     environment:
       - PORT=${TG_HTTP_PORT}
-      - WORKOUT_SERVICE_ADDR=${WORKOUT_SERVICE_ADDR}
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - HTTP_PORT=${TG_HTTP_PORT}
     networks:
       - golift_network
     depends_on:

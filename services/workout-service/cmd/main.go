@@ -20,7 +20,7 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load("../../.env"); err != nil {
+	if err := godotenv.Load(".env", "../../.env"); err != nil {
 		log.Println("Warning: .env file not found, using system env")
 	}
 
