@@ -58,7 +58,8 @@ func main() {
 	} else {
 		botAPI, err = tgbotapi.NewBotAPI(botToken)
 		if err != nil {
-			log.Fatalf("[FATAL] Failed to create Telegram Bot API client: %v", err)
+			log.Printf("[ERROR] Failed to connect to Telegram API (timeout/blocked): %v", err)
+			log.Println("[WARNING] Gateway will work in REST mode only, Telegram commands/webhooks unavailable.")
 		}
 
 		if appDomain != "" {
