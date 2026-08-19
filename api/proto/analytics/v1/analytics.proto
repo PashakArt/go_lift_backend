@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package analytics.v1;
+
+option go_package = "github.com/PashakArt/go_lift_backend/api/proto/analytics/v1;analyticsv1";
+
+import "google/protobuf/timestamp.proto";
+
+service AnalyticsService {
+  // Получить аналитику конкретного упражнения за период.
+  rpc GetExerciseAnalytics(GetExerciseAnalyticsRequest) returns (GetExerciseAnalyticsResponse);
+}
+
+
+message GetExerciseAnalyticsRequest {
+  string exercise_id = 1;
+
+  // Начало периода.
+  // Если не передано — с момента первого выполнения упражнения.
+  google.protobuf.Timestamp from = 2;
+
+  // Конец периода.
+  // Если не передано — до текущего момента.
+  google.protobuf.Timestamp to = 3;
+}
+
+message GetExerciseAnalyticsResponse {
+  repeated Metric metrics = 1;
+  PersonalRecords personal_records = 2;
+}
+
+
+message Metric {
+  MetricType type = 1;
+
+  // Одна точка = одна тренировочная сессия.
+  repeated DataPoint points = 2;
+}
+
+message DataPoint {
+  // Время начала тренировочной сессии.
+  google.protobuf.Timestamp session_start_time = 1;
+
+  // Значение метрики в данной тренировочной сессии.
+  double value = 2;
+
+  string session_id = 3;
+}
+
+
+enum MetricType {
+  METRIC_TYPE_UNSPECIFIED = 0;
+  // DYNAMIC
+  METRIC_TYPE_MAX_WEIGHT = 1;
+  METRIC_TYPE_MAX_REPS = 2;
+  METRIC_TYPE_VOLUME = 3;
+
+  // BODYWEIGHT
+  METRIC_TYPE_BODYWEIGHT_MAX_REPS = 4;
+  // Общее количество повторений всех подходов за тренировочную сессию.
+  METRIC_TYPE_TOTAL_REPS = 5;
+  // Максимальный дополнительный вес за тренировочную сессию.
+  // Например: +10, +15, +20 -> значение = 20.
+  METRIC_TYPE_MAX_ADDED_WEIGHT = 6;
+
+  // Сумма additional_weight * reps по подходам,
+  // где дополнительный вес задан.
+  // Например:
+  // +20 x 8
+  // +20 x 8
+  // +15 x 10
+  // = 470 кг дополнительного веса.
+  METRIC_TYPE_ADDED_WEIGHT_VOLUME = 7;
+
+  // STATIC
+
+  // Максимальная продолжительность одного подхода
+  // за тренировочную сессию.
+  METRIC_TYPE_MAX_DURATION = 8;
+  METRIC_TYPE_TOTAL_DURATION = 9;
+
+  // CARDIO
+  METRIC_TYPE_DISTANCE = 10;
+  METRIC_TYPE_DURATION = 11;
+}
+
+
+message PersonalRecords {
+  optional Record max_weight = 1;
+  optional Record max_reps = 2;
+  optional Record volume = 3;
+  optional Record max_added_weight = 4;
+  optional Record total_reps = 5;
+  optional Record max_duration = 6;
+  optional Record max_distance = 7;
+}
+
+message Record {
+  double value = 1;
+  string session_id = 2;
+  google.protobuf.Timestamp achieved_at = 3;
+}
