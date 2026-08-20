@@ -1,4 +1,4 @@
-package server
+package handlers
 
 import (
 	"crypto/hmac"
@@ -16,13 +16,13 @@ import (
 	"time"
 )
 
-func (s *HTTPServer) ValidateAndParseInitData(initData string) (url.Values, error) {
+func ValidateAndParseInitData(initData, botToken string) (url.Values, error) {
 	params, err := url.ParseQuery(initData)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse initData query: %w", err)
 	}
 
-	if s.botToken == "mock_token_123456" || s.botToken == "" {
+	if botToken == "mock_token_123456" || botToken == "" {
 		log.Println("[WARN] Running initData validation in MOCK mode")
 		return params, nil
 	}
@@ -62,7 +62,7 @@ func (s *HTTPServer) ValidateAndParseInitData(initData string) (url.Values, erro
 	checkString := strings.Join(checkStrings, "\n")
 
 	macKey := hmac.New(sha256.New, []byte("WebAppData"))
-	macKey.Write([]byte(s.botToken))
+	macKey.Write([]byte(botToken))
 	secretKey := macKey.Sum(nil)
 
 	mac := hmac.New(sha256.New, secretKey)

@@ -12,7 +12,9 @@ import (
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/auth"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/clients/workout"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/server"
+	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/server/handlers"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/telegram"
+	"github.com/go-playground/validator/v10"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/joho/godotenv"
 )
@@ -92,11 +94,21 @@ func main() {
 		log.Fatalf("[ERROR] JWT_SECRET_KEY env is not set")
 	}
 	jwtManager := auth.NewJwtManager(jwtSecretKey, 24*time.Hour)
+	validate := validator.New()
 
-	server := server.NewHTTPServer(botToken, workoutClient, jwtManager, tgRouter)
+	authHandler := handlers.NewAuthHandler(workoutClient, jwtManager, botToken)
+	workoutHandler := handlers.NewWorkoutHandler(workoutClient, validate)
+	authMiddleware := server.AuthMiddleware(jwtManager)
+
+	srv := server.NewHTTPServer(
+		workoutHandler,
+		authHandler,
+		tgRouter,
+		authMiddleware,
+	)
 
 	go func() {
-		if err := server.Start(httpPort); err != nil {
+		if err := srv.Start(httpPort); err != nil {
 			log.Fatalf("HTTP server failed to start: %v", err)
 		}
 	}()

@@ -4,72 +4,40 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/auth"
-	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/clients/workout"
+	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/server/handlers"
 	"github.com/PashakArt/go_lift_backend/services/tg-bot-gateway/internal/telegram"
-	"github.com/go-playground/validator/v10"
-)
-
-const (
-	defaultTenantId = "00000000-0000-0000-0000-000000000000"
 )
 
 type HTTPServer struct {
-	workoutClient  *workout.Client
-	botToken       string
-	jwtManager     *auth.JwtManager
-	validate       *validator.Validate
-	telegramRouter *telegram.Router
+	workoutHandler  *handlers.WorkoutHandler
+	authHandler     *handlers.AuthHandler
+	templateHandler *handlers.TemplateHandler
+	authMiddleware  func(http.Handler) http.Handler
+	telegramRouter  *telegram.Router
 }
 
 func NewHTTPServer(
-	botToken string,
-	workoutClient *workout.Client,
-	jwtManager *auth.JwtManager,
+	workoutHandler *handlers.WorkoutHandler,
+	authHandler *handlers.AuthHandler,
 	telegramRouter *telegram.Router,
+	authMiddleware func(http.Handler) http.Handler,
 ) *HTTPServer {
 	return &HTTPServer{
-		workoutClient:  workoutClient,
-		botToken:       botToken,
-		jwtManager:     jwtManager,
-		validate:       validator.New(),
+		workoutHandler: workoutHandler,
+		authHandler:    authHandler,
 		telegramRouter: telegramRouter,
+		authMiddleware: authMiddleware,
 	}
 }
 
 func (s *HTTPServer) Start(port string) error {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/api/v1/telegram/webhook", s.telegramRouter.HandleWebhook)
+	s.authHandler.RegisterRoutes(mux)
+	s.workoutHandler.RegisterRoutes(mux, s.authMiddleware)
+	s.templateHandler.RegisterRoutes(mux, s.authMiddleware)
 
 	mux.HandleFunc("POST /api/v1/telegram/webhook", s.telegramRouter.HandleWebhook)
-
-	mux.HandleFunc("POST /api/v1/init", s.HandleInit)
-
-	mux.Handle("POST /api/v1/workout/sets", s.AuthMiddleware(http.HandlerFunc(s.HandleLogWorkoutSet)))
-
-	mux.Handle("POST /api/v1/start", s.AuthMiddleware(http.HandlerFunc(s.HandleStartTraining)))
-	mux.Handle("POST /api/v1/finish", s.AuthMiddleware(http.HandlerFunc(s.HandleFinishTraining)))
-
-	mux.Handle("GET /api/v1/muscle-groups", s.AuthMiddleware(http.HandlerFunc(s.HandleGetMuscleGroups)))
-	mux.Handle("GET /api/v1/{muscleGroupId}/exercises", s.AuthMiddleware(http.HandlerFunc(s.HandleGetExercises)))
-	mux.Handle(
-		"GET /api/v1/exercises/{exerciseId}/completed",
-		s.AuthMiddleware(http.HandlerFunc(s.HandleGetCompletedExercises)),
-	)
-
-	mux.Handle("GET /api/v1/workouts/calendar", s.AuthMiddleware(http.HandlerFunc(s.HandleGetTrainingDays)))
-	mux.Handle("GET /api/v1/workouts/day", s.AuthMiddleware(http.HandlerFunc(s.HandleGetWorkoutsForDay)))
-	mux.Handle(
-		"GET /api/v1/sessions/{sessionId}/exercises",
-		s.AuthMiddleware(http.HandlerFunc(s.HandleGetSessionExercises)),
-	)
-
-	mux.Handle("POST /api/v1/templates", s.AuthMiddleware(http.HandlerFunc(s.HandleCreateTemplate)))
-	mux.Handle("GET /api/v1/templates", s.AuthMiddleware(http.HandlerFunc(s.HandleGetTemplates)))
-	mux.Handle("GET /api/v1/templates/detail/{templateId}", s.AuthMiddleware(http.HandlerFunc(s.HandleGetTemplate)))
-	mux.Handle("DELETE /api/v1/templates/{templateId}", s.AuthMiddleware(http.HandlerFunc(s.HandleDeleteTemplate)))
-	mux.Handle("PUT /api/v1/templates/{templateId}", s.AuthMiddleware(http.HandlerFunc(s.HandleUpdateTemplate)))
 
 	handler := CorsMiddleware(mux)
 
