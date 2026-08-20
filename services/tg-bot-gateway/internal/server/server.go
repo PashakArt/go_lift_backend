@@ -19,14 +19,16 @@ type HTTPServer struct {
 func NewHTTPServer(
 	workoutHandler *handlers.WorkoutHandler,
 	authHandler *handlers.AuthHandler,
+	templateHandler *handlers.TemplateHandler,
 	telegramRouter *telegram.Router,
 	authMiddleware func(http.Handler) http.Handler,
 ) *HTTPServer {
 	return &HTTPServer{
-		workoutHandler: workoutHandler,
-		authHandler:    authHandler,
-		telegramRouter: telegramRouter,
-		authMiddleware: authMiddleware,
+		workoutHandler:  workoutHandler,
+		authHandler:     authHandler,
+		telegramRouter:  telegramRouter,
+		authMiddleware:  authMiddleware,
+		templateHandler: templateHandler,
 	}
 }
 

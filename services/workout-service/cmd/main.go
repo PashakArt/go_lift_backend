@@ -20,8 +20,10 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load(".env", "../../.env"); err != nil {
-		log.Println("Warning: .env file not found, using system env")
+	if err := godotenv.Load(); err != nil {
+		if err = godotenv.Load("../../.env"); err != nil {
+			log.Println("Warning: .env file not found, using system env")
+		}
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

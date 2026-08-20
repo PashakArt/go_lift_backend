@@ -98,11 +98,13 @@ func main() {
 
 	authHandler := handlers.NewAuthHandler(workoutClient, jwtManager, botToken)
 	workoutHandler := handlers.NewWorkoutHandler(workoutClient, validate)
+	templateHandler := handlers.NewTemplateHandler(validate, workoutClient)
 	authMiddleware := server.AuthMiddleware(jwtManager)
 
 	srv := server.NewHTTPServer(
 		workoutHandler,
 		authHandler,
+		templateHandler,
 		tgRouter,
 		authMiddleware,
 	)
